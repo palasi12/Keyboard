@@ -1,24 +1,33 @@
 {
-  "name": "keydeck",
+  "name": "taptile",
   "version": "0.1.0",
   "private": true,
-  "description": "An affordable, open stream deck. Software first.",
-  "workspaces": [
-    "packages/*",
-    "apps/*"
-  ],
+  "type": "module",
+  "description": "Taptile \u2014 programmable mini keyboards. Storefront.",
   "engines": {
     "node": ">=20"
   },
   "scripts": {
-    "build": "npm run build --workspaces --if-present",
-    "typecheck": "tsc -b --pretty",
-    "dev:desktop": "npm run dev -w @keydeck/desktop",
-    "dev:web": "npm run dev -w @keydeck/web",
-    "test": "npm run test --workspaces --if-present",
-    "lint": "npm run typecheck"
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.46.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.28.0"
   },
   "devDependencies": {
-    "typescript": "^5.6.3"
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.3",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.15",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.11",
+    "@types/node": "^22.9.0"
   }
 }

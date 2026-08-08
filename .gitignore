@@ -6,8 +6,12 @@ release/
 *.tsbuildinfo
 .DS_Store
 Thumbs.db
+
+# Secrets — never commit these.
 .env
 .env.local
+.env.*.local
+
 *.log
 npm-debug.log*
 .vscode/*

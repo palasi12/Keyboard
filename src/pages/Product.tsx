@@ -1,0 +1,112 @@
+import { Link, useParams } from 'react-router-dom';
+import { findProduct, formatPrice } from '../lib/catalog';
+import { useCart } from '../lib/cart';
+import ProductArt from '../components/ProductArt';
+
+export default function Product() {
+  const { slug } = useParams<{ slug: string }>();
+  const product = slug ? findProduct(slug) : undefined;
+  const { add } = useCart();
+
+  if (!product) {
+    return (
+      <section className="mx-auto max-w-2xl px-5 py-24 text-center">
+        <h1 className="text-2xl font-bold text-white">We could not find that product</h1>
+        <Link to="/shop" className="btn-primary mt-6">
+          Back to the shop
+        </Link>
+      </section>
+    );
+  }
+
+  return (
+    <section className="mx-auto max-w-6xl px-5 py-14">
+      <nav className="mb-8 text-sm text-neutral-500">
+        <Link to="/shop" className="transition hover:text-white">
+          Shop
+        </Link>
+        <span className="mx-2">/</span>
+        <span className="text-neutral-400">{product.name}</span>
+      </nav>
+
+      <div className="grid gap-12 lg:grid-cols-2">
+        <ProductArt product={product} />
+
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+            {product.name}
+          </h1>
+          <p className="mt-2 text-lg text-neutral-400">{product.tagline}</p>
+
+          <div className="mt-6 flex items-baseline gap-3">
+            <span className="text-3xl font-extrabold text-white">
+              {formatPrice(product.price)}
+            </span>
+            {product.compareAt && (
+              <span className="text-lg text-neutral-600 line-through">
+                {formatPrice(product.compareAt)}
+              </span>
+            )}
+          </div>
+
+          <p className="mt-6 leading-relaxed text-neutral-400">{product.description}</p>
+
+          <ul className="mt-7 space-y-2.5">
+            {product.features.map((feature) => (
+              <li key={feature} className="flex gap-2.5 text-sm text-neutral-300">
+                <svg
+                  className="mt-0.5 h-4 w-4 shrink-0 text-accent-400"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M13 4.5 6.5 11 3 7.5"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+                {feature}
+              </li>
+            ))}
+          </ul>
+
+          <div className="mt-9">
+            {product.inStock ? (
+              <button
+                type="button"
+                onClick={() => add(product.slug)}
+                className="btn-primary w-full py-3 text-base sm:w-auto sm:px-10"
+              >
+                Add to basket
+              </button>
+            ) : (
+              <button type="button" disabled className="btn-ghost w-full py-3 text-base sm:w-auto sm:px-10">
+                Out of stock
+              </button>
+            )}
+            <p className="mt-3 text-sm text-neutral-500">
+              Free UK delivery over £30 · 30-day returns
+            </p>
+          </div>
+
+          <div className="mt-10 border-t border-ink-800 pt-8">
+            <h2 className="text-sm font-semibold uppercase tracking-wide text-neutral-400">
+              Specifications
+            </h2>
+            <dl className="mt-4 divide-y divide-ink-800">
+              {product.specs.map((spec) => (
+                <div key={spec.label} className="flex justify-between gap-6 py-3 text-sm">
+                  <dt className="text-neutral-500">{spec.label}</dt>
+                  <dd className="text-right text-neutral-200">{spec.value}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}

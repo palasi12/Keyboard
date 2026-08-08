@@ -1,0 +1,63 @@
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
+import Nav from './components/Nav';
+import Footer from './components/Footer';
+import CartDrawer from './components/CartDrawer';
+import ProtectedRoute from './components/ProtectedRoute';
+import Landing from './pages/Landing';
+import Shop from './pages/Shop';
+import Product from './pages/Product';
+import Cart from './pages/Cart';
+import Login from './pages/Login';
+import Account from './pages/Account';
+import OrderSuccess from './pages/OrderSuccess';
+
+/** Jump to the top on navigation, or to the #anchor when there is one. */
+function ScrollBehaviour() {
+  const { pathname, hash } = useLocation();
+
+  useEffect(() => {
+    if (hash) {
+      const target = document.querySelector(hash);
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth' });
+        return;
+      }
+    }
+    window.scrollTo(0, 0);
+  }, [pathname, hash]);
+
+  return null;
+}
+
+export default function App() {
+  return (
+    <div className="flex min-h-screen flex-col bg-ink-950">
+      <ScrollBehaviour />
+      <Nav />
+      <CartDrawer />
+
+      <main className="flex-1">
+        <Routes>
+          <Route path="/" element={<Landing />} />
+          <Route path="/shop" element={<Shop />} />
+          <Route path="/product/:slug" element={<Product />} />
+          <Route path="/cart" element={<Cart />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/order/success" element={<OrderSuccess />} />
+          <Route
+            path="/account"
+            element={
+              <ProtectedRoute>
+                <Account />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </main>
+
+      <Footer />
+    </div>
+  );
+}
