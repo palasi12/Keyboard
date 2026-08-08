@@ -25,7 +25,7 @@ export default function Cart() {
   if (lines.length === 0) {
     return (
       <section className="mx-auto max-w-2xl px-5 py-24 text-center">
-        <h1 className="text-2xl font-bold text-white">Your basket is empty</h1>
+        <h1 className="text-2xl font-bold text-neutral-100">Your basket is empty</h1>
         <p className="mt-3 text-neutral-400">Have a look at what we make.</p>
         <Link to="/shop" className="btn-primary mt-7">
           Shop keyboards
@@ -36,20 +36,20 @@ export default function Cart() {
 
   return (
     <section className="mx-auto max-w-4xl px-5 py-14">
-      <h1 className="text-3xl font-bold tracking-tight text-white">Your basket</h1>
+      <h1 className="text-3xl font-heading tracking-heading text-neutral-100">Your basket</h1>
 
-      <div className="mt-10 divide-y divide-ink-800 border-y border-ink-800">
+      <div className="mt-10 divide-y-2 divide-divider border-y-2 border-divider">
         {lines.map((line) => (
           <div key={line.slug} className="flex flex-wrap items-center gap-5 py-5">
             <div
-              className="h-20 w-20 shrink-0 rounded-xl"
+              className="h-20 w-20 shrink-0 rounded-none"
               style={{ backgroundColor: line.product.swatch, opacity: 0.85 }}
               aria-hidden="true"
             />
             <div className="min-w-0 flex-1">
               <Link
                 to={`/product/${line.slug}`}
-                className="font-semibold text-white transition hover:text-accent-400"
+                className="font-semibold text-neutral-100 transition hover:text-accent-500"
               >
                 {line.product.name}
               </Link>
@@ -71,7 +71,7 @@ export default function Cart() {
                 onChange={(event) => setQuantity(line.slug, Number(event.target.value))}
                 className="field w-20 px-2.5 py-1.5 text-sm"
               />
-              <span className="w-20 text-right font-semibold text-white">
+              <span className="w-20 text-right font-semibold text-neutral-100">
                 {formatPrice(line.lineTotal)}
               </span>
               <button
@@ -89,12 +89,12 @@ export default function Cart() {
       <div className="mt-8 flex flex-col items-end gap-3">
         <div className="flex w-full max-w-xs items-center justify-between">
           <span className="text-neutral-400">Subtotal</span>
-          <span className="text-2xl font-extrabold text-white">{formatPrice(subtotal)}</span>
+          <span className="text-2xl font-heading text-neutral-100">{formatPrice(subtotal)}</span>
         </div>
         <p className="text-xs text-neutral-600">Shipping and tax calculated at checkout.</p>
 
         {!isCheckoutConfigured && (
-          <div className="mt-2 w-full rounded-lg border border-amber-500/30 bg-amber-500/10 p-4 text-sm">
+          <div className="mt-2 w-full rounded-none border border-amber-500/30 bg-amber-500/10 p-4 text-sm">
             <p className="font-semibold text-amber-300">Checkout is not connected yet</p>
             <p className="mt-1.5 leading-relaxed text-amber-200/70">
               This site cannot take payments until you build the Stripe endpoint and set{' '}

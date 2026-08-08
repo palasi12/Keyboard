@@ -11,7 +11,7 @@ export default function Product() {
   if (!product) {
     return (
       <section className="mx-auto max-w-2xl px-5 py-24 text-center">
-        <h1 className="text-2xl font-bold text-white">We could not find that product</h1>
+        <h1 className="text-2xl font-bold text-neutral-100">We could not find that product</h1>
         <Link to="/shop" className="btn-primary mt-6">
           Back to the shop
         </Link>
@@ -20,9 +20,9 @@ export default function Product() {
   }
 
   return (
-    <section className="mx-auto max-w-6xl px-5 py-14">
+    <section className="mx-auto max-w-shell px-5 py-14">
       <nav className="mb-8 text-sm text-neutral-500">
-        <Link to="/shop" className="transition hover:text-white">
+        <Link to="/shop" className="transition hover:text-neutral-100">
           Shop
         </Link>
         <span className="mx-2">/</span>
@@ -33,13 +33,13 @@ export default function Product() {
         <ProductArt product={product} />
 
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+          <h1 className="text-3xl font-heading tracking-heading text-neutral-100 sm:text-4xl">
             {product.name}
           </h1>
           <p className="mt-2 text-lg text-neutral-400">{product.tagline}</p>
 
           <div className="mt-6 flex items-baseline gap-3">
-            <span className="text-3xl font-extrabold text-white">
+            <span className="text-3xl font-heading text-neutral-100">
               {formatPrice(product.price)}
             </span>
             {product.compareAt && (
@@ -55,7 +55,7 @@ export default function Product() {
             {product.features.map((feature) => (
               <li key={feature} className="flex gap-2.5 text-sm text-neutral-300">
                 <svg
-                  className="mt-0.5 h-4 w-4 shrink-0 text-accent-400"
+                  className="mt-0.5 h-4 w-4 shrink-0 text-accent-500"
                   viewBox="0 0 16 16"
                   fill="none"
                   aria-hidden="true"
@@ -83,7 +83,7 @@ export default function Product() {
                 Add to basket
               </button>
             ) : (
-              <button type="button" disabled className="btn-ghost w-full py-3 text-base sm:w-auto sm:px-10">
+              <button type="button" disabled className="btn-secondary w-full py-3 text-base sm:w-auto sm:px-10">
                 Out of stock
               </button>
             )}
@@ -92,11 +92,11 @@ export default function Product() {
             </p>
           </div>
 
-          <div className="mt-10 border-t border-ink-800 pt-8">
+          <div className="mt-10 border-t-2 border-divider pt-8">
             <h2 className="text-sm font-semibold uppercase tracking-wide text-neutral-400">
               Specifications
             </h2>
-            <dl className="mt-4 divide-y divide-ink-800">
+            <dl className="mt-4 divide-y-2 divide-divider">
               {product.specs.map((spec) => (
                 <div key={spec.label} className="flex justify-between gap-6 py-3 text-sm">
                   <dt className="text-neutral-500">{spec.label}</dt>

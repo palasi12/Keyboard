@@ -5,13 +5,13 @@ import { useCart } from '../lib/cart';
 export function Logo({ className = '' }: { className?: string }) {
   return (
     <span className={`flex items-center gap-2 ${className}`}>
-      <span className="grid h-7 w-7 grid-cols-2 gap-[3px] rounded-md bg-ink-800 p-[5px]">
-        <span className="rounded-[2px] bg-accent-500" />
-        <span className="rounded-[2px] bg-ink-600" />
-        <span className="rounded-[2px] bg-ink-600" />
-        <span className="rounded-[2px] bg-accent-500" />
+      <span className="grid h-7 w-7 grid-cols-2 gap-[3px] bg-surface2 p-[5px]">
+        <span className="rounded-none bg-accent" />
+        <span className="rounded-none bg-neutral-700" />
+        <span className="rounded-none bg-neutral-700" />
+        <span className="rounded-none bg-accent" />
       </span>
-      <span className="text-[15px] font-bold tracking-tight text-white">Taptile</span>
+      <span className="text-[18px] font-heading tracking-heading text-neutral-100">Taptile</span>
     </span>
   );
 }
@@ -27,20 +27,20 @@ export default function Nav() {
   }
 
   return (
-    <header className="sticky top-0 z-40 border-b border-ink-800/80 bg-ink-950/85 backdrop-blur">
-      <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5">
+    <header className="sticky top-0 z-40 border-b-2 border-divider bg-ground/90 backdrop-blur">
+      <nav className="mx-auto flex h-16 max-w-shell items-center justify-between px-5">
         <Link to="/" aria-label="Taptile home">
           <Logo />
         </Link>
 
         <div className="hidden items-center gap-7 text-sm text-neutral-400 md:flex">
-          <Link to="/shop" className="transition hover:text-white">
+          <Link to="/shop" className="transition hover:text-neutral-100">
             Shop
           </Link>
-          <Link to="/#how" className="transition hover:text-white">
+          <Link to="/#how" className="transition hover:text-neutral-100">
             How it works
           </Link>
-          <Link to="/#faq" className="transition hover:text-white">
+          <Link to="/#faq" className="transition hover:text-neutral-100">
             FAQ
           </Link>
         </div>
@@ -49,14 +49,14 @@ export default function Nav() {
           <button
             type="button"
             onClick={() => setOpen(true)}
-            className="btn-ghost relative py-2"
+            className="btn-secondary relative py-2"
             aria-label={`Basket, ${itemCount} item${itemCount === 1 ? '' : 's'}`}
           >
             Basket
             {itemCount > 0 && (
               <span
                 className="absolute -right-1.5 -top-1.5 flex h-5 min-w-[20px] items-center
-                           justify-center rounded-full bg-accent-500 px-1 text-[11px] font-bold"
+                           justify-center rounded-full bg-accent px-1 text-[11px] font-bold"
               >
                 {itemCount}
               </span>
@@ -65,10 +65,10 @@ export default function Nav() {
 
           {user ? (
             <>
-              <Link to="/account" className="btn-ghost hidden py-2 sm:inline-flex">
+              <Link to="/account" className="btn-secondary hidden py-2 sm:inline-flex">
                 Account
               </Link>
-              <button type="button" onClick={handleSignOut} className="btn-ghost py-2">
+              <button type="button" onClick={handleSignOut} className="btn-secondary py-2">
                 Sign out
               </button>
             </>

@@ -32,7 +32,7 @@ function ScrollBehaviour() {
 
 export default function App() {
   return (
-    <div className="flex min-h-screen flex-col bg-ink-950">
+    <div className="flex min-h-screen flex-col bg-ground">
       <ScrollBehaviour />
       <Nav />
       <CartDrawer />

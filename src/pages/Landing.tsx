@@ -46,23 +46,12 @@ export default function Landing() {
   return (
     <>
       {/* ---------------------------------- hero ---------------------------------- */}
-      <section className="relative overflow-hidden">
-        <div
-          className="pointer-events-none absolute left-1/2 top-0 h-[420px] w-[820px]
-                     -translate-x-1/2 rounded-full bg-accent-500/15 blur-[120px]"
-          aria-hidden="true"
-        />
-        <div className="relative mx-auto grid max-w-6xl gap-14 px-5 py-20 lg:grid-cols-2 lg:items-center lg:py-28">
+      <section className="border-b-2 border-divider">
+        <div className="mx-auto grid max-w-shell gap-14 px-5 py-20 lg:grid-cols-2 lg:items-center lg:py-28">
           <div>
-            <span
-              className="inline-flex items-center gap-2 rounded-full border border-ink-700
-                         bg-ink-900 px-3 py-1 text-xs font-medium text-neutral-300"
-            >
-              <span className="h-1.5 w-1.5 rounded-full bg-accent-400" />
-              Free UK delivery over £30
-            </span>
+            <p className="kicker">Free UK delivery over £30</p>
 
-            <h1 className="mt-6 text-4xl font-extrabold leading-[1.08] tracking-tight text-white sm:text-5xl lg:text-6xl">
+            <h1 className="mt-4 text-5xl font-heading leading-[1.05] tracking-heading text-neutral-100 sm:text-6xl lg:text-7xl">
               Your shortcuts,
               <br />
               on real keys.
@@ -77,7 +66,7 @@ export default function Landing() {
               <Link to="/shop" className="btn-primary px-6 py-3 text-base">
                 Shop keyboards
               </Link>
-              <Link to="/#how" className="btn-ghost px-6 py-3 text-base">
+              <Link to="/#how" className="btn-secondary px-6 py-3 text-base">
                 How it works
               </Link>
             </div>
@@ -97,9 +86,10 @@ export default function Landing() {
       </section>
 
       {/* ---------------------------------- products ---------------------------------- */}
-      <section id="shop" className="border-t border-ink-800/60 py-20">
-        <div className="mx-auto max-w-6xl px-5">
-          <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+      <section id="shop" className="border-t-2 border-divider py-20">
+        <div className="mx-auto max-w-shell px-5">
+          <p className="kicker">01 — Range</p>
+          <h2 className="mt-3 text-3xl font-heading tracking-heading text-neutral-100 sm:text-4xl">
             Pick your size
           </h2>
           <p className="mt-4 max-w-lg text-neutral-400">
@@ -112,17 +102,17 @@ export default function Landing() {
               <Link
                 key={product.slug}
                 to={`/product/${product.slug}`}
-                className="card group overflow-hidden transition hover:border-ink-600"
+                className="card group overflow-hidden transition hover:border-neutral-500"
               >
                 <ProductArt product={product} className="rounded-none" />
                 <div className="p-5">
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <h3 className="font-semibold text-white">{product.name}</h3>
+                      <h3 className="font-semibold text-neutral-100">{product.name}</h3>
                       <p className="mt-1 text-sm text-neutral-500">{product.tagline}</p>
                     </div>
                     <div className="text-right">
-                      <p className="font-bold text-white">{formatPrice(product.price)}</p>
+                      <p className="font-bold text-neutral-100">{formatPrice(product.price)}</p>
                       {product.compareAt && (
                         <p className="text-xs text-neutral-600 line-through">
                           {formatPrice(product.compareAt)}
@@ -130,7 +120,7 @@ export default function Landing() {
                       )}
                     </div>
                   </div>
-                  <p className="mt-4 text-sm font-medium text-accent-400 group-hover:text-accent-500">
+                  <p className="mt-4 text-sm font-medium text-accent-500 group-hover:text-accent-500">
                     {product.inStock ? 'View details →' : 'Out of stock'}
                   </p>
                 </div>
@@ -141,21 +131,19 @@ export default function Landing() {
       </section>
 
       {/* ---------------------------------- how ---------------------------------- */}
-      <section id="how" className="border-t border-ink-800/60 py-20">
-        <div className="mx-auto max-w-6xl px-5">
-          <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+      <section id="how" className="border-t-2 border-divider py-20">
+        <div className="mx-auto max-w-shell px-5">
+          <p className="kicker">02 — Setup</p>
+          <h2 className="mt-3 text-3xl font-heading tracking-heading text-neutral-100 sm:text-4xl">
             How it works
           </h2>
           <div className="mt-12 grid gap-8 sm:grid-cols-3">
             {STEPS.map((step, index) => (
               <div key={step.title}>
-                <span
-                  className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent-500/15
-                             text-sm font-bold text-accent-400"
-                >
+                <span className="flex h-9 w-9 items-center justify-center bg-accent text-sm font-heading text-ground">
                   {index + 1}
                 </span>
-                <h3 className="mt-4 font-semibold text-white">{step.title}</h3>
+                <h3 className="mt-4 font-semibold text-neutral-100">{step.title}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-neutral-400">{step.body}</p>
               </div>
             ))}
@@ -163,16 +151,37 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* ------------------------------ poster statement ------------------------------ */}
+      <section className="border-t-2 border-divider bg-accent">
+        <div className="mx-auto max-w-shell px-5 py-16">
+          <p className="text-[10px] uppercase tracking-[0.1em] text-accent-200">
+            Taptile Mini · TP-09D2
+          </p>
+          <h2 className="mt-3 max-w-3xl text-4xl font-heading leading-[1.05] tracking-heading text-ground sm:text-5xl">
+            Nine keys. Two dials.
+            <br />
+            Every shortcut you own.
+          </h2>
+          <Link
+            to="/product/taptile-mini"
+            className="btn mt-8 bg-ground px-6 py-3 text-base text-neutral-100 hover:bg-neutral-900"
+          >
+            See the Mini
+          </Link>
+        </div>
+      </section>
+
       {/* ---------------------------------- faq ---------------------------------- */}
-      <section id="faq" className="border-t border-ink-800/60 py-20">
+      <section id="faq" className="border-t-2 border-divider py-20">
         <div className="mx-auto max-w-3xl px-5">
-          <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+          <p className="kicker">03 — Questions</p>
+          <h2 className="mt-3 text-3xl font-heading tracking-heading text-neutral-100 sm:text-4xl">
             Questions
           </h2>
-          <div className="mt-10 divide-y divide-ink-800">
+          <div className="mt-10 divide-y-2 divide-divider">
             {FAQ.map((item) => (
               <details key={item.q} className="group py-5">
-                <summary className="flex cursor-pointer items-center justify-between gap-4 text-left font-medium text-white marker:content-['']">
+                <summary className="flex cursor-pointer items-center justify-between gap-4 text-left font-medium text-neutral-100 marker:content-['']">
                   {item.q}
                   <span className="shrink-0 text-neutral-500 transition group-open:rotate-45">
                     +

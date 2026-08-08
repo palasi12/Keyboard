@@ -17,7 +17,7 @@ export default function ProtectedRoute({ children }: { children: ReactNode }) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div
-          className="h-6 w-6 animate-spin rounded-full border-2 border-ink-700 border-t-accent-500"
+          className="h-6 w-6 animate-spin rounded-full border-2 border-divider border-t-accent-500"
           role="status"
           aria-label="Loading"
         />

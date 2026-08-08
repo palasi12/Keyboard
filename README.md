@@ -44,6 +44,26 @@ shows a setup notice rather than pretending to work.
 Never put a Stripe secret key in `.env.local` — everything there is compiled
 into the public JavaScript bundle.
 
+## Design system
+
+The look comes from the **Modernist** system in
+`Taptile Configuration UI Mockup/_ds/`. Read its `readme.md` before changing any
+styling. The rules that matter most:
+
+- **Zero corner radius.** Nothing is rounded, anywhere.
+- **2px dividers**, never hairlines. Alignment and rules do the organising.
+- **Flush left** — headings, copy, and labels inside wide buttons.
+- **Accent used sparingly.** Mostly ink on ground; red carries the primary
+  action and the one poster statement per page.
+- Type is Archivo throughout, headings at weight 800.
+
+Tokens live in `tailwind.config.js` and `src/index.css`. Take colours, spacing
+and type from there rather than hard-coding values.
+
+Note the mockup's own chrome rounds its corners and the design system says not
+to. The system's readme wins here — that rounding is specific to rendering the
+hardware.
+
 ## Project layout
 
 ```

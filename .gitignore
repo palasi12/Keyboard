@@ -19,3 +19,6 @@ npm-debug.log*
 !.vscode/settings.json
 .idea/
 coverage/
+
+# Claude Code local settings
+.claude/

@@ -16,13 +16,13 @@ export default function CartDrawer() {
         aria-label="Close basket"
       />
 
-      <div className="relative flex h-full w-full max-w-sm flex-col border-l border-ink-800 bg-ink-950">
-        <div className="flex items-center justify-between border-b border-ink-800 px-5 py-4">
-          <h2 className="text-base font-semibold text-white">Your basket</h2>
+      <div className="relative flex h-full w-full max-w-sm flex-col border-l-2 border-divider bg-ground">
+        <div className="flex items-center justify-between border-b-2 border-divider px-5 py-4">
+          <h2 className="text-base font-semibold text-neutral-100">Your basket</h2>
           <button
             type="button"
             onClick={() => setOpen(false)}
-            className="text-neutral-500 transition hover:text-white"
+            className="text-neutral-500 transition hover:text-neutral-100"
             aria-label="Close"
           >
             ✕
@@ -32,7 +32,7 @@ export default function CartDrawer() {
         {lines.length === 0 ? (
           <div className="flex flex-1 flex-col items-center justify-center gap-4 px-6 text-center">
             <p className="text-sm text-neutral-500">Nothing in here yet.</p>
-            <Link to="/shop" onClick={() => setOpen(false)} className="btn-ghost">
+            <Link to="/shop" onClick={() => setOpen(false)} className="btn-secondary">
               Browse keyboards
             </Link>
           </div>
@@ -42,12 +42,12 @@ export default function CartDrawer() {
               {lines.map((line) => (
                 <div key={line.slug} className="flex gap-4">
                   <div
-                    className="h-16 w-16 shrink-0 rounded-lg"
+                    className="h-16 w-16 shrink-0 rounded-none"
                     style={{ backgroundColor: line.product.swatch, opacity: 0.85 }}
                     aria-hidden="true"
                   />
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-semibold text-white">
+                    <p className="truncate text-sm font-semibold text-neutral-100">
                       {line.product.name}
                     </p>
                     <p className="mt-0.5 text-xs text-neutral-500">
@@ -76,15 +76,15 @@ export default function CartDrawer() {
                       </button>
                     </div>
                   </div>
-                  <p className="text-sm font-semibold text-white">{formatPrice(line.lineTotal)}</p>
+                  <p className="text-sm font-semibold text-neutral-100">{formatPrice(line.lineTotal)}</p>
                 </div>
               ))}
             </div>
 
-            <div className="border-t border-ink-800 px-5 py-5">
+            <div className="border-t-2 border-divider px-5 py-5">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-neutral-400">Subtotal</span>
-                <span className="text-lg font-bold text-white">{formatPrice(subtotal)}</span>
+                <span className="text-lg font-bold text-neutral-100">{formatPrice(subtotal)}</span>
               </div>
               <p className="mt-1 text-xs text-neutral-600">
                 Shipping and tax calculated at checkout.

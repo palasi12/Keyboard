@@ -24,7 +24,7 @@ A single HTTPS endpoint that accepts:
 
 ```json
 {
-  "items": [{ "slug": "taptile-6", "quantity": 2 }],
+  "items": [{ "slug": "taptile-six", "quantity": 2 }],
   "email": "customer@example.com",
   "successUrl": "https://taptile.com/order/success",
   "cancelUrl": "https://taptile.com/cart"
@@ -48,9 +48,9 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 // The server's own price list. Never trust prices from the client.
 const PRICES: Record<string, { name: string; amount: number }> = {
-  'taptile-3': { name: 'Taptile 3', amount: 2400 },
-  'taptile-6': { name: 'Taptile 6', amount: 3900 },
-  'taptile-9': { name: 'Taptile 9', amount: 5400 },
+  'taptile-three': { name: 'Taptile Three', amount: 2400 },
+  'taptile-six': { name: 'Taptile Six', amount: 3900 },
+  'taptile-mini': { name: 'Taptile Mini', amount: 5400 },
 };
 
 export async function POST(request: Request) {

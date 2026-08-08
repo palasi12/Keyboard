@@ -86,7 +86,7 @@ export default function Login() {
   return (
     <div className="flex items-center justify-center px-5 py-16">
         <div className="w-full max-w-sm">
-          <h1 className="text-2xl font-bold tracking-tight text-white">
+          <h1 className="text-2xl font-heading tracking-heading text-neutral-100">
             {mode === 'signin' ? 'Sign in' : 'Create your account'}
           </h1>
           <p className="mt-2 text-sm text-neutral-400">
@@ -97,7 +97,7 @@ export default function Login() {
 
           {!configured && (
             <div
-              className="mt-6 rounded-lg border border-amber-500/30 bg-amber-500/10 p-4 text-sm"
+              className="mt-6 rounded-none border border-amber-500/30 bg-amber-500/10 p-4 text-sm"
               role="alert"
             >
               <p className="font-semibold text-amber-300">Sign-in is not connected yet</p>
@@ -146,7 +146,7 @@ export default function Login() {
                   type="button"
                   onClick={() => setShowPassword((v) => !v)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium
-                             text-neutral-400 transition hover:text-white"
+                             text-neutral-400 transition hover:text-neutral-100"
                 >
                   {showPassword ? 'Hide' : 'Show'}
                 </button>
@@ -170,12 +170,12 @@ export default function Login() {
           </form>
 
           <div className="my-6 flex items-center gap-3">
-            <span className="h-px flex-1 bg-ink-800" />
+            <span className="h-px flex-1 bg-surface2" />
             <span className="text-xs uppercase tracking-wide text-neutral-600">or</span>
-            <span className="h-px flex-1 bg-ink-800" />
+            <span className="h-px flex-1 bg-surface2" />
           </div>
 
-          <button type="button" onClick={handleGoogle} className="btn-ghost w-full py-2.5" disabled={busy}>
+          <button type="button" onClick={handleGoogle} className="btn-secondary w-full py-2.5" disabled={busy}>
             <svg className="h-4 w-4" viewBox="0 0 24 24" aria-hidden="true">
               <path
                 fill="#4285F4"
@@ -204,7 +204,7 @@ export default function Login() {
                 <button
                   type="button"
                   onClick={() => switchMode('signup')}
-                  className="font-semibold text-accent-400 hover:text-accent-500"
+                  className="font-semibold text-accent-500 hover:text-accent-500"
                 >
                   Create one
                 </button>
@@ -215,7 +215,7 @@ export default function Login() {
                 <button
                   type="button"
                   onClick={() => switchMode('signin')}
-                  className="font-semibold text-accent-400 hover:text-accent-500"
+                  className="font-semibold text-accent-500 hover:text-accent-500"
                 >
                   Sign in
                 </button>

@@ -1,11 +1,11 @@
 import type { Product } from '../lib/catalog';
 
 /**
- * Stand-in product imagery.
+ * Stand-in product imagery, drawn to match the deck rendering in the
+ * configuration mockup: a dark shell, a recessed well, and a grid of keys.
  *
- * Draws a plausible key grid from the product's key count so the site looks
- * finished before real photography exists. Replace with actual vendor photos
- * before launch — customers do not buy from CSS drawings.
+ * Replace with real vendor photography before launch — see docs/PRODUCTS.md.
+ * Nobody buys hardware from a CSS drawing.
  */
 export default function ProductArt({
   product,
@@ -14,34 +14,46 @@ export default function ProductArt({
   product: Product;
   className?: string;
 }) {
-  const cols = product.keyCount <= 3 ? 3 : product.keyCount <= 6 ? 3 : 3;
+  const cols = product.keyCount <= 3 ? 3 : 3;
   const keys = Array.from({ length: product.keyCount }, (_, index) => index);
 
   return (
     <div
-      className={`flex items-center justify-center rounded-2xl bg-ink-900 p-8 ${className}`}
+      className={`flex items-center justify-center bg-surface p-10 ${className}`}
       role="img"
       aria-label={`${product.name} — placeholder product image`}
     >
-      <div className="w-full max-w-[220px] rounded-xl bg-ink-800 p-4 shadow-2xl shadow-black/40">
-        <div
-          className="grid gap-2"
-          style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }}
-        >
-          {keys.map((index) => (
-            <div
-              key={index}
-              className="aspect-square rounded-md"
-              style={{
-                backgroundColor: product.swatch,
-                opacity: 0.35 + (index % 3) * 0.22,
-              }}
-            />
-          ))}
+      <div className="w-full max-w-[240px] bg-[#171514] p-3">
+        <div className="bg-[#0d0c0c] p-2">
+          <div
+            className="grid gap-1.5"
+            style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }}
+          >
+            {keys.map((index) => (
+              <div
+                key={index}
+                className="aspect-square bg-[#2f2b2a]"
+                style={
+                  index === 0
+                    ? { backgroundColor: '#ec3013' }
+                    : undefined
+                }
+              />
+            ))}
+          </div>
         </div>
+
         <div className="mt-3 flex items-center justify-between px-0.5">
-          <span className="h-1.5 w-8 rounded-full bg-ink-700" />
-          <span className="h-3 w-3 rounded-full border-2 border-ink-700" />
+          <span className="text-[9px] uppercase tracking-[0.14em] text-neutral-600">
+            {product.model}
+          </span>
+          {product.dialCount > 0 && (
+            <span className="flex gap-1.5" aria-hidden="true">
+              {Array.from({ length: product.dialCount }, (_, index) => (
+                <span key={index} className="h-3 w-3 rounded-full bg-[#2f2b2a]" />
+              ))}
+            </span>
+          )}
         </div>
       </div>
     </div>

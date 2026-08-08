@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -5,17 +7,33 @@
 @layer base {
   :root {
     color-scheme: dark;
+    /* The divider used everywhere. 2px, never a hairline. */
+    --divider: color-mix(in srgb, #f8f4f4 14%, transparent);
   }
 
   body {
-    @apply bg-ink-950 text-white antialiased;
+    @apply bg-ground text-neutral-100 antialiased;
+    font-size: 15px;
+    line-height: 1.55;
   }
 
-  /* Respect users who asked the OS to reduce motion. */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading tracking-heading;
+    line-height: 1.12;
+  }
+
+  /* The system styles keyboard focus itself; never leave the browser default. */
+  :focus { outline: none; }
+  :focus-visible {
+    outline: 2px solid theme('colors.accent.DEFAULT');
+    outline-offset: 2px;
+  }
+  ::selection {
+    background: color-mix(in srgb, #ec3013 30%, transparent);
+  }
+
   @media (prefers-reduced-motion: reduce) {
-    *,
-    *::before,
-    *::after {
+    *, *::before, *::after {
       animation-duration: 0.01ms !important;
       transition-duration: 0.01ms !important;
     }
@@ -23,34 +41,71 @@
 }
 
 @layer components {
+  /* Button labels are flush left — a button wider than its label starts the
+     text at the left padding edge. This is a deliberate rule of the system. */
   .btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5
-           text-sm font-semibold transition focus:outline-none focus-visible:ring-2
-           focus-visible:ring-accent-400 focus-visible:ring-offset-2
-           focus-visible:ring-offset-ink-950 disabled:cursor-not-allowed
-           disabled:opacity-50;
+    @apply inline-flex items-center justify-start gap-2 px-4 py-2.5 font-heading
+           text-sm leading-tight transition-colors disabled:cursor-not-allowed
+           disabled:opacity-45;
   }
 
   .btn-primary {
-    @apply btn bg-accent-500 text-white hover:bg-accent-600;
+    @apply btn bg-accent text-ground hover:bg-accent-600 active:bg-accent-700;
+  }
+
+  .btn-secondary {
+    @apply btn border text-neutral-100;
+    border-color: var(--divider);
+  }
+  .btn-secondary:hover {
+    background: color-mix(in srgb, #f8f4f4 7%, transparent);
+  }
+  .btn-secondary:active {
+    background: color-mix(in srgb, #f8f4f4 14%, transparent);
   }
 
   .btn-ghost {
-    @apply btn border border-ink-700 bg-ink-850 text-neutral-200 hover:border-ink-600
-           hover:bg-ink-800;
+    @apply btn px-1 text-accent-500;
+  }
+  .btn-ghost:hover {
+    background: color-mix(in srgb, #ec3013 12%, transparent);
   }
 
   .field {
-    @apply w-full rounded-lg border border-ink-700 bg-ink-900 px-3.5 py-2.5 text-sm
-           text-white placeholder-neutral-500 transition focus:border-accent-500
-           focus:outline-none focus:ring-1 focus:ring-accent-500;
+    @apply w-full border bg-surface px-2.5 py-2 text-sm text-neutral-100
+           placeholder-neutral-600 transition-colors;
+    border-color: var(--divider);
+    caret-color: theme('colors.accent.DEFAULT');
+  }
+  .field:hover {
+    border-color: color-mix(in srgb, #f8f4f4 45%, transparent);
+  }
+  .field:focus-visible {
+    border-color: theme('colors.accent.DEFAULT');
+    outline-offset: 0;
   }
 
   .label {
-    @apply mb-1.5 block text-xs font-medium uppercase tracking-wide text-neutral-400;
+    @apply mb-1.5 block text-xs text-neutral-400;
+  }
+
+  /* Small caps section marker, straight from the system's h6 treatment. */
+  .kicker {
+    @apply text-[10px] uppercase tracking-[0.1em] text-accent-500;
   }
 
   .card {
-    @apply rounded-xl border border-ink-800 bg-ink-900;
+    @apply bg-surface;
+  }
+
+  /* The 2px rule that does all the organising. */
+  .rule {
+    @apply border-0 border-t-2;
+    border-color: var(--divider);
+  }
+
+  .divide-rule > * + * {
+    @apply border-t-2;
+    border-color: var(--divider);
   }
 }

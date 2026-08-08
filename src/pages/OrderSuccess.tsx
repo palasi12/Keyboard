@@ -14,12 +14,12 @@ export default function OrderSuccess() {
           />
         </svg>
       </div>
-      <h1 className="mt-6 text-2xl font-bold text-white">Thanks for your order</h1>
+      <h1 className="mt-6 text-2xl font-bold text-neutral-100">Thanks for your order</h1>
       <p className="mt-3 text-neutral-400">
         A confirmation email is on its way. You can track it from your account.
       </p>
       <div className="mt-8 flex justify-center gap-3">
-        <Link to="/account" className="btn-ghost">
+        <Link to="/account" className="btn-secondary">
           View orders
         </Link>
         <Link to="/shop" className="btn-primary">

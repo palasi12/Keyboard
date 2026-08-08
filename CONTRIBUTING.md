@@ -1,5 +1,49 @@
 # Contributing
 
+## First time setup
+
+Do this once.
+
+1. **Install the tools**
+   - [Node 20+](https://nodejs.org) — pick the LTS build
+   - [Git](https://git-scm.com)
+   - [VS Code](https://code.visualstudio.com)
+
+2. **Accept the GitHub invite** — check your email, or go to
+   https://github.com/palasi12/Keyboard and accept the banner.
+
+3. **Clone the repo**
+
+   ```bash
+   git clone https://github.com/palasi12/Keyboard.git
+   cd Keyboard
+   ```
+
+4. **Tell git who you are** (inside this folder, no `--global`)
+
+   ```bash
+   git config user.name "Your Name"
+   git config user.email "the-email-on-your-github-account"
+   ```
+
+5. **Install and run**
+
+   ```bash
+   npm install
+   npm run dev
+   ```
+
+   Open the URL it prints — usually http://localhost:5173.
+
+6. **Optional: environment variables.** Sign-in and checkout are switched off
+   until these exist. The site runs fine without them.
+
+   ```bash
+   cp .env.example .env.local
+   ```
+
+   Ask Palasi for the values. **Never commit `.env.local`.**
+
 Two people, one repo. These rules exist so you never lose an afternoon to a
 merge conflict.
 
