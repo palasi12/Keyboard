@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="_ds/modernist-bc4d6628-d9d8-43f9-9245-70b3b28a2047/styles.css">
+  <script src="_ds/modernist-bc4d6628-d9d8-43f9-9245-70b3b28a2047/_ds_bundle.js"></script>
+  <style>
+    html,body{margin:0;height:100%;overflow:auto}
+    .tt-root{ min-width:1280px; --color-bg:#0b0a0a; --color-surface:#1a1918;
+      --color-text:var(--color-neutral-100); --color-divider:color-mix(in srgb, var(--color-neutral-100) 14%, transparent); }
+    .tt-key{ transition: border-color .1s; cursor:pointer; }
+    .tt-key:hover{ border-color: var(--color-neutral-400); }
+    .tt-key:active .tt-face{ filter:brightness(0.9); }
+    .tt-dial{ transition: border-color .1s; cursor:pointer; }
+    .tt-dial:hover{ border-color: var(--color-neutral-400); }
+    .tt-navrow{ border-radius:8px; }
+    .tt-navrow:hover{ background:color-mix(in srgb, var(--color-neutral-100) 5%, transparent); }
+    .tt-sidebtn{ border-radius:8px; }
+    .tt-sidebtn:hover{ background:var(--color-neutral-700); }
+    .tt-card{ border-radius:10px; }
+    .tt-shell{ background:linear-gradient(160deg, #262322 0%, #171514 46%, #0f0e0e 100%) !important; }
+    .tt-well{ background:linear-gradient(180deg, #0d0c0c, #131111); border:1px solid rgba(0,0,0,.7);
+      border-radius:12px; padding:8px; box-shadow:inset 0 2px 6px rgba(0,0,0,.85), inset 0 -1px 0 rgba(255,255,255,.04); }
+    .tt-key{ background:linear-gradient(180deg, #3a3634, #242120) !important; }
+    .tt-face{ background-image:linear-gradient(180deg, rgba(255,255,255,.07), rgba(0,0,0,.22)); }
+    .tt-dialwell{ padding:6px 9px 4px; border-radius:50%; background:radial-gradient(circle at 50% 30%, #141312, #0b0a0a);
+      box-shadow:inset 0 2px 6px rgba(0,0,0,.9); }
+    .tt-dial{ background:conic-gradient(from 0deg, #3d3937, #201e1d, #454140, #201e1d, #3d3937) !important; }
+    .tt-screw{ width:4px; height:4px; border-radius:50%; background:radial-gradient(circle at 35% 30%, #56514f, #1a1817); }
+    .tt-port{ width:26px; height:7px; border-radius:4px; background:#0a0909; box-shadow:inset 0 1px 2px rgba(0,0,0,.9), 0 1px 0 rgba(255,255,255,.06); }
+    .tt-stage{ transition:transform .55s cubic-bezier(.3,.8,.3,1); transform-style:preserve-3d; }
+    .tt-iso{ transform:perspective(2000px) rotateX(44deg) rotateZ(-28deg) scale(.88); }
+    .tt-iso .tt-grid, .tt-iso .tt-dialrow{ transform-style:preserve-3d; }
+
+    .tt-iso .tt-key, .tt-iso .tt-dial{ position:relative; transform-style:preserve-3d; }
+    .tt-iso .tt-key{ transform:translateZ(22px); box-shadow:-10px 10px 0 -2px rgba(0,0,0,.6), 0 26px 40px rgba(0,0,0,.7), inset 0 1px 0 rgba(255,255,255,.06); }
+    .tt-iso .tt-dial{ transform:translateZ(28px); box-shadow:-10px 10px 0 -2px rgba(0,0,0,.6), 0 26px 40px rgba(0,0,0,.7); }
+    .tt-shell.tt-iso{ overflow:visible; transform:perspective(2000px) rotateX(44deg) rotateZ(-28deg) scale(.88); }
+    .tt-shell{ border-radius:16px; box-shadow:0 24px 60px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.05); overflow:hidden; }
+    .tt-bar{ border-radius:12px; box-shadow:0 0 0 1px rgba(255,255,255,.04), 0 10px 30px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.06); }
+    .tt-pill{ border-radius:999px; }
+    .tt-badge{ border-radius:50%; box-shadow:0 0 0 4px color-mix(in srgb, var(--color-accent) 18%, transparent), 0 0 18px color-mix(in srgb, var(--color-accent) 45%, transparent); }
+    .tt-save{ border-radius:999px !important; box-shadow:0 6px 18px color-mix(in srgb, var(--color-accent) 40%, transparent); }
+    .tt-key{ border-radius:10px; box-shadow:0 4px 10px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.05); }
+    .tt-face{ border-radius:7px; }
+    .tt-dial{ box-shadow:0 6px 16px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.06); }
+    .tt-scroll::-webkit-scrollbar{ width:8px; }
+    .tt-scroll::-webkit-scrollbar-thumb{ background:var(--color-neutral-700); }
+  </style>
+</helmet>
+
+<div class="tt-root" style="background:var(--color-bg); color:var(--color-text); font-family:var(--font-body); width:100%; height:100vh; display:flex; flex-direction:column; overflow:hidden;">
+
+  <div class="nav" style="border-bottom:2px solid var(--color-divider); background:var(--color-bg); flex:none; padding:16px 28px;">
+    <div style="display:flex; align-items:center; gap:10px; margin-right:auto;">
+      <div style="width:22px; height:22px; border:2px solid var(--color-text); display:grid; grid-template-columns:1fr 1fr; gap:2px; padding:2px;">
+        <div style="background:var(--color-accent);"></div><div style="background:var(--color-text);"></div>
+        <div style="background:var(--color-text);"></div><div style="background:var(--color-accent);"></div>
+      </div>
+      <div class="nav-brand" style="color:var(--color-text);">TAPTILE</div>
+    </div>
+    <div style="display:flex; align-items:center; gap:8px; font-size:12px; color:var(--color-neutral-400); letter-spacing:.04em; text-transform:uppercase;">
+      <div style="width:7px; height:7px; border-radius:50%; background:{{ connected.dot }};"></div>
+      {{ connected.label }}
+    </div>
+    <div style="width:2px; align-self:stretch; background:var(--color-divider);"></div>
+    <div style="font-size:13px; color:var(--color-neutral-300);">Profile: <span style="color:var(--color-text); font-weight:600;">{{ activeProfile.name }}</span></div>
+  </div>
+
+  <div style="display:flex; flex:1; min-height:0;">
+
+    <div style="width:56px; flex:none; border-right:2px solid var(--color-divider); display:flex; flex-direction:column; align-items:center; padding:18px 0; gap:6px;">
+      <div style="width:36px; height:36px; display:grid; place-items:center; background:var(--color-accent); color:#f8f4f4;" title="Keyboard">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M8 14h8"/></svg>
+      </div>
+      <div style="width:36px; height:36px; display:grid; place-items:center; color:var(--color-neutral-500); cursor:pointer;" title="Settings">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg>
+      </div>
+      <div style="flex:1;"></div>
+      <div style="width:36px; height:36px; display:grid; place-items:center; color:var(--color-neutral-500); cursor:pointer;" title="Help">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 2-3 4"/><path d="M12 17h.01"/></svg>
+      </div>
+    </div>
+
+    <div class="tt-scroll" style="width:252px; flex:none; border-right:2px solid var(--color-divider); padding:22px 18px; display:flex; flex-direction:column; gap:20px; overflow:auto;">
+
+      <h5 style="margin:0; color:var(--color-text);">Configuration</h5>
+
+      <div>
+        <div style="font-size:10.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--color-neutral-500); margin:0 0 8px;">Device</div>
+        <div class="tt-card" style="display:flex; align-items:center; gap:10px; padding:10px; border:1px solid rgba(255,255,255,.08); background:var(--color-surface); cursor:pointer;">
+          <div style="width:30px; height:30px; flex:none; border-radius:8px; border:1px solid var(--color-neutral-700); display:grid; place-items:center; background:var(--color-neutral-900);">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--color-neutral-300)" stroke-width="2"><rect x="3" y="6" width="18" height="12"/><path d="M8 10v4M12 10v4M16 10v4"/></svg>
+          </div>
+          <div style="flex:1; min-width:0;">
+            <div style="font-size:12.5px; font-weight:600; color:var(--color-text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Taptile Mini</div>
+            <div style="display:flex; align-items:center; gap:6px; font-size:10.5px; color:var(--color-neutral-400); margin-top:2px;">
+              <div style="width:6px; height:6px; border-radius:50%; background:{{ connected.dot }};"></div>
+              {{ connected.label }}
+            </div>
+          </div>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-neutral-500)" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+      </div>
+
+      <div class="hr" style="background:var(--color-divider); margin:0;"></div>
+
+      <div>
+        <div style="font-size:10.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--color-neutral-500); margin:0 0 8px;">Profiles</div>
+        <div style="display:flex; flex-direction:column; gap:2px;">
+          <sc-for list="{{ profiles }}" as="p" hint-placeholder-count="4">
+            <div class="tt-sidebtn" onClick="{{ selectProfile }}" data-pid="{{ p.id }}" style="display:flex; align-items:center; gap:10px; padding:9px 10px; border-left:3px solid {{ p.borderColor }}; background:{{ p.bg }};">
+              <div style="width:26px; height:26px; flex:none; border-radius:7px; display:grid; place-items:center; background:{{ p.iconBg }}; color:{{ p.iconColor }}; font-family:var(--font-heading); font-weight:800; font-size:11px;">{{ p.initials }}</div>
+              <div style="flex:1; min-width:0;">
+                <div style="font-size:12.5px; color:{{ p.textColor }}; font-weight:{{ p.weight }};">{{ p.name }}</div>
+              </div>
+              <div style="font-size:10.5px; color:var(--color-neutral-500);">{{ p.mappingCount }}</div>
+            </div>
+          </sc-for>
+        </div>
+        <button class="btn btn-ghost" style="margin-top:8px; padding-left:10px; font-size:12px; color:var(--color-neutral-400);">+ New profile</button>
+      </div>
+
+      <div class="hr" style="background:var(--color-divider); margin:0;"></div>
+
+      <div>
+        <div style="font-size:10.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--color-neutral-500); margin:0 0 8px;">Keyboard configuration</div>
+        <div style="display:flex; flex-direction:column;">
+          <sc-for list="{{ navItems }}" as="n" hint-placeholder-count="5">
+            <div class="tt-navrow" onClick="{{ selectSection }}" data-nav="{{ n.secIndex }}" style="display:flex; align-items:center; gap:10px; padding:9px 10px; color:{{ n.color }}; background:{{ n.bg }}; border-left:3px solid {{ n.border }}; cursor:pointer; font-size:12.5px;">
+              <div style="width:16px; flex:none; color:{{ n.color }};" dangerouslySetInnerHTML="{{ n.iconHtml }}"></div>
+              {{ n.label }}
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+
+    <div style="flex:1; display:flex; flex-direction:column; min-width:0;">
+      <div style="flex:none; padding:26px 32px 0;">
+        <div style="display:flex; align-items:baseline; gap:12px;">
+          <div style="font-family:var(--font-heading); font-weight:800; font-size:12px; letter-spacing:.14em; color:var(--color-accent);">{{ sectionIndex }}</div>
+          <div style="font-size:10.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--color-neutral-500);">{{ sectionKicker }}</div>
+        </div>
+        <h3 style="margin:5px 0 0; color:var(--color-text);">{{ sectionTitle }}</h3>
+
+        <div class="tt-bar" style="display:flex; align-items:center; flex-wrap:wrap; gap:6px; row-gap:8px; min-width:0; margin-top:12px; padding:9px 10px; border:1px solid rgba(255,255,255,.07); background:var(--color-surface);">
+          <div class="tt-badge" style="width:32px; height:32px; flex:none; display:grid; place-items:center; background:var(--color-accent); color:#f8f4f4; font-family:var(--font-heading); font-weight:800; font-size:12px;">Pr</div>
+          <div style="font-size:13px; font-weight:600; color:var(--color-text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; flex:0 1 auto; max-width:110px; min-width:0;">{{ activeProfile.name }}</div>
+          <div class="tt-pill" style="display:flex; align-items:center; gap:6px; padding:6px 12px; border:1px solid rgba(255,255,255,.09); background:rgba(255,255,255,.03); font-size:11.5px; color:var(--color-neutral-300); cursor:pointer; white-space:nowrap; flex:none;">
+            Standard
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </div>
+          <div class="tt-pill" style="display:flex; padding:3px; gap:2px; border:1px solid rgba(255,255,255,.09); background:rgba(255,255,255,.03); flex:none;">
+            <div class="tt-pill" onClick="{{ setTopView }}" style="padding:5px 10px; font-size:11.5px; white-space:nowrap; cursor:pointer; background:{{ topViewBg }}; color:{{ topViewColor }};">2D</div>
+            <div class="tt-pill" onClick="{{ setIsoView }}" style="padding:5px 10px; font-size:11.5px; white-space:nowrap; cursor:pointer; background:{{ isoViewBg }}; color:{{ isoViewColor }};">3D</div>
+          </div>
+          <div style="flex:1; min-width:0;"></div>
+          <div class="tt-pill" onClick="{{ toggleSound }}" style="width:30px; height:30px; display:grid; place-items:center; border:1px solid rgba(255,255,255,.09); cursor:pointer; background:{{ soundBg }}; color:{{ soundColor }}; flex:none;" title="Key sounds">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5 6 9H2v6h4l5 4V5Z"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+          </div>
+          <div style="display:flex; gap:4px; flex:none;">
+            <div class="tt-pill" style="width:30px; height:30px; display:grid; place-items:center; color:var(--color-neutral-400); border:1px solid rgba(255,255,255,.09); cursor:pointer;" title="Undo">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7v6h6M3 13a9 9 0 1 0 3-7"/></svg>
+            </div>
+            <div class="tt-pill" style="width:30px; height:30px; display:grid; place-items:center; color:var(--color-neutral-600); border:1px solid rgba(255,255,255,.09);" title="Redo">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 7v6h-6M21 13a9 9 0 1 1-3-7"/></svg>
+            </div>
+          </div>
+          <button class="btn btn-primary tt-save" style="white-space:nowrap; gap:7px; padding:8px 14px; font-size:13px; flex:none;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>
+            Save
+          </button>
+        </div>
+
+
+      </div>
+
+      <div class="tt-scroll" style="flex:1; min-width:0; overflow:auto; display:flex; align-items:center; justify-content:center; padding:18px; background-image:linear-gradient(color-mix(in srgb, var(--color-neutral-100) 6%, transparent) 1px, transparent 1px), linear-gradient(90deg, color-mix(in srgb, var(--color-neutral-100) 6%, transparent) 1px, transparent 1px), radial-gradient(circle at 50% 45%, color-mix(in srgb, var(--color-accent) 12%, transparent), transparent 62%); background-size:32px 32px, 32px 32px, 100% 100%;">
+        <sc-if value="{{ isMapping }}" hint-placeholder-val="{{ true }}">
+        <div class="tt-shell tt-stage {{ stageClass }}" style="background:var(--color-surface); border:1px solid rgba(255,255,255,.08); padding:0; display:flex; flex-direction:column; align-items:stretch;">
+
+          <div style="display:flex; align-items:center; gap:10px; padding:11px 18px; border-bottom:1px solid rgba(255,255,255,.07); background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,0)); border-radius:15px 15px 0 0;">
+            <div class="tt-port"></div>
+            <div style="font-family:var(--font-heading); font-weight:800; font-size:10px; letter-spacing:.18em; color:var(--color-neutral-400);">TAPTILE MINI</div>
+            <div style="flex:1;"></div>
+            <div style="font-size:9.5px; letter-spacing:.14em; color:var(--color-neutral-600);">TP-09D2</div>
+            <div style="width:6px; height:6px; border-radius:50%; background:{{ connected.dot }}; box-shadow:0 0 8px {{ connected.dot }};"></div>
+          </div>
+
+          <div class="tt-plate" style="padding:16px 24px 16px; display:flex; flex-direction:column; align-items:center; position:relative;">
+          <div class="tt-screw" style="position:absolute; top:9px; left:9px;"></div>
+          <div class="tt-screw" style="position:absolute; top:9px; right:9px;"></div>
+          <div class="tt-screw" style="position:absolute; bottom:9px; left:9px;"></div>
+          <div class="tt-screw" style="position:absolute; bottom:9px; right:9px;"></div>
+
+          <div class="tt-well">
+          <div class="tt-grid" style="display:grid; grid-template-columns:repeat(3, 74px); grid-template-rows:repeat(3, 74px); gap:10px;">
+            <sc-for list="{{ keys }}" as="k" hint-placeholder-count="9">
+              <div class="tt-key" onClick="{{ selectKey }}" onMouseDown="{{ pressKey }}" onMouseUp="{{ releaseKey }}" onMouseLeave="{{ releaseKey }}" data-kid="{{ k.id }}" style="border:1px solid {{ k.bezel }}; background:var(--color-neutral-700); padding:3px; position:relative;">
+                <div class="tt-face" style="width:100%; height:100%; background:{{ k.face }}; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; position:relative; transform:{{ k.pressT }}; filter:{{ k.pressF }}; transition:transform .07s ease, filter .07s ease;">
+                  <div style="position:absolute; top:5px; left:6px; font-family:var(--font-heading); font-weight:800; font-size:8.5px; letter-spacing:.1em; color:{{ k.indexColor }};">{{ k.index }}</div>
+                  <div style="color:{{ k.iconColor }};" dangerouslySetInnerHTML="{{ k.iconHtml }}"></div>
+                  <div style="font-size:10.5px; text-align:center; line-height:1.2; color:{{ k.textColor }}; padding:0 4px;">{{ k.label }}</div>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+          </div>
+
+          <div style="width:100%; display:flex; align-items:center; gap:10px; margin:12px 0 8px;">
+            <div style="font-size:9.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--color-neutral-600);">Rotary</div>
+            <div style="flex:1; height:1px; background:rgba(255,255,255,.08);"></div>
+          </div>
+
+          <div class="tt-dialrow" style="display:flex; gap:30px;">
+            <sc-for list="{{ dials }}" as="d" hint-placeholder-count="2">
+              <div class="tt-dialwell" style="display:flex; flex-direction:column; align-items:center; gap:4px; border-radius:14px;">
+                <div class="tt-dial" onClick="{{ selectDial }}" onMouseDown="{{ startTwist }}" data-did="{{ d.id }}" style="width:76px; height:76px; border-radius:50%; border:2px solid {{ d.bezel }}; background:var(--color-neutral-700); padding:4px; cursor:grab;">
+                  <div style="width:100%; height:100%; border-radius:50%; background:{{ d.face }}; position:relative; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; overflow:hidden;">
+                    <div style="position:absolute; inset:0; border-radius:50%; transform:rotate({{ d.angle }}deg); background:repeating-conic-gradient(from 0deg, rgba(255,255,255,.09) 0deg 3deg, transparent 3deg 9deg);"></div>
+                    <div style="position:absolute; top:3px; left:50%; width:2px; height:11px; margin-left:-1px; background:{{ d.markColor }}; transform-origin:50% 35px; transform:rotate({{ d.angle }}deg);"></div>
+                    <div style="color:{{ d.iconColor }}; position:relative;" dangerouslySetInnerHTML="{{ d.iconHtml }}"></div>
+                    <div style="font-size:10px; text-align:center; color:{{ d.textColor }}; position:relative;">{{ d.label }}</div>
+                  </div>
+                </div>
+                <div style="font-family:var(--font-heading); font-weight:800; font-size:8.5px; letter-spacing:.14em; color:{{ d.indexColor }};">{{ d.index }} · {{ d.readout }}</div>
+              </div>
+            </sc-for>
+          </div>
+          </div>
+        </div>
+        </sc-if>
+
+        <sc-if value="{{ isDials }}" hint-placeholder-val="{{ false }}">
+        <div style="width:100%; max-width:720px; display:flex; flex-direction:column; gap:18px; align-self:flex-start;">
+          <sc-for list="{{ dialSettings }}" as="ds" hint-placeholder-count="2">
+            <div class="tt-card" style="background:var(--color-surface); border:1px solid rgba(255,255,255,.08); padding:20px 22px; display:flex; gap:22px;">
+              <div style="flex:none; display:flex; flex-direction:column; align-items:center; gap:8px;">
+                <div class="tt-dial" style="width:76px; height:76px; border-radius:50%; border:2px solid {{ ds.bezel }}; background:var(--color-neutral-700); padding:4px;">
+                  <div style="width:100%; height:100%; border-radius:50%; background:{{ ds.face }}; display:flex; align-items:center; justify-content:center; color:{{ ds.iconColor }};" dangerouslySetInnerHTML="{{ ds.iconHtml }}"></div>
+                </div>
+                <div style="font-family:var(--font-heading); font-weight:800; font-size:9px; letter-spacing:.14em; color:var(--color-neutral-500);">{{ ds.index }}</div>
+              </div>
+
+              <div style="flex:1; min-width:0; display:flex; flex-direction:column; gap:16px;">
+                <div style="display:flex; align-items:baseline; gap:10px;">
+                  <h5 style="margin:0; color:var(--color-text);">{{ ds.title }}</h5>
+                  <div style="font-size:11.5px; color:var(--color-neutral-500);">{{ ds.action }}</div>
+                </div>
+
+                <div>
+                  <div style="display:flex; justify-content:space-between; font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--color-neutral-500); margin-bottom:8px;">
+                    <span>Sensitivity</span><span style="color:var(--color-accent-200);">{{ ds.steps }} steps / turn</span>
+                  </div>
+                  <input type="range" min="12" max="90" step="6" value="{{ ds.steps }}" data-did="{{ ds.id }}" onChange="{{ changeSteps }}" onInput="{{ changeSteps }}" style="width:100%; accent-color:var(--color-accent); background:transparent;"></input>
+                  <div style="display:flex; justify-content:space-between; font-size:10px; color:var(--color-neutral-600); margin-top:2px;">
+                    <span>Fine</span><span>Fast</span>
+                  </div>
+                </div>
+
+                <div style="display:flex; gap:26px; flex-wrap:wrap;">
+                  <div>
+                    <div style="font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--color-neutral-500); margin-bottom:7px;">Direction</div>
+                    <div class="tt-pill" style="display:flex; padding:3px; gap:2px; border:1px solid rgba(255,255,255,.09); background:rgba(255,255,255,.03);">
+                      <div class="tt-pill" onClick="{{ setNormal }}" data-did="{{ ds.id }}" style="padding:5px 12px; font-size:11.5px; cursor:pointer; background:{{ ds.normalBg }}; color:{{ ds.normalColor }};">Normal</div>
+                      <div class="tt-pill" onClick="{{ setInverted }}" data-did="{{ ds.id }}" style="padding:5px 12px; font-size:11.5px; cursor:pointer; background:{{ ds.invertBg }}; color:{{ ds.invertColor }};">Inverted</div>
+                    </div>
+                  </div>
+                  <div>
+                    <div style="font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--color-neutral-500); margin-bottom:7px;">Acceleration</div>
+                    <div class="tt-pill" onClick="{{ toggleAccel }}" data-did="{{ ds.id }}" style="width:52px; height:28px; padding:3px; border:1px solid rgba(255,255,255,.09); background:{{ ds.accelTrack }}; cursor:pointer; display:flex; justify-content:{{ ds.accelJustify }};">
+                      <div style="width:22px; height:22px; border-radius:50%; background:{{ ds.accelKnob }};"></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div style="font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--color-neutral-500); margin-bottom:7px;">Press action</div>
+                    <div style="font-size:12.5px; color:var(--color-neutral-300);">{{ ds.press }}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </sc-for>
+
+          <div style="font-size:11.5px; color:var(--color-neutral-500); line-height:1.6;">Sensitivity sets how many encoder steps one full rotation sends. Acceleration scales that value when you spin quickly — useful for timeline scrubbing, less so for exposure.</div>
+        </div>
+        </sc-if>
+      </div>
+
+      <div style="flex:none; border-top:2px solid var(--color-divider); padding:12px 32px; display:flex; align-items:center; gap:20px; font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:var(--color-neutral-500);">
+        <div>Firmware 2.4.1</div>
+        <div style="width:1px; height:12px; background:var(--color-divider);"></div>
+        <div>Polling 1000 Hz</div>
+        <div style="width:1px; height:12px; background:var(--color-divider);"></div>
+        <div style="color:var(--color-accent-300);">Unsaved changes</div>
+        <div style="flex:1;"></div>
+        <div>Taptile Mini · TP-09D2</div>
+      </div>
+    </div>
+
+    <div class="tt-scroll" style="width:320px; flex:none; border-left:2px solid var(--color-divider); padding:24px; display:flex; flex-direction:column; gap:20px; overflow:auto;">
+      <sc-if value="{{ hasSelection }}" hint-placeholder-val="{{ true }}">
+        <div style="display:flex; align-items:flex-start; gap:14px;">
+          <div style="width:44px; height:44px; flex:none; border-radius:12px; background:var(--color-accent); color:#f8f4f4; display:grid; place-items:center; font-family:var(--font-heading); font-weight:800; font-size:14px; letter-spacing:.06em;">{{ selectedIndex }}</div>
+          <div style="min-width:0;">
+            <div style="font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:var(--color-neutral-500);">{{ selectedSub }}</div>
+            <h4 style="margin:3px 0 0; color:var(--color-text);">{{ selectedAction }}</h4>
+          </div>
+        </div>
+
+        <div class="tt-card" style="display:flex; align-items:center; gap:14px; padding:18px; background:var(--color-surface); border:1px solid rgba(255,255,255,.08);">
+          <div style="color:var(--color-accent); flex:none;" dangerouslySetInnerHTML="{{ selectedIconHtml }}"></div>
+          <div style="flex:1; min-width:0;">
+            <div style="font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--color-neutral-500);">Sends</div>
+            <div style="font-family:var(--font-heading); font-weight:800; font-size:13px; color:var(--color-text); margin-top:2px;">{{ selectedShortcut }}</div>
+          </div>
+        </div>
+
+        <div style="display:flex; flex-direction:column;">
+          <div style="display:flex; justify-content:space-between; padding:9px 0; border-bottom:1px solid var(--color-divider); font-size:12px;">
+            <span style="color:var(--color-neutral-500);">Profile</span><span style="color:var(--color-text);">{{ selectedTitle }}</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; padding:9px 0; border-bottom:1px solid var(--color-divider); font-size:12px;">
+            <span style="color:var(--color-neutral-500);">Trigger</span><span style="color:var(--color-text);">{{ selectedTrigger }}</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; padding:9px 0; border-bottom:1px solid var(--color-divider); font-size:12px;">
+            <span style="color:var(--color-neutral-500);">Long press</span><span style="color:var(--color-neutral-500);">Not assigned</span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Assigned action</label>
+          <select class="input" style="background:var(--color-neutral-900); color:var(--color-text); border-color:rgba(255,255,255,.1); border-radius:10px; padding:8px 12px; height:38px;" value="{{ selectedActionValue }}" onChange="{{ changeAction }}">
+            <sc-for list="{{ actionOptions }}" as="opt" hint-placeholder-count="6">
+              <option value="{{ opt.value }}">{{ opt.label }}</option>
+            </sc-for>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Live label</label>
+          <input class="input" style="background:var(--color-neutral-900); color:var(--color-text); border-color:rgba(255,255,255,.1); border-radius:10px; padding:8px 12px; height:38px;" value="{{ selectedLabel }}" onChange="{{ changeLabel }}"></input>
+        </div>
+
+        <div class="field">
+          <label>Icon</label>
+          <div style="display:grid; grid-template-columns:repeat(6, 1fr); gap:6px;">
+            <sc-for list="{{ iconChoices }}" as="ic" hint-placeholder-count="18">
+              <div onClick="{{ pickIcon }}" data-icon="{{ ic.key }}" style="aspect-ratio:1; border-radius:8px; display:grid; place-items:center; border:1px solid {{ ic.border }}; background:{{ ic.bg }}; color:{{ ic.color }}; cursor:pointer;" dangerouslySetInnerHTML="{{ ic.html }}"></div>
+            </sc-for>
+          </div>
+        </div>
+
+        <button class="btn btn-secondary btn-block tt-pill" style="border-color:rgba(255,255,255,.12); color:var(--color-text); justify-content:center; padding:10px 16px;" onClick="{{ openLibrary }}">Browse action library</button>
+
+        <div class="hr" style="background:var(--color-divider); margin:4px 0;"></div>
+        <button class="btn btn-ghost" style="justify-content:flex-start; padding-left:0;" onClick="{{ resetKey }}">Reset to default</button>
+      </sc-if>
+      <sc-if value="{{ hasNoSelection }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; color:var(--color-neutral-500); text-align:center; padding:40px 10px;">
+          <div style="width:40px; height:40px; border:1px dashed var(--color-neutral-600);"></div>
+          <div style="font-size:13px;">Select a key or dial<br>to edit its mapping</div>
+        </div>
+      </sc-if>
+    </div>
+
+  </div>
+
+  <sc-if value="{{ libraryOpen }}" hint-placeholder-val="{{ false }}">
+    <div class="dialog-backdrop" onClick="{{ closeLibrary }}">
+      <div class="dialog" onClick="{{ stopProp }}" style="width:600px; max-width:92vw; background:var(--color-surface); border:1px solid var(--color-divider);">
+        <div style="display:flex; align-items:center; justify-content:space-between;">
+          <div class="dialog-title" style="color:var(--color-text);">Action library</div>
+          <button class="btn btn-icon btn-ghost" onClick="{{ closeLibrary }}" style="color:var(--color-neutral-400);">✕</button>
+        </div>
+        <div class="dialog-body" style="color:var(--color-neutral-400);">Choose an action to assign to {{ selectedKind }}</div>
+        <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; max-height:360px; overflow:auto; padding-top:4px;">
+          <sc-for list="{{ libraryItems }}" as="li" hint-placeholder-count="18">
+            <div onClick="{{ chooseLibraryAction }}" data-value="{{ li.value }}" style="display:flex; flex-direction:column; align-items:center; gap:8px; padding:14px 8px; border:1px solid {{ li.border }}; background:{{ li.bg }}; cursor:pointer;">
+              <div style="color:{{ li.color }};" dangerouslySetInnerHTML="{{ li.iconHtml }}"></div>
+              <div style="font-size:11.5px; text-align:center; color:{{ li.textColor }};">{{ li.label }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const ICONS = {
+  scrub: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3H5a2 2 0 0 0-2 2v4M9 21H5a2 2 0 0 1-2-2v-4M15 3h4a2 2 0 0 1 2 2v4M15 21h4a2 2 0 0 0 2-2v-4"/></svg>',
+  cut: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M20 4L8.12 15.88M14.47 14.48L20 20M8.12 8.12L12 12"/></svg>',
+  undo: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7v6h6M3 13a9 9 0 1 0 3-7"/></svg>',
+  redo: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 7v6h-6M21 13a9 9 0 1 1-3-7"/></svg>',
+  save: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>',
+  zoomin: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.3-4.3M11 8v6M8 11h6"/></svg>',
+  zoomout: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.3-4.3M8 11h6"/></svg>',
+  play: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 3l16 9-16 9V3Z"/></svg>',
+  mark: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h4v16H4zM16 4h4v16h-4z"/></svg>',
+  ripple: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12h4M8 6v12M14 6v12M18 12h4"/></svg>',
+  layer: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>',
+  brush: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9.06 11.9l8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08"/><path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02Z"/></svg>',
+  eraser: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 20H7l-5-5a2 2 0 0 1 0-2.83l9.5-9.5a2 2 0 0 1 2.83 0L21 9.34a2 2 0 0 1 0 2.83L13 20"/></svg>',
+  crop: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6.13 2v14a2 2 0 0 0 2 2h14M6.13 6.13H20v14"/></svg>',
+  bright: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>',
+  contrast: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 0 20V2Z" fill="currentColor"/></svg>',
+  fx: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 4V2M15 16v-2M8 9h2M20 9h2M17.8 11.8L19 13M17.8 6.2L19 5M12.2 6.2 11 5M12.2 11.8 11 13"/><circle cx="15" cy="9" r="3"/><circle cx="6" cy="18" r="3"/></svg>',
+  dial: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+  vol: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5 6 9H2v6h4l5 4V5Z"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>',
+};
+
+const ACTION_LIB = [
+  {value:'scrub', label:'Timeline Scrub', icon:'scrub'},
+  {value:'cut', label:'Cut / Razor', icon:'cut'},
+  {value:'ripple', label:'Ripple Delete', icon:'ripple'},
+  {value:'undo', label:'Undo', icon:'undo'},
+  {value:'redo', label:'Redo', icon:'redo'},
+  {value:'save', label:'Save Project', icon:'save'},
+  {value:'zoomin', label:'Zoom In', icon:'zoomin'},
+  {value:'zoomout', label:'Zoom Out', icon:'zoomout'},
+  {value:'play', label:'Play / Pause', icon:'play'},
+  {value:'mark', label:'Mark In / Out', icon:'mark'},
+  {value:'layer', label:'Toggle Layer', icon:'layer'},
+  {value:'brush', label:'Brush Size', icon:'brush'},
+  {value:'eraser', label:'Eraser Tool', icon:'eraser'},
+  {value:'crop', label:'Crop Tool', icon:'crop'},
+  {value:'bright', label:'Exposure', icon:'bright'},
+  {value:'contrast', label:'Contrast', icon:'contrast'},
+  {value:'fx', label:'Toggle Effect', icon:'fx'},
+  {value:'vol', label:'Volume', icon:'vol'},
+  {value:'dial', label:'Playhead Jog', icon:'dial'},
+];
+
+function actionMeta(v){ return ACTION_LIB.find(a=>a.value===v) || ACTION_LIB[0]; }
+
+const PROFILE_DATA = {
+  premiere: { name:'Premiere Pro', initials:'Pr',
+    keys:['scrub','cut','ripple','mark','undo','redo','save','zoomin','play'],
+    dials:['scrub','vol']
+  },
+};
+
+const LABELS = {
+  scrub:'Scrub', cut:'Cut', ripple:'Ripple Del', undo:'Undo', redo:'Redo', save:'Save',
+  zoomin:'Zoom In', zoomout:'Zoom Out', play:'Play/Pause', mark:'Mark In/Out', layer:'Toggle Layer',
+  brush:'Brush Size', eraser:'Eraser', crop:'Crop', bright:'Exposure', contrast:'Contrast',
+  fx:'Effect', vol:'Volume', dial:'Jog',
+};
+
+class Component extends DCLogic {
+  state = {
+    profileId: 'premiere',
+    profileKeys: { ...Object.fromEntries(Object.entries(PROFILE_DATA).map(([id,p])=>[id, p.keys.slice()])) },
+    profileDials: { ...Object.fromEntries(Object.entries(PROFILE_DATA).map(([id,p])=>[id, p.dials.slice()])) },
+    selection: { type: 'key', id: 0 },
+    libraryOpen: false,
+    iso: false,
+    section: 'mapping',
+    pressed: null,
+    sound: true,
+    dialAngles: [0, 0],
+    dialCfg: [
+      { steps: 36, invert: false, accel: true },
+      { steps: 24, invert: false, accel: false },
+    ],
+  };
+
+  ac() {
+    if (!this.state.sound) return null;
+    if (!this._ac) this._ac = new (window.AudioContext || window.webkitAudioContext)();
+    if (this._ac.state === 'suspended') this._ac.resume();
+    return this._ac;
+  }
+  noise(ac) {
+    if (!this._nb) {
+      const b = ac.createBuffer(1, ac.sampleRate * 0.25, ac.sampleRate);
+      const d = b.getChannelData(0);
+      for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+      this._nb = b;
+    }
+    const src = ac.createBufferSource();
+    src.buffer = this._nb;
+    return src;
+  }
+  // layered keyboard "thock": noise transient through a bandpass + a low sine body
+  thock(pitch, vol) {
+    const ac = this.ac(); if (!ac) return;
+    const t = ac.currentTime;
+
+    const n = this.noise(ac), nf = ac.createBiquadFilter(), ng = ac.createGain();
+    nf.type = 'lowpass'; nf.frequency.setValueAtTime(1500 * pitch, t); nf.Q.value = 0.7;
+    ng.gain.setValueAtTime(vol * 0.3, t);
+    ng.gain.exponentialRampToValueAtTime(0.0001, t + 0.022);
+    n.connect(nf); nf.connect(ng); ng.connect(ac.destination);
+    n.start(t); n.stop(t + 0.06);
+
+    const o = ac.createOscillator(), g = ac.createGain();
+    o.type = 'sine';
+    o.frequency.setValueAtTime(165 * pitch, t);
+    o.frequency.exponentialRampToValueAtTime(72 * pitch, t + 0.07);
+    g.gain.setValueAtTime(vol * 0.8, t);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.075);
+    o.connect(g); g.connect(ac.destination);
+    o.start(t); o.stop(t + 0.1);
+  }
+  detent(vol) {
+    const ac = this.ac(); if (!ac) return;
+    const t = ac.currentTime;
+    const n = this.noise(ac), f = ac.createBiquadFilter(), g = ac.createGain();
+    f.type = 'bandpass'; f.frequency.setValueAtTime(4200, t); f.Q.value = 6;
+    g.gain.setValueAtTime(vol, t);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.02);
+    n.connect(f); f.connect(g); g.connect(ac.destination);
+    n.start(t); n.stop(t + 0.04);
+  }
+  toggleSound = () => this.setState(s => ({ sound: !s.sound }));
+
+  pressKey = (e) => {
+    const id = parseInt(e.currentTarget.getAttribute('data-kid'), 10);
+    this.setState({ pressed: id });
+    this.thock(0.94 + (id % 3) * 0.05, 0.42);
+  };
+  releaseKey = () => {
+    if (this.state.pressed !== null) { this.setState({ pressed: null }); this.thock(1.5, 0.14); }
+  };
+
+  startTwist = (e) => {
+    const id = parseInt(e.currentTarget.getAttribute('data-did'), 10);
+    const r = e.currentTarget.getBoundingClientRect();
+    const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+    const ang = Math.atan2(e.clientY - cy, e.clientX - cx) * 180 / Math.PI;
+    this.drag = { id, cx, cy, last: ang, start: this.state.dialAngles[id] };
+    document.addEventListener('mousemove', this.onDragMove);
+    document.addEventListener('mouseup', this.onDragEnd);
+    document.body.style.cursor = 'grabbing';
+    e.preventDefault();
+  };
+  onDragMove = (e) => {
+    if (!this.drag) return;
+    const a = Math.atan2(e.clientY - this.drag.cy, e.clientX - this.drag.cx) * 180 / Math.PI;
+    let delta = a - this.drag.last;
+    if (delta > 180) delta -= 360;
+    if (delta < -180) delta += 360;
+    this.drag.last = a;
+    const id = this.drag.id;
+    this.setState(s => {
+      const next = (s.dialAngles[id] || 0) + delta;
+      const per = 360 / (s.dialCfg[id] ? s.dialCfg[id].steps : 24);
+      if (Math.floor(next / per) !== Math.floor((s.dialAngles[id] || 0) / per)) this.detent(0.28);
+      return { dialAngles: s.dialAngles.map((v, i) => i === id ? next : v) };
+    });
+  };
+  onDragEnd = () => {
+    document.removeEventListener('mousemove', this.onDragMove);
+    document.removeEventListener('mouseup', this.onDragEnd);
+    if (this.drag) { this.drag = null; document.body.style.cursor = ''; }
+  };
+  componentDidMount() {
+    window.addEventListener('mousemove', this.onDragMove);
+    window.addEventListener('mouseup', this.onDragEnd);
+  }
+  componentWillUnmount() {
+    window.removeEventListener('mousemove', this.onDragMove);
+    window.removeEventListener('mouseup', this.onDragEnd);
+  }
+
+  selectSection = (e) => {
+    const i = parseInt(e.currentTarget.getAttribute('data-nav'), 10);
+    const key = ['mapping', 'dials'][i];
+    if (key) this.setState({ section: key });
+  };
+  changeSteps = (e) => {
+    const id = parseInt(e.currentTarget.getAttribute('data-did'), 10);
+    const val = parseInt(e.target.value, 10);
+    this.setState(s => ({ dialCfg: s.dialCfg.map((d, i) => i === id ? { ...d, steps: val } : d) }));
+  };
+  setDialFlag = (id, patch) => this.setState(s => ({ dialCfg: s.dialCfg.map((d, i) => i === id ? { ...d, ...patch } : d) }));
+  setNormal = (e) => this.setDialFlag(parseInt(e.currentTarget.getAttribute('data-did'), 10), { invert: false });
+  setInverted = (e) => this.setDialFlag(parseInt(e.currentTarget.getAttribute('data-did'), 10), { invert: true });
+  toggleAccel = (e) => {
+    const id = parseInt(e.currentTarget.getAttribute('data-did'), 10);
+    this.setState(s => ({ dialCfg: s.dialCfg.map((d, i) => i === id ? { ...d, accel: !d.accel } : d) }));
+  };
+
+  setTopView = () => this.setState({ iso: false });
+  setIsoView = () => this.setState({ iso: true });
+
+  selectProfile = (e) => {
+    const pid = e.currentTarget.getAttribute('data-pid');
+    this.setState({ profileId: pid, selection: null });
+  };
+  selectKey = (e) => {
+    const id = parseInt(e.currentTarget.getAttribute('data-kid'), 10);
+    this.setState({ selection: { type: 'key', id } });
+  };
+  selectDial = (e) => {
+    const id = parseInt(e.currentTarget.getAttribute('data-did'), 10);
+    this.setState({ selection: { type: 'dial', id } });
+  };
+  changeAction = (e) => {
+    const val = e.target.value;
+    const { type, id } = this.state.selection;
+    this.setState(s => {
+      const arrKey = type === 'key' ? 'profileKeys' : 'profileDials';
+      const arr = s[arrKey][s.profileId].slice();
+      arr[id] = val;
+      return { [arrKey]: { ...s[arrKey], [s.profileId]: arr } };
+    });
+  };
+  changeLabel = (e) => {
+    const val = e.target.value;
+    const { type, id } = this.state.selection;
+    this.setState(s => {
+      const key = `customLabel_${s.profileId}_${type}_${id}`;
+      return { [key]: val };
+    });
+  };
+  pickIcon = (e) => {
+    const icon = e.currentTarget.getAttribute('data-icon');
+    const { type, id } = this.state.selection;
+    this.setState(s => {
+      const key = `customIcon_${s.profileId}_${type}_${id}`;
+      return { [key]: icon };
+    });
+  };
+  openLibrary = () => this.setState({ libraryOpen: true });
+  closeLibrary = () => this.setState({ libraryOpen: false });
+  stopProp = (e) => e.stopPropagation();
+  chooseLibraryAction = (e) => {
+    const val = e.currentTarget.getAttribute('data-value');
+    const { type, id } = this.state.selection;
+    this.setState(s => {
+      const arrKey = type === 'key' ? 'profileKeys' : 'profileDials';
+      const arr = s[arrKey][s.profileId].slice();
+      arr[id] = val;
+      const upd = { [arrKey]: { ...s[arrKey], [s.profileId]: arr }, libraryOpen: false };
+      upd[`customIcon_${s.profileId}_${type}_${id}`] = undefined;
+      upd[`customLabel_${s.profileId}_${type}_${id}`] = undefined;
+      return upd;
+    });
+  };
+  resetKey = () => {
+    const { type, id } = this.state.selection;
+    this.setState(s => {
+      const key = `customLabel_${s.profileId}_${type}_${id}`;
+      const key2 = `customIcon_${s.profileId}_${type}_${id}`;
+      const arrKey = type === 'key' ? 'profileKeys' : 'profileDials';
+      const arr = s[arrKey][s.profileId].slice();
+      arr[id] = PROFILE_DATA[s.profileId][type === 'key' ? 'keys' : 'dials'][id];
+      const upd = { [arrKey]: { ...s[arrKey], [s.profileId]: arr } };
+      upd[key] = undefined;
+      upd[key2] = undefined;
+      return upd;
+    });
+  };
+
+  renderVals() {
+    const s = this.state;
+    const pid = s.profileId;
+    const profileOrder = ['premiere'];
+    const accent = 'var(--color-accent)';
+    const accentDeep = 'var(--color-accent-900)';
+    const accentText = 'var(--color-accent-200)';
+    const idleBezel = 'var(--color-neutral-600)';
+
+    const profiles = profileOrder.map(id => {
+      const active = id === pid;
+      const mappingCount = PROFILE_DATA[id].keys.length + PROFILE_DATA[id].dials.length;
+      return {
+        id,
+        name: PROFILE_DATA[id].name,
+        initials: PROFILE_DATA[id].initials,
+        borderColor: active ? accent : 'transparent',
+        bg: active ? accentDeep : 'transparent',
+        iconBg: active ? accent : 'var(--color-neutral-700)',
+        textColor: active ? '#f8f4f4' : 'var(--color-neutral-300)',
+        iconColor: '#f8f4f4',
+        weight: active ? 700 : 500,
+        mappingCount,
+        showActiveMark: active,
+      };
+    });
+
+    const keyIds = s.profileKeys[pid];
+    const dialIds = s.profileDials[pid];
+
+    const sel = s.selection;
+
+    const keys = keyIds.map((actionVal, i) => {
+      const customIcon = s[`customIcon_${pid}_key_${i}`];
+      const customLabel = s[`customLabel_${pid}_key_${i}`];
+      const meta = actionMeta(actionVal);
+      const iconKey = customIcon || meta.icon;
+      const label = customLabel !== undefined ? customLabel : LABELS[actionVal] || meta.label;
+      const isSel = sel && sel.type === 'key' && sel.id === i;
+      return {
+        id: i,
+        label,
+        index: 'K' + (i + 1),
+        indexColor: isSel ? 'var(--color-accent)' : 'var(--color-neutral-600)',
+        pressT: s.pressed === i ? 'translateY(3px) scale(.97)' : 'none',
+        pressF: s.pressed === i ? 'brightness(1.35)' : 'none',
+        iconHtml: { __html: ICONS[iconKey] },
+        bezel: isSel ? accent : idleBezel,
+        face: isSel ? accentDeep : 'var(--color-neutral-900)',
+        iconColor: isSel ? accentText : 'var(--color-neutral-300)',
+        textColor: isSel ? accentText : 'var(--color-neutral-400)',
+      };
+    });
+
+    const dials = dialIds.map((actionVal, i) => {
+      const customIcon = s[`customIcon_${pid}_dial_${i}`];
+      const customLabel = s[`customLabel_${pid}_dial_${i}`];
+      const meta = actionMeta(actionVal);
+      const iconKey = customIcon || meta.icon;
+      const label = customLabel !== undefined ? customLabel : LABELS[actionVal] || meta.label;
+      const isSel = sel && sel.type === 'dial' && sel.id === i;
+      return {
+        id: i,
+        label,
+        index: 'D' + (i + 1),
+        indexColor: isSel ? 'var(--color-accent)' : 'var(--color-neutral-500)',
+        angle: Math.round(s.dialAngles[i] || 0),
+        markColor: isSel ? 'var(--color-accent)' : 'var(--color-neutral-400)',
+        readout: (s.dialCfg[i] ? Math.round(((s.dialAngles[i] || 0) / 360) * s.dialCfg[i].steps) : 0) + ' steps',
+        iconHtml: { __html: ICONS[iconKey] },
+        bezel: isSel ? accent : idleBezel,
+        face: isSel ? accentDeep : 'var(--color-neutral-900)',
+        iconColor: isSel ? accentText : 'var(--color-neutral-300)',
+        textColor: isSel ? accentText : 'var(--color-neutral-400)',
+      };
+    });
+
+    const SHORTCUTS = {
+      scrub:'J / K / L', cut:'⌘ K', ripple:'⇧ ⌦', undo:'⌘ Z', redo:'⇧ ⌘ Z', save:'⌘ S',
+      zoomin:'=', zoomout:'-', play:'Space', mark:'I / O', layer:'⌘ ⇧ L', brush:'B',
+      eraser:'E', crop:'C', bright:'Exposure ±', contrast:'Contrast ±', fx:'⌘ ⇧ E', vol:'System volume', dial:'Jog wheel',
+    };
+    const hasSelection = !!sel;
+    let selectedKind = '', selectedTitle = '', selectedSub = '', selectedAction = '', selectedIconHtml = { __html: '' }, selectedActionValue = '', selectedLabel = '', selectedIndex = '', selectedShortcut = '', selectedTrigger = '';
+    if (sel) {
+      const arr = sel.type === 'key' ? keyIds : dialIds;
+      const actionVal = arr[sel.id];
+      const meta = actionMeta(actionVal);
+      const customIcon = s[`customIcon_${pid}_${sel.type}_${sel.id}`];
+      const customLabel = s[`customLabel_${pid}_${sel.type}_${sel.id}`];
+      selectedKind = sel.type === 'key' ? `Key ${sel.id + 1}` : `Dial ${sel.id + 1}`;
+      selectedTitle = PROFILE_DATA[pid].name;
+      selectedSub = sel.type === 'key' ? 'Mechanical key mapping' : 'Rotary dial mapping';
+      selectedAction = meta.label;
+      selectedIconHtml = { __html: ICONS[customIcon || meta.icon] };
+      selectedActionValue = actionVal;
+      selectedLabel = customLabel !== undefined ? customLabel : (LABELS[actionVal] || meta.label);
+      selectedIndex = (sel.type === 'key' ? 'K' : 'D') + (sel.id + 1);
+      selectedShortcut = SHORTCUTS[actionVal] || '—';
+      selectedTrigger = sel.type === 'key' ? 'Press' : 'Rotate';
+    }
+
+    const iconChoices = Object.keys(ICONS).map(k => {
+      const active = sel && (s[`customIcon_${pid}_${sel.type}_${sel.id}`] || actionMeta(sel && (sel.type==='key'?keyIds[sel.id]:dialIds[sel.id])).icon) === k;
+      return {
+        key: k,
+        html: { __html: ICONS[k] },
+        border: active ? accent : 'var(--color-divider)',
+        bg: active ? accentDeep : 'transparent',
+        color: active ? accentText : 'var(--color-neutral-400)',
+      };
+    });
+
+    const currentActionVal = sel ? (sel.type === 'key' ? keyIds[sel.id] : dialIds[sel.id]) : null;
+    const libraryItems = ACTION_LIB.map(a => {
+      const active = a.value === currentActionVal;
+      return {
+        value: a.value,
+        label: a.label,
+        iconHtml: { __html: ICONS[a.icon] },
+        border: active ? accent : 'var(--color-divider)',
+        bg: active ? accentDeep : 'var(--color-neutral-900)',
+        color: active ? accentText : 'var(--color-neutral-400)',
+        textColor: active ? accentText : 'var(--color-neutral-400)',
+      };
+    });
+
+    const navItems = [
+      { key: 'mapping', label: 'Key Mapping', icon: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="6" width="18" height="12"/><path d="M8 10v4M12 10v4M16 10v4"/></svg>', active: true },
+      { key: 'dials', label: 'Dial Sensitivity', icon: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>', active: false },
+      { label: 'RGB Lighting', icon: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/></svg>', active: false },
+      { label: 'Advanced Keys', icon: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M4 9h16M9 4v16"/></svg>', active: false },
+      { label: 'Firmware', icon: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v6M12 16v6M4.9 4.9l4.2 4.2M14.9 14.9l4.2 4.2M2 12h6M16 12h6M4.9 19.1l4.2-4.2M14.9 9.1l4.2-4.2"/></svg>', active: false },
+    ].map((n, i) => {
+      const on = n.key ? s.section === n.key : false;
+      return {
+        secIndex: i,
+        label: n.label,
+        iconHtml: { __html: n.icon },
+        color: on ? accentText : 'var(--color-neutral-400)',
+        bg: on ? accentDeep : 'transparent',
+        border: on ? accent : 'transparent',
+      };
+    });
+
+    const dialSettings = s.dialCfg.map((cfg, i) => {
+      const actionVal = dialIds[i];
+      const meta = actionMeta(actionVal);
+      return {
+        id: i,
+        index: 'D' + (i + 1),
+        title: 'Dial ' + (i + 1),
+        action: meta.label,
+        steps: cfg.steps,
+        iconHtml: { __html: ICONS[meta.icon] },
+        bezel: 'var(--color-neutral-600)',
+        face: 'var(--color-neutral-900)',
+        iconColor: 'var(--color-neutral-300)',
+        normalBg: cfg.invert ? 'transparent' : accent,
+        normalColor: cfg.invert ? 'var(--color-neutral-400)' : '#f8f4f4',
+        invertBg: cfg.invert ? accent : 'transparent',
+        invertColor: cfg.invert ? '#f8f4f4' : 'var(--color-neutral-400)',
+        accelTrack: cfg.accel ? accent : 'rgba(255,255,255,.05)',
+        accelKnob: cfg.accel ? '#f8f4f4' : 'var(--color-neutral-500)',
+        accelJustify: cfg.accel ? 'flex-end' : 'flex-start',
+        press: i === 0 ? 'Play / Pause' : 'Mute',
+      };
+    });
+
+    const sectionMeta = {
+      mapping: { index: '01', kicker: 'Key mapping', title: PROFILE_DATA[pid].name },
+      dials: { index: '02', kicker: 'Dial sensitivity', title: 'Rotary encoders' },
+    }[s.section] || { index: '01', kicker: 'Key mapping', title: PROFILE_DATA[pid].name };
+
+    return {
+      stageClass: s.iso ? 'tt-iso' : '',
+      setTopView: this.setTopView,
+      setIsoView: this.setIsoView,
+      topViewBg: s.iso ? 'transparent' : accent,
+      topViewColor: s.iso ? 'var(--color-neutral-400)' : '#f8f4f4',
+      isoViewBg: s.iso ? accent : 'transparent',
+      isoViewColor: s.iso ? '#f8f4f4' : 'var(--color-neutral-400)',
+      connected: { dot: '#3ec95f', label: 'Device Connected' },
+      activeProfile: { name: PROFILE_DATA[pid].name },
+      profiles,
+      navItems,
+      selectSection: this.selectSection,
+      isMapping: s.section === 'mapping',
+      isDials: s.section === 'dials',
+      sectionIndex: sectionMeta.index,
+      sectionKicker: sectionMeta.kicker,
+      sectionTitle: sectionMeta.title,
+      dialSettings,
+      changeSteps: this.changeSteps,
+      setNormal: this.setNormal,
+      setInverted: this.setInverted,
+      toggleAccel: this.toggleAccel,
+      selectProfile: this.selectProfile,
+      keys, dials,
+      selectKey: this.selectKey,
+      selectDial: this.selectDial,
+      toggleSound: this.toggleSound,
+      soundBg: s.sound ? accent : 'transparent',
+      soundColor: s.sound ? '#f8f4f4' : 'var(--color-neutral-500)',
+      pressKey: this.pressKey,
+      releaseKey: this.releaseKey,
+      startTwist: this.startTwist,
+      hasSelection, hasNoSelection: !hasSelection,
+      selectedKind, selectedTitle, selectedSub, selectedAction, selectedIconHtml,
+      selectedActionValue, selectedLabel, selectedIndex, selectedShortcut, selectedTrigger,
+      actionOptions: ACTION_LIB.map(a => ({ value: a.value, label: a.label })),
+      changeAction: this.changeAction,
+      changeLabel: this.changeLabel,
+      iconChoices,
+      pickIcon: this.pickIcon,
+      resetKey: this.resetKey,
+      libraryOpen: s.libraryOpen,
+      libraryItems,
+      openLibrary: this.openLibrary,
+      closeLibrary: this.closeLibrary,
+      stopProp: this.stopProp,
+      chooseLibraryAction: this.chooseLibraryAction,
+    };
+  }
+}
+
+</script>
+</body>
+</html>
