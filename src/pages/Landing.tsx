@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom';
 import { PRODUCTS, formatPrice } from '../lib/catalog';
 import ProductArt from '../components/ProductArt';
+import WaitlistForm from '../components/WaitlistForm';
+import Seo from '../components/Seo';
 
 const STEPS = [
   {
@@ -56,6 +58,12 @@ export default function Landing() {
 
   return (
     <>
+      <Seo
+        title="Taptile — programmable mini keyboards"
+        description="Programmable mini keyboards for the shortcuts you use every day. Hot-swappable, USB-C, Windows and macOS. From £24."
+        path="/"
+        image="/og.svg"
+      />
       {/* ---------------------------------- hero ---------------------------------- */}
       <section className="stage border-b-2 border-divider">
         <div className="mx-auto grid max-w-shell gap-14 px-5 py-20 lg:grid-cols-2 lg:items-center lg:py-28">
@@ -223,10 +231,27 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* -------------------------------- waitlist -------------------------------- */}
+      <section id="waitlist" className="border-t-2 border-divider py-20">
+        <div className="mx-auto max-w-2xl px-5">
+          <p className="kicker-accent">03 — Early access</p>
+          <h2 className="mt-3 text-3xl font-heading tracking-heading text-neutral-100 sm:text-4xl">
+            Want one first?
+          </h2>
+          <p className="mt-4 text-neutral-400">
+            We&apos;ll email you once these are ready to order. One email, no newsletter.
+          </p>
+
+          <div className="mt-8">
+            <WaitlistForm source="landing" />
+          </div>
+        </div>
+      </section>
+
       {/* ---------------------------------- faq ---------------------------------- */}
       <section id="faq" className="border-t-2 border-divider py-20">
         <div className="mx-auto max-w-3xl px-5">
-          <p className="kicker-accent">03 — Questions</p>
+          <p className="kicker-accent">04 — Questions</p>
           <h2 className="mt-3 text-3xl font-heading tracking-heading text-neutral-100 sm:text-4xl">
             Questions
           </h2>

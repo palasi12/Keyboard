@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+# Nothing useful for a crawler behind these.
+Disallow: /account
+Disallow: /cart
+Disallow: /order/
+
+Sitemap: /sitemap.xml

@@ -2,6 +2,7 @@ import { Link, useParams } from 'react-router-dom';
 import { findProduct, formatPrice } from '../lib/catalog';
 import { useCart } from '../lib/cart';
 import ProductArt from '../components/ProductArt';
+import Seo from '../components/Seo';
 
 export default function Product() {
   const { slug } = useParams<{ slug: string }>();
@@ -11,7 +12,8 @@ export default function Product() {
   if (!product) {
     return (
       <section className="mx-auto max-w-2xl px-5 py-24 text-center">
-        <h1 className="text-2xl font-bold text-neutral-100">We could not find that product</h1>
+        <Seo title="Product not found" description="That product does not exist." />
+        <h1 className="text-2xl font-heading text-neutral-100">We could not find that product</h1>
         <Link to="/shop" className="btn-primary mt-6">
           Back to the shop
         </Link>
@@ -21,6 +23,12 @@ export default function Product() {
 
   return (
     <section className="mx-auto max-w-shell px-5 py-14">
+      <Seo
+        title={`${product.name} — ${product.keyCount} programmable keys`}
+        description={product.description}
+        path={`/product/${product.slug}`}
+        image="/og.svg"
+      />
       <nav className="mb-8 text-sm text-neutral-500">
         <Link to="/shop" className="transition hover:text-neutral-100">
           Shop

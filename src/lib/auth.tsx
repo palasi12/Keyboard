@@ -26,6 +26,12 @@ interface AuthContextValue {
   signIn(email: string, password: string): Promise<AuthResult>;
   signUp(email: string, password: string): Promise<AuthResult>;
   signInWithGoogle(): Promise<AuthResult>;
+  /** Send a password reset link. */
+  requestPasswordReset(email: string): Promise<AuthResult>;
+  /** Set a new password. Only works inside a recovery session. */
+  updatePassword(password: string): Promise<AuthResult>;
+  /** Re-send the signup confirmation email. */
+  resendConfirmation(email: string): Promise<AuthResult>;
   signOut(): Promise<void>;
 }
 
@@ -95,6 +101,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return error ? { ok: false, error: friendlyAuthError(error.message) } : { ok: true };
   }, []);
 
+  const requestPasswordReset = useCallback(async (email: string): Promise<AuthResult> => {
+    if (!supabase) return NOT_CONFIGURED;
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+    return error ? { ok: false, error: friendlyAuthError(error.message) } : { ok: true };
+  }, []);
+
+  const updatePassword = useCallback(async (password: string): Promise<AuthResult> => {
+    if (!supabase) return NOT_CONFIGURED;
+    const { error } = await supabase.auth.updateUser({ password });
+    return error ? { ok: false, error: friendlyAuthError(error.message) } : { ok: true };
+  }, []);
+
+  const resendConfirmation = useCallback(async (email: string): Promise<AuthResult> => {
+    if (!supabase) return NOT_CONFIGURED;
+    const { error } = await supabase.auth.resend({
+      type: 'signup',
+      email,
+      options: { emailRedirectTo: `${window.location.origin}/account` },
+    });
+    return error ? { ok: false, error: friendlyAuthError(error.message) } : { ok: true };
+  }, []);
+
   const signOut = useCallback(async () => {
     if (!supabase) return;
     await supabase.auth.signOut();
@@ -110,9 +140,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       signIn,
       signUp,
       signInWithGoogle,
+      requestPasswordReset,
+      updatePassword,
+      resendConfirmation,
       signOut,
     }),
-    [session, loading, signIn, signUp, signInWithGoogle, signOut],
+    [
+      session,
+      loading,
+      signIn,
+      signUp,
+      signInWithGoogle,
+      requestPasswordReset,
+      updatePassword,
+      resendConfirmation,
+      signOut,
+    ],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

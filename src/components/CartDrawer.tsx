@@ -1,14 +1,43 @@
+import { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { formatPrice } from '../lib/catalog';
 import { useCart } from '../lib/cart';
 
 export default function CartDrawer() {
   const { lines, subtotal, isOpen, setOpen, setQuantity, remove } = useCart();
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  // Escape closes it, and the page behind must not scroll while it is open —
+  // on iOS a scrolling background under an overlay is genuinely disorienting.
+  useEffect(() => {
+    if (!isOpen) return;
+
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') setOpen(false);
+    }
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', onKeyDown);
+
+    // Move focus into the panel so a keyboard user is not left behind it.
+    panelRef.current?.focus();
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener('keydown', onKeyDown);
+    };
+  }, [isOpen, setOpen]);
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex justify-end" role="dialog" aria-label="Basket">
+    <div
+      className="fixed inset-0 z-50 flex justify-end"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Basket"
+    >
       <button
         type="button"
         className="absolute inset-0 bg-black/60"
@@ -16,7 +45,11 @@ export default function CartDrawer() {
         aria-label="Close basket"
       />
 
-      <div className="relative flex h-full w-full max-w-sm flex-col border-l-2 border-divider bg-ground">
+      <div
+        ref={panelRef}
+        tabIndex={-1}
+        className="relative flex h-full w-full max-w-sm flex-col border-l-2 border-divider bg-ground outline-none"
+      >
         <div className="flex items-center justify-between border-b-2 border-divider px-5 py-4">
           <h2 className="text-base font-semibold text-neutral-100">Your basket</h2>
           <button

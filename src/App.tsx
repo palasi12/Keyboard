@@ -11,6 +11,8 @@ import Cart from './pages/Cart';
 import Login from './pages/Login';
 import Account from './pages/Account';
 import OrderSuccess from './pages/OrderSuccess';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 
 /** Jump to the top on navigation, or to the #anchor when there is one. */
 function ScrollBehaviour() {
@@ -34,16 +36,28 @@ export default function App() {
   return (
     <div className="flex min-h-screen flex-col bg-ground">
       <ScrollBehaviour />
+
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50
+                   focus:rounded-full focus:bg-neutral-100 focus:px-4 focus:py-2
+                   focus:font-heading focus:text-sm focus:text-keycap"
+      >
+        Skip to content
+      </a>
+
       <Nav />
       <CartDrawer />
 
-      <main className="flex-1">
+      <main id="main" className="flex-1">
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/shop" element={<Shop />} />
           <Route path="/product/:slug" element={<Product />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/order/success" element={<OrderSuccess />} />
           <Route
             path="/account"

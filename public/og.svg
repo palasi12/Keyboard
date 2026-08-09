@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#0b0a0a"/>
+  <g fill="none" stroke="#ffffff" stroke-opacity="0.05">
+    <path d="M0 32h1200M0 96h1200M0 160h1200M0 224h1200M0 288h1200M0 352h1200M0 416h1200M0 480h1200M0 544h1200M0 608h1200"/>
+    <path d="M32 0v630M96 0v630M160 0v630M224 0v630M288 0v630M352 0v630M416 0v630M480 0v630M544 0v630M608 0v630M672 0v630M736 0v630M800 0v630M864 0v630M928 0v630M992 0v630M1056 0v630M1120 0v630M1184 0v630"/>
+  </g>
+  <g transform="translate(88,150)">
+    <rect width="34" height="34" rx="8" fill="#f8f4f4"/>
+    <rect x="44" width="34" height="34" rx="8" fill="#2a2725"/>
+    <rect y="44" width="34" height="34" rx="8" fill="#2a2725"/>
+    <rect x="44" y="44" width="34" height="34" rx="8" fill="#ec3013"/>
+  </g>
+  <text x="186" y="203" font-family="Archivo, Helvetica, Arial, sans-serif" font-size="38" font-weight="800" letter-spacing="-0.5" fill="#f8f4f4">Taptile</text>
+  <text x="88" y="330" font-family="Archivo, Helvetica, Arial, sans-serif" font-size="82" font-weight="800" letter-spacing="-2" fill="#f8f4f4">Your shortcuts,</text>
+  <text x="88" y="420" font-family="Archivo, Helvetica, Arial, sans-serif" font-size="82" font-weight="800" letter-spacing="-2" fill="#f8f4f4">on real keys.</text>
+  <text x="88" y="500" font-family="Archivo, Helvetica, Arial, sans-serif" font-size="28" font-weight="400" fill="#9b9797">Programmable mini keyboards · From £24</text>
+</svg>

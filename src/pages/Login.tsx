@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent } from 'react';
-import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../lib/auth';
+import Seo from '../components/Seo';
 
 type Mode = 'signin' | 'signup';
 
@@ -20,8 +21,10 @@ export default function Login() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
+  const [awaitingConfirmation, setAwaitingConfirmation] = useState(false);
 
-  const { user, loading, configured, signIn, signUp, signInWithGoogle } = useAuth();
+  const { user, loading, configured, signIn, signUp, signInWithGoogle, resendConfirmation } =
+    useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -36,6 +39,7 @@ export default function Login() {
     setMode(next);
     setError(null);
     setNotice(null);
+    setAwaitingConfirmation(false);
     setSearchParams(next === 'signup' ? { mode: 'signup' } : {}, { replace: true });
   }
 
@@ -68,6 +72,7 @@ export default function Login() {
 
     if (result.needsEmailConfirmation) {
       setNotice(`Check ${email} for a confirmation link, then sign in.`);
+      setAwaitingConfirmation(true);
       return;
     }
 
@@ -85,6 +90,11 @@ export default function Login() {
 
   return (
     <div className="flex items-center justify-center px-5 py-16">
+      <Seo
+        title={mode === 'signin' ? 'Sign in' : 'Create your account'}
+        description="Sign in to your Taptile account."
+        path="/login"
+      />
         <div className="w-full max-w-sm">
           <h1 className="text-2xl font-heading tracking-heading text-neutral-100">
             {mode === 'signin' ? 'Sign in' : 'Create your account'}
@@ -128,9 +138,19 @@ export default function Login() {
             </div>
 
             <div>
-              <label htmlFor="password" className="label">
-                Password
-              </label>
+              <div className="mb-1.5 flex items-baseline justify-between gap-3">
+                <label htmlFor="password" className="label mb-0">
+                  Password
+                </label>
+                {mode === 'signin' && (
+                  <Link
+                    to="/forgot-password"
+                    className="text-xs text-neutral-400 transition hover:text-neutral-100"
+                  >
+                    Forgot?
+                  </Link>
+                )}
+              </div>
               <div className="relative">
                 <input
                   id="password"
@@ -159,9 +179,27 @@ export default function Login() {
               </p>
             )}
             {notice && (
-              <p className="text-sm text-emerald-400" role="status">
-                {notice}
-              </p>
+              <div className="text-sm text-neutral-300" role="status" aria-live="polite">
+                <p>{notice}</p>
+                {awaitingConfirmation && (
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      setNotice('Sending…');
+                      const result = await resendConfirmation(email);
+                      setNotice(
+                        result.ok
+                          ? `Sent again to ${email}.`
+                          : (result.error ?? 'Could not resend just now.'),
+                      );
+                    }}
+                    className="mt-1.5 text-xs text-neutral-400 underline underline-offset-2
+                               transition hover:text-neutral-100"
+                  >
+                    Didn&apos;t arrive? Send it again
+                  </button>
+                )}
+              </div>
             )}
 
             <button type="submit" className="btn-primary w-full py-2.5" disabled={busy}>

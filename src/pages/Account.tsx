@@ -1,11 +1,13 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../lib/auth';
+import Seo from '../components/Seo';
 
 export default function Account() {
   const { user } = useAuth();
 
   return (
     <section className="mx-auto max-w-3xl px-5 py-14">
+      <Seo title="Your account" description="Your Taptile account." path="/account" />
       <h1 className="text-3xl font-heading tracking-heading text-neutral-100">Your account</h1>
       <p className="mt-2 text-neutral-400">{user?.email}</p>
 

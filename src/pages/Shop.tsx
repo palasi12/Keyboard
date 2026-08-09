@@ -1,10 +1,18 @@
 import { Link } from 'react-router-dom';
 import { PRODUCTS, formatPrice } from '../lib/catalog';
 import ProductArt from '../components/ProductArt';
+import Seo from '../components/Seo';
 
 export default function Shop() {
   return (
-    <section className="mx-auto max-w-shell px-5 py-16">
+    <>
+      <Seo
+        title="Shop all keyboards"
+        description="Every Taptile board: three, six or nine keys, hot-swappable switches, USB-C. From £24."
+        path="/shop"
+        image="/og.svg"
+      />
+      <section className="mx-auto max-w-shell px-5 py-16">
       <h1 className="text-3xl font-heading tracking-heading text-neutral-100 sm:text-4xl">All keyboards</h1>
       <p className="mt-3 text-neutral-400">Every board is fully programmable and hot-swappable.</p>
 
@@ -32,5 +40,6 @@ export default function Shop() {
         ))}
       </div>
     </section>
+    </>
   );
 }

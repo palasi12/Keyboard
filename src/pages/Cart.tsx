@@ -4,6 +4,7 @@ import { formatPrice } from '../lib/catalog';
 import { useCart } from '../lib/cart';
 import { isCheckoutConfigured, startCheckout } from '../lib/checkout';
 import { useAuth } from '../lib/auth';
+import Seo from '../components/Seo';
 
 export default function Cart() {
   const { lines, subtotal, setQuantity, remove } = useCart();
@@ -25,7 +26,8 @@ export default function Cart() {
   if (lines.length === 0) {
     return (
       <section className="mx-auto max-w-2xl px-5 py-24 text-center">
-        <h1 className="text-2xl font-bold text-neutral-100">Your basket is empty</h1>
+        <Seo title="Your basket" description="Your Taptile basket." path="/cart" />
+        <h1 className="text-2xl font-heading text-neutral-100">Your basket is empty</h1>
         <p className="mt-3 text-neutral-400">Have a look at what we make.</p>
         <Link to="/shop" className="btn-primary mt-7">
           Shop keyboards
@@ -36,6 +38,7 @@ export default function Cart() {
 
   return (
     <section className="mx-auto max-w-4xl px-5 py-14">
+      <Seo title="Your basket" description="Your Taptile basket." path="/cart" />
       <h1 className="text-3xl font-heading tracking-heading text-neutral-100">Your basket</h1>
 
       <div className="mt-10 divide-y-2 divide-divider border-y-2 border-divider">
