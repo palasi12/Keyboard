@@ -7,8 +7,8 @@
 @layer base {
   :root {
     color-scheme: dark;
-    /* The divider used everywhere. 2px, never a hairline. */
     --divider: color-mix(in srgb, #f8f4f4 14%, transparent);
+    --hairline: rgba(255, 255, 255, 0.08);
   }
 
   body {
@@ -20,16 +20,19 @@
   h1, h2, h3, h4, h5, h6 {
     @apply font-heading tracking-heading;
     line-height: 1.12;
+    text-wrap: pretty;
   }
 
-  /* The system styles keyboard focus itself; never leave the browser default. */
+  a { @apply text-neutral-100; }
+  a:hover { @apply text-white; }
+
   :focus { outline: none; }
   :focus-visible {
-    outline: 2px solid theme('colors.accent.DEFAULT');
+    outline: 2px solid theme('colors.neutral.100');
     outline-offset: 2px;
   }
   ::selection {
-    background: color-mix(in srgb, #ec3013 30%, transparent);
+    background: rgba(255, 255, 255, 0.24);
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -41,69 +44,101 @@
 }
 
 @layer components {
-  /* Button labels are flush left — a button wider than its label starts the
-     text at the left padding edge. This is a deliberate rule of the system. */
+  /* ------------------------------- buttons -------------------------------- */
+  /* Pill controls, matching the configurator's toolbar. */
   .btn {
-    @apply inline-flex items-center justify-start gap-2 px-4 py-2.5 font-heading
-           text-sm leading-tight transition-colors disabled:cursor-not-allowed
-           disabled:opacity-45;
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-4 py-2.5
+           font-heading text-sm leading-tight transition
+           disabled:cursor-not-allowed disabled:opacity-45;
   }
+  .btn:active { transform: scale(0.97); }
 
+  /* The interface accent is white — red is reserved for the hardware itself. */
   .btn-primary {
-    @apply btn bg-accent text-ground hover:bg-accent-600 active:bg-accent-700;
+    @apply btn bg-neutral-100 text-keycap shadow-glow hover:bg-white;
+  }
+  .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 30px rgba(255, 255, 255, 0.26);
   }
 
   .btn-secondary {
     @apply btn border text-neutral-100;
-    border-color: var(--divider);
+    border-color: var(--hairline);
+    background: rgba(255, 255, 255, 0.02);
   }
-  .btn-secondary:hover {
-    background: color-mix(in srgb, #f8f4f4 7%, transparent);
-  }
-  .btn-secondary:active {
-    background: color-mix(in srgb, #f8f4f4 14%, transparent);
-  }
+  .btn-secondary:hover { background: rgba(255, 255, 255, 0.07); }
 
   .btn-ghost {
-    @apply btn px-1 text-accent-500;
+    @apply btn px-2 text-neutral-100;
   }
-  .btn-ghost:hover {
-    background: color-mix(in srgb, #ec3013 12%, transparent);
-  }
+  .btn-ghost:hover { background: rgba(255, 255, 255, 0.08); }
 
+  /* -------------------------------- fields -------------------------------- */
   .field {
-    @apply w-full border bg-surface px-2.5 py-2 text-sm text-neutral-100
-           placeholder-neutral-600 transition-colors;
-    border-color: var(--divider);
+    @apply w-full rounded-full border bg-surface px-4 py-2.5 text-sm
+           text-neutral-100 placeholder-neutral-600 transition;
+    border-color: var(--hairline);
     caret-color: theme('colors.accent.DEFAULT');
   }
-  .field:hover {
-    border-color: color-mix(in srgb, #f8f4f4 45%, transparent);
-  }
   .field:focus-visible {
-    border-color: theme('colors.accent.DEFAULT');
-    outline-offset: 0;
+    border-color: rgba(255, 255, 255, 0.65);
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.1);
+    outline: none;
   }
 
-  .label {
-    @apply mb-1.5 block text-xs text-neutral-400;
-  }
+  .label { @apply mb-1.5 block text-xs text-neutral-400; }
 
-  /* Small caps section marker, straight from the system's h6 treatment. */
+  /* ------------------------------- surfaces ------------------------------- */
   .kicker {
-    @apply text-[10px] uppercase tracking-[0.1em] text-accent-500;
+    @apply text-[10px] uppercase tracking-[0.16em] text-neutral-500;
   }
+  .kicker-accent { @apply kicker text-neutral-100; }
 
   .card {
-    @apply bg-surface;
+    @apply rounded-xl border bg-surface transition;
+    border-color: var(--hairline);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  }
+  .card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(255, 255, 255, 0.16);
+    box-shadow: 0 18px 44px rgba(0, 0, 0, 0.5);
   }
 
-  /* The 2px rule that does all the organising. */
+  /* The technical grid + accent glow the configurator sits on. */
+  .stage {
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+      radial-gradient(circle at 50% 45%, rgba(255, 255, 255, 0.09), transparent 62%);
+    background-size: 32px 32px, 32px 32px, 100% 100%;
+  }
+  .stage-soft {
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+    background-size: 32px 32px, 32px 32px;
+  }
+
+  /* A pressable keycap — bezel ring, recessed face, soft depth. */
+  .cap {
+    @apply rounded-md p-[3px] shadow-cap transition;
+    background: theme('colors.bezel');
+    border: 1px solid rgba(255, 255, 255, 0.06);
+  }
+  .cap-face {
+    @apply grid h-full w-full place-items-center rounded-sm;
+    background: theme('colors.keycap');
+  }
+  /* Selected key — the state the configurator shows on the active mapping. */
+  .cap-selected { border-color: rgba(255, 255, 255, 0.45); }
+  .cap-selected .cap-face { background: theme('colors.neutral.100'); }
+
   .rule {
     @apply border-0 border-t-2;
     border-color: var(--divider);
   }
-
   .divide-rule > * + * {
     @apply border-t-2;
     border-color: var(--divider);

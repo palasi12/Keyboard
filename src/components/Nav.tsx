@@ -2,16 +2,19 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../lib/auth';
 import { useCart } from '../lib/cart';
 
-export function Logo({ className = '' }: { className?: string }) {
+export function Logo({ className = '', size = 44 }: { className?: string; size?: number }) {
   return (
-    <span className={`flex items-center gap-2 ${className}`}>
-      <span className="grid h-7 w-7 grid-cols-2 gap-[3px] bg-surface2 p-[5px]">
-        <span className="rounded-none bg-accent" />
-        <span className="rounded-none bg-neutral-700" />
-        <span className="rounded-none bg-neutral-700" />
-        <span className="rounded-none bg-accent" />
+    <span className={`flex items-center ${className}`}>
+      <img
+        src="/logo-cut.png"
+        alt=""
+        aria-hidden="true"
+        style={{ width: size, height: size }}
+        className="block shrink-0"
+      />
+      <span className="ml-2.5 mt-1.5 font-heading text-[17px] uppercase tracking-[0.08em] text-neutral-100">
+        Taptile
       </span>
-      <span className="text-[18px] font-heading tracking-heading text-neutral-100">Taptile</span>
     </span>
   );
 }
@@ -27,20 +30,20 @@ export default function Nav() {
   }
 
   return (
-    <header className="sticky top-0 z-40 border-b-2 border-divider bg-ground/90 backdrop-blur">
-      <nav className="mx-auto flex h-16 max-w-shell items-center justify-between px-5">
+    <header className="sticky top-0 z-40 border-b-2 border-divider bg-ground/80 backdrop-blur">
+      <nav className="mx-auto flex h-[68px] max-w-shell items-center justify-between px-5">
         <Link to="/" aria-label="Taptile home">
           <Logo />
         </Link>
 
-        <div className="hidden items-center gap-7 text-sm text-neutral-400 md:flex">
-          <Link to="/shop" className="transition hover:text-neutral-100">
+        <div className="hidden items-center gap-1 rounded-full border border-hairline bg-white/[0.02] p-1 text-sm text-neutral-400 md:flex">
+          <Link to="/shop" className="rounded-full px-3.5 py-1.5 transition hover:bg-white/[0.06] hover:text-neutral-100">
             Shop
           </Link>
-          <Link to="/#how" className="transition hover:text-neutral-100">
+          <Link to="/#how" className="rounded-full px-3.5 py-1.5 transition hover:bg-white/[0.06] hover:text-neutral-100">
             How it works
           </Link>
-          <Link to="/#faq" className="transition hover:text-neutral-100">
+          <Link to="/#faq" className="rounded-full px-3.5 py-1.5 transition hover:bg-white/[0.06] hover:text-neutral-100">
             FAQ
           </Link>
         </div>

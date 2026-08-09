@@ -17,6 +17,17 @@ const STEPS = [
   },
 ];
 
+const MARQUEE = [
+  'Premiere Pro',
+  'Photoshop',
+  'Lightroom',
+  'DaVinci Resolve',
+  'After Effects',
+  'OBS',
+  'Figma',
+  'Ableton',
+];
+
 const FAQ = [
   {
     q: 'What can I actually program the keys to do?',
@@ -41,17 +52,20 @@ const FAQ = [
 ];
 
 export default function Landing() {
-  const hero = PRODUCTS[1] ?? PRODUCTS[0];
+  const hero = PRODUCTS[2] ?? PRODUCTS[0];
 
   return (
     <>
       {/* ---------------------------------- hero ---------------------------------- */}
-      <section className="border-b-2 border-divider">
+      <section className="stage border-b-2 border-divider">
         <div className="mx-auto grid max-w-shell gap-14 px-5 py-20 lg:grid-cols-2 lg:items-center lg:py-28">
-          <div>
-            <p className="kicker">Free UK delivery over £30</p>
+          <div className="animate-rise">
+            <p className="inline-flex items-center gap-2 rounded-full border border-hairline bg-white/[0.03] px-3.5 py-1.5 text-[11px] tracking-[0.06em] text-neutral-400">
+              <span className="h-1.5 w-1.5 rounded-full bg-neutral-100" />
+              Free UK delivery over £30
+            </p>
 
-            <h1 className="mt-4 text-5xl font-heading leading-[1.05] tracking-heading text-neutral-100 sm:text-6xl lg:text-7xl">
+            <h1 className="mt-6 text-5xl font-heading leading-[1.05] tracking-heading text-neutral-100 sm:text-6xl lg:text-7xl">
               Your shortcuts,
               <br />
               on real keys.
@@ -71,24 +85,41 @@ export default function Landing() {
               </Link>
             </div>
 
-            <p className="mt-5 text-sm text-neutral-500">
-              From {formatPrice(Math.min(...PRODUCTS.map((p) => p.price)))} · Works with Windows,
-              macOS and Linux
-            </p>
+            <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-neutral-500">
+              <span>
+                From {formatPrice(Math.min(...PRODUCTS.map((p) => p.price)))}
+              </span>
+              <span className="h-3 w-px bg-divider" />
+              <span>Windows, macOS, Linux</span>
+              <span className="h-3 w-px bg-divider" />
+              <span>Hot-swappable switches</span>
+            </div>
           </div>
 
           {hero && (
-            <div className="flex justify-center lg:justify-end">
-              <ProductArt product={hero} className="w-full max-w-sm" />
+            <div className="flex animate-rise justify-center lg:justify-end">
+              <ProductArt product={hero} detailed />
             </div>
           )}
         </div>
       </section>
 
+      {/* --------------------------------- marquee --------------------------------- */}
+      <section className="border-b-2 border-divider">
+        <div className="mx-auto flex max-w-shell flex-wrap items-center gap-x-8 gap-y-3 px-5 py-5">
+          <p className="kicker">Profiles for</p>
+          {MARQUEE.map((app) => (
+            <span key={app} className="text-sm text-neutral-600">
+              {app}
+            </span>
+          ))}
+        </div>
+      </section>
+
       {/* ---------------------------------- products ---------------------------------- */}
-      <section id="shop" className="border-t-2 border-divider py-20">
+      <section id="shop" className="py-20">
         <div className="mx-auto max-w-shell px-5">
-          <p className="kicker">01 — Range</p>
+          <p className="kicker-accent">01 — Range</p>
           <h2 className="mt-3 text-3xl font-heading tracking-heading text-neutral-100 sm:text-4xl">
             Pick your size
           </h2>
@@ -102,10 +133,11 @@ export default function Landing() {
               <Link
                 key={product.slug}
                 to={`/product/${product.slug}`}
-                className="card group overflow-hidden transition hover:border-neutral-500"
+                className="card group flex flex-col overflow-hidden"
               >
                 <ProductArt product={product} className="rounded-none" />
-                <div className="p-5">
+
+                <div className="border-t border-hairline p-5">
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <h3 className="font-semibold text-neutral-100">{product.name}</h3>
@@ -120,7 +152,22 @@ export default function Landing() {
                       )}
                     </div>
                   </div>
-                  <p className="mt-4 text-sm font-medium text-accent-500 group-hover:text-accent-500">
+
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    <span className="rounded-full border border-hairline px-2.5 py-1 text-[11px] text-neutral-400">
+                      {product.keyCount} keys
+                    </span>
+                    <span className="rounded-full border border-hairline px-2.5 py-1 text-[11px] text-neutral-400">
+                      {product.dialCount === 0
+                        ? 'No dial'
+                        : `${product.dialCount} dial${product.dialCount > 1 ? 's' : ''}`}
+                    </span>
+                    <span className="rounded-full border border-hairline px-2.5 py-1 text-[11px] text-neutral-400">
+                      USB-C
+                    </span>
+                  </div>
+
+                  <p className="mt-5 text-sm font-medium text-neutral-100">
                     {product.inStock ? 'View details →' : 'Out of stock'}
                   </p>
                 </div>
@@ -133,17 +180,20 @@ export default function Landing() {
       {/* ---------------------------------- how ---------------------------------- */}
       <section id="how" className="border-t-2 border-divider py-20">
         <div className="mx-auto max-w-shell px-5">
-          <p className="kicker">02 — Setup</p>
+          <p className="kicker-accent">02 — Setup</p>
           <h2 className="mt-3 text-3xl font-heading tracking-heading text-neutral-100 sm:text-4xl">
             How it works
           </h2>
-          <div className="mt-12 grid gap-8 sm:grid-cols-3">
+          <div className="mt-12 grid gap-6 sm:grid-cols-3">
             {STEPS.map((step, index) => (
-              <div key={step.title}>
-                <span className="flex h-9 w-9 items-center justify-center bg-accent text-sm font-heading text-ground">
+              <div
+                key={step.title}
+                className="rounded-xl border border-hairline bg-surface p-6"
+              >
+                <span className="grid h-10 w-10 place-items-center rounded-full bg-neutral-100 font-heading text-sm text-keycap shadow-glow">
                   {index + 1}
                 </span>
-                <h3 className="mt-4 font-semibold text-neutral-100">{step.title}</h3>
+                <h3 className="mt-5 font-semibold text-neutral-100">{step.title}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-neutral-400">{step.body}</p>
               </div>
             ))}
@@ -152,35 +202,40 @@ export default function Landing() {
       </section>
 
       {/* ------------------------------ poster statement ------------------------------ */}
-      <section className="border-t-2 border-divider bg-accent">
-        <div className="mx-auto max-w-shell px-5 py-16">
-          <p className="text-[10px] uppercase tracking-[0.1em] text-accent-200">
-            Taptile Mini · TP-09D2
-          </p>
-          <h2 className="mt-3 max-w-3xl text-4xl font-heading leading-[1.05] tracking-heading text-ground sm:text-5xl">
-            Nine keys. Two dials.
-            <br />
-            Every shortcut you own.
-          </h2>
-          <Link
-            to="/product/taptile-mini"
-            className="btn mt-8 bg-ground px-6 py-3 text-base text-neutral-100 hover:bg-neutral-900"
-          >
-            See the Mini
-          </Link>
+      <section className="border-t-2 border-divider py-20">
+        <div className="mx-auto max-w-shell px-5">
+          <div className="overflow-hidden rounded-2xl bg-neutral-100 px-8 py-14 shadow-glow sm:px-12">
+            <p className="text-[10px] uppercase tracking-[0.16em] text-neutral-700">
+              Taptile Mini · TP-09D2
+            </p>
+            <h2 className="mt-3 max-w-3xl text-4xl font-heading leading-[1.05] tracking-heading text-ground sm:text-5xl">
+              Nine keys. Two dials.
+              <br />
+              Every shortcut you own.
+            </h2>
+            <Link
+              to="/product/taptile-mini"
+              className="btn mt-9 bg-ground px-6 py-3 text-base text-neutral-100 hover:bg-neutral-900"
+            >
+              See the Mini
+            </Link>
+          </div>
         </div>
       </section>
 
       {/* ---------------------------------- faq ---------------------------------- */}
       <section id="faq" className="border-t-2 border-divider py-20">
         <div className="mx-auto max-w-3xl px-5">
-          <p className="kicker">03 — Questions</p>
+          <p className="kicker-accent">03 — Questions</p>
           <h2 className="mt-3 text-3xl font-heading tracking-heading text-neutral-100 sm:text-4xl">
             Questions
           </h2>
-          <div className="mt-10 divide-y-2 divide-divider">
+          <div className="mt-10 space-y-3">
             {FAQ.map((item) => (
-              <details key={item.q} className="group py-5">
+              <details
+                key={item.q}
+                className="group rounded-xl border border-hairline bg-surface px-5 py-4 transition hover:border-white/[0.16]"
+              >
                 <summary className="flex cursor-pointer items-center justify-between gap-4 text-left font-medium text-neutral-100 marker:content-['']">
                   {item.q}
                   <span className="shrink-0 text-neutral-500 transition group-open:rotate-45">

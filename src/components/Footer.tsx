@@ -7,7 +7,7 @@ export default function Footer() {
       <div className="mx-auto max-w-shell px-5">
         <div className="flex flex-col gap-8 sm:flex-row sm:justify-between">
           <div>
-            <Logo />
+            <Logo size={52} />
             <p className="mt-3 max-w-xs text-sm text-neutral-500">
               Programmable mini keyboards, without the premium price tag.
             </p>
