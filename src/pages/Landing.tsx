@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from 'react';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { joinWaitlist } from '../lib/waitlist';
 import { isSupabaseConfigured } from '../lib/supabase';
 import Seo from '../components/Seo';
@@ -192,6 +192,69 @@ const FAQ = [
 ];
 
 /* ------------------------------- component ------------------------------- */
+
+/**
+ * The configurator demo (the standalone `Taptile.dc.html` mockup in
+ * `public/software-demo/`). It is authored for a 1280px+ desktop window, so we
+ * render it at a fixed 1440×905 and scale that down to whatever width the
+ * section gets — the frame height follows the scale so nothing clips.
+ */
+const DEMO_W = 1440;
+const DEMO_H = 905;
+
+function SoftwareDemo() {
+  const frameRef = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(0);
+
+  useEffect(() => {
+    const el = frameRef.current;
+    if (!el) return;
+    const update = () => setScale(Math.min(1, el.clientWidth / DEMO_W));
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div className="mt-11 overflow-hidden rounded-2xl border border-white/10 bg-keycap shadow-[0_40px_90px_rgba(0,0,0,.6)]">
+      <div className="flex items-center gap-3.5 border-b border-hairline bg-white/[0.02] px-4 py-3">
+        <span className="flex gap-1.5">
+          <span className="h-2.5 w-2.5 rounded-full bg-[#3d3a3a]" />
+          <span className="h-2.5 w-2.5 rounded-full bg-[#3d3a3a]" />
+          <span className="h-2.5 w-2.5 rounded-full bg-[#3d3a3a]" />
+        </span>
+        <span className="text-[11.5px] uppercase tracking-[0.1em] text-neutral-600">Taptile — Configurator</span>
+        <a
+          href="/software-demo/Taptile.dc.html"
+          target="_blank"
+          rel="noreferrer"
+          className="ml-auto text-[11px] text-neutral-500 underline-offset-2 hover:text-neutral-100 hover:underline"
+        >
+          Open full-screen ↗
+        </a>
+      </div>
+      <div
+        ref={frameRef}
+        className="relative w-full overflow-hidden bg-ground"
+        style={{ height: scale ? DEMO_H * scale : 560 }}
+      >
+        <iframe
+          src="/software-demo/Taptile.dc.html"
+          title="Taptile configurator demo — sign in, then the key-mapping page"
+          loading="lazy"
+          style={{
+            width: DEMO_W,
+            height: DEMO_H,
+            border: 0,
+            transformOrigin: 'top left',
+            transform: `scale(${scale || 0.01})`,
+          }}
+        />
+      </div>
+    </div>
+  );
+}
 
 interface Saved {
   email: string;
@@ -699,10 +762,34 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* --------------------------- software (#software) --------------------------- */}
+      <section id="software" className="scroll-mt-20 border-t-2 border-divider py-[88px]">
+        <div className="mx-auto max-w-shell px-5">
+          <div className="flex flex-wrap items-end justify-between gap-8">
+            <div>
+              <p className="kicker-accent">02 — Software</p>
+              <h2 className="mt-3 text-3xl font-heading tracking-heading text-neutral-100 sm:text-4xl">
+                The app comes with it
+              </h2>
+              <p className="mt-4 max-w-lg text-neutral-400">
+                Taptile ships with the configurator — no subscription, no account required. Map a
+                key, name it, pick an icon, set the light. It writes straight to the board.
+              </p>
+            </div>
+            <p className="max-w-[260px] text-[13px] text-neutral-600">
+              The real app, running right here. Hit <span className="text-neutral-300">Test mode</span> on
+              the sign-in screen to jump straight to the key-mapping page.
+            </p>
+          </div>
+
+          <SoftwareDemo />
+        </div>
+      </section>
+
       {/* ------------------------------- how (#how) ------------------------------- */}
       <section id="how" className="scroll-mt-20 border-t-2 border-divider py-[88px]">
         <div className="mx-auto max-w-shell px-5">
-          <p className="kicker-accent">02 — Setup</p>
+          <p className="kicker-accent">03 — Setup</p>
           <h2 className="mt-3 text-3xl font-heading tracking-heading text-neutral-100 sm:text-4xl">
             How it works
           </h2>
@@ -758,7 +845,7 @@ export default function Landing() {
       >
         <div className="mx-auto grid max-w-shell items-start gap-16 px-5 py-24 lg:grid-cols-2">
           <div>
-            <p className="kicker-accent">03 — Early access</p>
+            <p className="kicker-accent">04 — Early access</p>
             <h2 className="mt-3 text-4xl font-heading leading-[1.05] tracking-heading text-neutral-100 sm:text-5xl">
               Want one first?
             </h2>
@@ -874,7 +961,7 @@ export default function Landing() {
       {/* ------------------------------- faq (#faq) ------------------------------- */}
       <section id="faq" className="scroll-mt-20 border-t-2 border-divider py-[88px]">
         <div className="mx-auto max-w-[820px] px-5">
-          <p className="kicker-accent">04 — Questions</p>
+          <p className="kicker-accent">05 — Questions</p>
           <h2 className="mt-3 text-3xl font-heading tracking-heading text-neutral-100 sm:text-4xl">
             Questions
           </h2>
