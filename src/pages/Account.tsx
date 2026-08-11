@@ -1,9 +1,23 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../lib/auth';
 import Seo from '../components/Seo';
+import { checkIsAdmin } from '../lib/admin';
 
 export default function Account() {
   const { user } = useAuth();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  // Only surfaces the link. The database decides what /admin can actually read.
+  useEffect(() => {
+    let active = true;
+    void checkIsAdmin().then((result) => {
+      if (active) setIsAdmin(result);
+    });
+    return () => {
+      active = false;
+    };
+  }, [user?.id]);
 
   return (
     <section className="mx-auto max-w-3xl px-5 py-14">
@@ -32,6 +46,18 @@ export default function Account() {
             Collected at checkout by Stripe — nothing to fill in here.
           </p>
         </div>
+
+        {isAdmin && (
+          <div className="card p-6">
+            <h2 className="font-semibold text-neutral-100">Admin</h2>
+            <p className="mt-2 text-sm text-neutral-400">
+              View and export waitlist signups.
+            </p>
+            <Link to="/admin" className="btn-secondary mt-5">
+              Open waitlist
+            </Link>
+          </div>
+        )}
       </div>
     </section>
   );

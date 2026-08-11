@@ -3,6 +3,7 @@ Allow: /
 
 # Nothing useful for a crawler behind these.
 Disallow: /account
+Disallow: /admin
 Disallow: /cart
 Disallow: /order/
 

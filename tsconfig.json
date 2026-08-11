@@ -15,7 +15,7 @@
     "isolatedModules": true,
     "noEmit": true,
     "forceConsistentCasingInFileNames": true,
-    "types": ["vite/client", "node"],
+    "types": ["vite/client", "node", "w3c-web-hid"],
     "baseUrl": ".",
     "paths": { "@/*": ["./src/*"] }
   },

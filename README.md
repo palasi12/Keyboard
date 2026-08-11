@@ -25,12 +25,16 @@ can check the mobile layout on your phone.
 - Basket with quantities, persists across refreshes
 - Sign in and sign up (needs Supabase keys — see below)
 - Account page
+- Admin waitlist dashboard at `/admin` (allowlisted accounts only)
+- Keyboard configurator at `/configurator` — see [docs/CONFIGURATOR.md](docs/CONFIGURATOR.md)
 
 ## What does not
 
 - **Checkout.** Needs a server endpoint. See [docs/CHECKOUT.md](docs/CHECKOUT.md).
 - **Real products.** All placeholder. See [docs/PRODUCTS.md](docs/PRODUCTS.md).
 - **Order history.** Arrives once Stripe webhooks write orders to a database.
+- **Configurator against real hardware.** Written to spec, never tested on a
+  board. See [docs/CONFIGURATOR.md](docs/CONFIGURATOR.md) for the checklist.
 
 ## Configuration
 

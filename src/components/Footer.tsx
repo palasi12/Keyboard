@@ -38,7 +38,7 @@ export default function Footer() {
                   </Link>
                 </li>
                 <li>
-                  <a href="mailto:hello@taptile.com" className="transition hover:text-neutral-100">
+                  <a href="mailto:taptile.admin@gmail.com" className="transition hover:text-neutral-100">
                     Contact
                   </a>
                 </li>

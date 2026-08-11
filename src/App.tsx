@@ -13,6 +13,8 @@ import Account from './pages/Account';
 import OrderSuccess from './pages/OrderSuccess';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
+import Admin from './pages/Admin';
+import Configurator from './pages/Configurator';
 
 /** Jump to the top on navigation, or to the #anchor when there is one. */
 function ScrollBehaviour() {
@@ -55,10 +57,19 @@ export default function App() {
           <Route path="/shop" element={<Shop />} />
           <Route path="/product/:slug" element={<Product />} />
           <Route path="/cart" element={<Cart />} />
+          <Route path="/configurator" element={<Configurator />} />
           <Route path="/login" element={<Login />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/order/success" element={<OrderSuccess />} />
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute>
+                <Admin />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/account"
             element={
