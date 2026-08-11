@@ -1,14 +1,169 @@
+import { useState, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
-import { PRODUCTS, formatPrice } from '../lib/catalog';
-import ProductArt from '../components/ProductArt';
-import WaitlistForm from '../components/WaitlistForm';
+import { joinWaitlist } from '../lib/waitlist';
 import Seo from '../components/Seo';
 
-const STEPS = [
+/**
+ * Landing page (V5).
+ *
+ * The hero board, the range picker and the profile marquee run on the
+ * self-contained demo data below — deliberately kept out of `lib/catalog.ts`
+ * so the interactive toy here can drift from the real shop listing without
+ * touching /shop or /product. The two email forms go through the real
+ * `joinWaitlist` RPC; whichever board the visitor picked rides along in the
+ * `source` field.
+ */
+
+/* --------------------------------- data --------------------------------- */
+
+const LABELS: Record<string, string> = {
+  scrub: 'Scrub',
+  cut: 'Cut',
+  ripple: 'Ripple Del',
+  undo: 'Undo',
+  redo: 'Redo',
+  save: 'Save',
+  zoomin: 'Zoom In',
+  zoomout: 'Zoom Out',
+  play: 'Play',
+  mark: 'Mark I/O',
+  layer: 'Layer',
+  crop: 'Crop',
+  bright: 'Exposure',
+  contrast: 'Contrast',
+  fx: 'Effect',
+  vol: 'Volume',
+};
+
+interface DemoProduct {
+  slug: string;
+  name: string;
+  model: string;
+  tagline: string;
+  cols: number;
+  keySize: number;
+  keys: string[];
+  dials: string[];
+  description: string;
+}
+
+const DEMO_PRODUCTS: DemoProduct[] = [
   {
-    title: 'Plug it in',
-    body: 'USB-C into any computer. No drivers, no install, no account needed to use it.',
+    slug: 'nano',
+    name: 'Taptile Nano',
+    model: 'TP-04D1',
+    tagline: 'Four keys, one dial.',
+    cols: 2,
+    keySize: 66,
+    keys: ['play', 'cut', 'undo', 'save'],
+    dials: ['vol'],
+    description:
+      'The smallest board. Four mechanical keys for the four things you do a hundred times a day, and one encoder for volume.',
   },
+  {
+    slug: 'mini',
+    name: 'Taptile Mini',
+    model: 'TP-09D2',
+    tagline: 'Nine keys, two dials.',
+    cols: 3,
+    keySize: 74,
+    keys: ['scrub', 'cut', 'ripple', 'mark', 'undo', 'redo', 'save', 'zoomin', 'play'],
+    dials: ['scrub', 'vol'],
+    description:
+      'A full 3×3 grid with two encoders — scrub and volume out of the box. The one most people should start with.',
+  },
+  {
+    slug: 'pro',
+    name: 'Taptile Pro',
+    model: 'TP-15D3',
+    tagline: 'Fifteen keys, three dials.',
+    cols: 5,
+    keySize: 66,
+    keys: [
+      'scrub', 'cut', 'ripple', 'mark', 'play',
+      'undo', 'redo', 'save', 'zoomin', 'zoomout',
+      'layer', 'fx', 'bright', 'contrast', 'crop',
+    ],
+    dials: ['scrub', 'vol', 'bright'],
+    description:
+      'For a timeline you live in. Fifteen keys, three encoders, and enough room to keep a whole edit on the desk.',
+  },
+];
+
+interface Profile {
+  name: string;
+  keys: Array<[string, string]>;
+  dials: string[];
+}
+
+const PROFILES: Profile[] = [
+  {
+    name: 'Premiere Pro',
+    keys: [
+      ['Scrub', '⌘←/→'], ['Cut', '⌘K'], ['Ripple Del', '⇧⌦'], ['Mark In/Out', 'I / O'],
+      ['Undo', '⌘Z'], ['Redo', '⇧⌘Z'], ['Save', '⌘S'], ['Zoom In', '='], ['Play/Pause', 'Space'],
+    ],
+    dials: ['Scrub', 'Volume'],
+  },
+  {
+    name: 'Photoshop',
+    keys: [
+      ['Brush', 'B'], ['Eraser', 'E'], ['Clone', 'S'], ['Lasso', 'L'],
+      ['Undo', '⌘Z'], ['New Layer', '⇧⌘N'], ['Save', '⌘S'], ['Fit Screen', '⌘0'], ['Flatten', '⇧⌘E'],
+    ],
+    dials: ['Brush size', 'Opacity'],
+  },
+  {
+    name: 'Figma',
+    keys: [
+      ['Frame', 'F'], ['Text', 'T'], ['Pen', 'P'], ['Component', '⌥⌘K'],
+      ['Undo', '⌘Z'], ['Duplicate', '⌘D'], ['Group', '⌘G'], ['Zoom Fit', '⇧1'], ['Comment', 'C'],
+    ],
+    dials: ['Zoom', 'Opacity'],
+  },
+  {
+    name: 'Illustrator',
+    keys: [
+      ['Selection', 'V'], ['Pen', 'P'], ['Shape', 'M'], ['Pathfinder', '⌘⌥⇧F9'],
+      ['Undo', '⌘Z'], ['Group', '⌘G'], ['Save', '⌘S'], ['Zoom Fit', '⌘0'], ['Outline', '⌘Y'],
+    ],
+    dials: ['Stroke', 'Zoom'],
+  },
+  {
+    name: 'OBS',
+    keys: [
+      ['Scene 1', 'F1'], ['Scene 2', 'F2'], ['Scene 3', 'F3'], ['Mute Mic', '⌥M'],
+      ['Start Rec', '⌥R'], ['Replay', '⌥B'], ['Studio', '⌥S'], ['Transition', 'T'], ['Go Live', '⌥L'],
+    ],
+    dials: ['Mic gain', 'Desktop'],
+  },
+];
+
+const MARQUEE_EXTRA = ['Lightroom', 'DaVinci Resolve', 'After Effects', 'Ableton'];
+const MARQUEE = (() => {
+  const one = [...PROFILES.map((p) => p.name), ...MARQUEE_EXTRA];
+  return [...one, ...one];
+})();
+
+const INTERESTS = ['Taptile Nano', 'Taptile Mini', 'Taptile Pro', 'Not sure yet'];
+
+const APP_POINTS = [
+  {
+    title: 'Map anything',
+    body: 'Shortcuts, text snippets, macros, app launches — pick from the library or record your own combination.',
+  },
+  {
+    title: 'Label and light it',
+    body: 'Rename a key, choose its icon, set its colour. What you see in the app is what sits on the desk.',
+  },
+  {
+    title: 'Stored on the board',
+    body: 'Profiles live in the hardware. Plug it into another machine and the layout comes with it.',
+  },
+];
+
+const STEPS = [
+  { title: 'Plug it in', body: 'USB-C into any computer. No drivers, no install, no account needed to use it.' },
   {
     title: 'Assign your keys',
     body: 'Open the configurator and tell each key what to do — a shortcut, a macro, a whole sequence.',
@@ -19,15 +174,10 @@ const STEPS = [
   },
 ];
 
-const MARQUEE = [
-  'Premiere Pro',
-  'Photoshop',
-  'Lightroom',
-  'DaVinci Resolve',
-  'After Effects',
-  'OBS',
-  'Figma',
-  'Ableton',
+const PROMISES = [
+  'You hear from us when the first batch is ready to order, and not before.',
+  'Early access to the board you picked, before the general listing.',
+  'Your address is only used for the launch email. Leave the list in one click.',
 ];
 
 const FAQ = [
@@ -44,165 +194,557 @@ const FAQ = [
     a: 'No. Switches are hot-swappable, so you can pull them out and try different ones by hand.',
   },
   {
-    q: 'How long is delivery?',
-    a: 'Placeholder — confirm with your vendor before launch and replace this answer.',
+    q: 'When can I buy one?',
+    a: 'When the first batch is finished. The list gets the email before anything is listed publicly, so joining is the only way to hear about it early.',
   },
   {
-    q: 'What is your returns policy?',
-    a: 'Placeholder — you need a real returns policy before taking payments. This is a legal requirement in the UK and EU, not a nice-to-have.',
+    q: 'Which board should I pick?',
+    a: 'Nano if you want a handful of shortcuts on the desk, Mini if you are not sure, Pro if you already know nine keys will not be enough. You can change your mind before the batch opens.',
   },
 ];
 
+/* ------------------------------- component ------------------------------- */
+
+interface Saved {
+  email: string;
+  interest: string;
+}
+
 export default function Landing() {
-  const hero = PRODUCTS[2] ?? PRODUCTS[0];
+  // Hero board demo — which app profile is showing and which key is lit.
+  const [profile, setProfile] = useState(0);
+  const [pressed, setPressed] = useState(4);
+  const [pressTick, setPressTick] = useState(0);
+
+  // Range picker — which hardware variant is selected.
+  const [rangeIndex, setRangeIndex] = useState(1);
+
+  // Waitlist — shared across both forms, exactly like the mockup.
+  const [email, setEmail] = useState('');
+  const [interest, setInterest] = useState('Not sure yet');
+  const [error, setError] = useState<string | null>(null);
+  const [status, setStatus] = useState<'idle' | 'busy'>('idle');
+  const [saved, setSaved] = useState<Saved | null>(null);
+
+  const active = PROFILES[profile]!;
+  const pressedKey = active.keys[pressed] ?? active.keys[0]!;
+  const range = DEMO_PRODUCTS[rangeIndex]!;
+  const rangeChosen = interest === range.name;
+
+  async function submit(event: FormEvent, source: string) {
+    event.preventDefault();
+    setError(null);
+    setStatus('busy');
+
+    const result = await joinWaitlist(email, source);
+
+    if (!result.ok) {
+      setError(result.error ?? 'Something went wrong.');
+      setStatus('idle');
+      return;
+    }
+    setSaved({ email: email.trim(), interest });
+    setStatus('idle');
+  }
+
+  function resetWaitlist() {
+    setSaved(null);
+    setEmail('');
+    setError(null);
+    setInterest('Not sure yet');
+  }
+
+  function chooseRange(index: number) {
+    setRangeIndex(index);
+    setInterest(DEMO_PRODUCTS[index]!.name);
+  }
+
+  function jumpToWaitlist() {
+    setInterest(range.name);
+    const el = document.getElementById('waitlist');
+    if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 70, behavior: 'smooth' });
+  }
+
+  const submitLabel = status === 'busy' ? 'Joining…' : 'Join the list';
 
   return (
     <>
       <Seo
         title="Taptile — programmable mini keyboards"
-        description="Programmable mini keyboards for the shortcuts you use every day. Hot-swappable, USB-C, Windows and macOS. From £24."
+        description="Programmable mini keyboards for the shortcuts you use every day. Hot-swappable, USB-C, Windows and macOS. Nano, Mini or Pro."
         path="/"
         image="/og.svg"
       />
+
       {/* ---------------------------------- hero ---------------------------------- */}
       <section className="stage border-b-2 border-divider">
-        <div className="mx-auto grid max-w-shell gap-14 px-5 py-20 lg:grid-cols-2 lg:items-center lg:py-28">
+        <div className="mx-auto grid max-w-shell items-center gap-16 px-5 py-20 lg:grid-cols-[1.05fr_.95fr] lg:py-[104px]">
+          {/* left: pitch + inline waitlist */}
           <div className="animate-rise">
             <p className="inline-flex items-center gap-2 rounded-full border border-hairline bg-white/[0.03] px-3.5 py-1.5 text-[11px] tracking-[0.06em] text-neutral-400">
-              <span className="h-1.5 w-1.5 rounded-full bg-neutral-100" />
-              Free UK delivery over £30
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-accent" />
+              Not shipping yet — first batch opens to the list
             </p>
 
-            <h1 className="mt-6 text-5xl font-heading leading-[1.05] tracking-heading text-neutral-100 sm:text-6xl lg:text-7xl">
+            <h1 className="mt-6 text-5xl font-heading leading-[1.03] tracking-heading text-neutral-100 sm:text-6xl lg:text-7xl">
               Your shortcuts,
               <br />
               on real keys.
             </h1>
 
             <p className="mt-6 max-w-lg text-lg leading-relaxed text-neutral-400">
-              A programmable mini keyboard for the things you do a hundred times a
-              day. Mute, switch scenes, paste the thing, run the macro. One press.
+              A programmable mini keyboard for the things you do a hundred times a day.
+              Mute, switch scenes, paste the thing, run the macro. One press.
             </p>
 
-            <div className="mt-9 flex flex-wrap items-center gap-3">
-              <Link to="/shop" className="btn-primary px-6 py-3 text-base">
-                Shop keyboards
-              </Link>
-              <Link to="/#how" className="btn-secondary px-6 py-3 text-base">
-                How it works
-              </Link>
+            <div className="mt-9 max-w-lg">
+              {saved ? (
+                <div
+                  role="status"
+                  aria-live="polite"
+                  className="rounded-xl border border-white/[0.16] bg-surface px-6 py-5 shadow-[0_10px_30px_rgba(0,0,0,.35)]"
+                >
+                  <p className="flex items-center gap-2.5 font-heading text-base text-neutral-100">
+                    <span className="grid h-6 w-6 place-items-center rounded-full bg-[#3ec95f] text-[13px] text-ground">
+                      ✓
+                    </span>
+                    You&apos;re on the list.
+                  </p>
+                  <p className="mt-2 text-sm text-neutral-400">
+                    We&apos;ll email {saved.email} once these are ready to order. Nothing else.
+                  </p>
+                  {saved.interest !== 'Not sure yet' && (
+                    <p className="mt-2 text-[13px] text-neutral-600">
+                      We&apos;ve noted the {saved.interest}.
+                    </p>
+                  )}
+                </div>
+              ) : (
+                <form onSubmit={(e) => submit(e, `landing-hero:${interest}`)} noValidate>
+                  <div className="flex gap-2.5">
+                    <label htmlFor="hero-email" className="sr-only">
+                      Email address
+                    </label>
+                    <input
+                      id="hero-email"
+                      type="email"
+                      inputMode="email"
+                      autoComplete="email"
+                      placeholder="you@example.com"
+                      value={email}
+                      onChange={(e) => {
+                        setEmail(e.target.value);
+                        setError(null);
+                      }}
+                      className="field flex-1"
+                      disabled={status === 'busy'}
+                    />
+                    <button type="submit" className="btn-primary shrink-0 px-6 py-3.5 text-base" disabled={status === 'busy'}>
+                      {submitLabel}
+                    </button>
+                  </div>
+                  {error && (
+                    <p role="alert" className="mt-2.5 text-sm text-accent-400">
+                      {error}
+                    </p>
+                  )}
+                  <p className="mt-3 text-[13px] text-neutral-600">
+                    We&apos;ll email you when the first batch is ready to order.
+                  </p>
+                </form>
+              )}
             </div>
 
             <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-neutral-500">
-              <span>
-                From {formatPrice(Math.min(...PRODUCTS.map((p) => p.price)))}
-              </span>
-              <span className="h-3 w-px bg-divider" />
               <span>Windows, macOS, Linux</span>
               <span className="h-3 w-px bg-divider" />
               <span>Hot-swappable switches</span>
+              <span className="h-3 w-px bg-divider" />
+              <span>Layout stored on the board</span>
             </div>
           </div>
 
-          {hero && (
-            <div className="flex animate-rise justify-center lg:justify-end">
-              <ProductArt product={hero} detailed />
+          {/* right: interactive board demo */}
+          <div id="try" className="animate-rise scroll-mt-24">
+            <div className="mb-3.5 flex items-center gap-2.5">
+              <span className="text-[10px] uppercase tracking-[0.16em] text-neutral-500">Try a profile</span>
+              <span className="h-0.5 flex-1 bg-divider" />
             </div>
-          )}
+
+            <div className="mb-4 flex flex-wrap gap-1.5">
+              {PROFILES.map((p, i) => {
+                const on = i === profile;
+                return (
+                  <button
+                    key={p.name}
+                    type="button"
+                    onClick={() => setProfile(i)}
+                    aria-pressed={on}
+                    className="rounded-full border px-3.5 py-1.5 text-[13px] font-semibold transition"
+                    style={{
+                      borderColor: on ? '#f8f4f4' : 'rgba(255,255,255,.12)',
+                      background: on ? '#f8f4f4' : 'rgba(255,255,255,.02)',
+                      color: on ? '#131111' : '#bab6b6',
+                    }}
+                  >
+                    {p.name}
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="stage-soft flex justify-center rounded-xl p-7">
+              <div className="overflow-hidden rounded-xl border border-hairline bg-surface shadow-shell">
+                <div className="flex items-center gap-2.5 border-b border-hairline bg-white/[0.02] px-4 py-2.5">
+                  <span className="h-2 w-4 rounded-[3px] border border-neutral-900 bg-bezel" />
+                  <span className="text-[9px] font-heading uppercase tracking-[0.18em] text-neutral-400">
+                    Taptile Mini
+                  </span>
+                  <span className="ml-auto text-[8.5px] tracking-[0.14em] text-neutral-700">TP-09D2</span>
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#3ec95f]" />
+                </div>
+
+                <div className="px-6 pb-6 pt-5">
+                  <div className="grid grid-cols-3 gap-2.5" style={{ gridAutoRows: '78px', gridTemplateColumns: 'repeat(3, 78px)' }}>
+                    {active.keys.map((k, i) => {
+                      const on = i === pressed;
+                      return (
+                        <button
+                          key={on ? `k${i}-${pressTick}` : `k${i}`}
+                          type="button"
+                          onClick={() => {
+                            setPressed(i);
+                            setPressTick((t) => t + 1);
+                          }}
+                          aria-label={`Key ${i + 1}, ${k[0]}`}
+                          className="rounded-md p-[3px] shadow-cap"
+                          style={{
+                            background: '#2a2725',
+                            border: `1px solid ${on ? 'rgba(255,255,255,.45)' : 'rgba(255,255,255,.06)'}`,
+                            animation: on ? 'keypop .22s ease-out' : 'none',
+                          }}
+                        >
+                          <span
+                            className="relative flex h-full w-full flex-col items-center justify-center gap-1 rounded-sm"
+                            style={{ background: on ? '#f8f4f4' : '#131111' }}
+                          >
+                            <span
+                              className="absolute left-1.5 top-1 text-[8px] font-heading tracking-[0.1em]"
+                              style={{ color: on ? 'rgba(19,17,17,.5)' : '#605d5d' }}
+                            >
+                              K{i + 1}
+                            </span>
+                            <span
+                              className="px-1 text-center text-[9.5px] leading-tight"
+                              style={{ color: on ? 'rgba(19,17,17,.75)' : '#9b9797' }}
+                            >
+                              {k[0]}
+                            </span>
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  <div className="my-4 flex items-center gap-2.5">
+                    <span className="text-[9.5px] uppercase tracking-[0.16em] text-neutral-500">Rotary</span>
+                    <span className="h-0.5 flex-1 bg-divider" />
+                  </div>
+
+                  <div className="flex justify-center gap-8">
+                    {active.dials.map((label, i) => (
+                      <span key={label} className="flex flex-col items-center gap-1.5">
+                        <span className="grid h-[78px] w-[78px] place-items-center rounded-full border-2 border-bezel bg-bezel p-1 shadow-cap">
+                          <span className="grid h-full w-full place-items-center rounded-full bg-keycap text-[9px] text-neutral-500">
+                            {label}
+                          </span>
+                        </span>
+                        <span className="text-[8px] font-heading tracking-[0.14em] text-neutral-700">D{i + 1}</span>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-3.5 flex items-center gap-3 rounded-lg border border-hairline bg-white/[0.02] px-4 py-3">
+              <span className="text-[9.5px] uppercase tracking-[0.16em] text-neutral-600">Fires</span>
+              <span className="font-mono text-sm text-neutral-100">{pressedKey[1]}</span>
+              <span className="ml-auto text-[13px] text-neutral-500">
+                {pressedKey[0]} · {active.name}
+              </span>
+            </div>
+            <p className="mt-2.5 text-xs text-neutral-700">
+              Press a key. Switch profiles to see the same board in another app.
+            </p>
+          </div>
         </div>
       </section>
 
       {/* --------------------------------- marquee --------------------------------- */}
-      <section className="border-b-2 border-divider">
-        <div className="mx-auto flex max-w-shell flex-wrap items-center gap-x-8 gap-y-3 px-5 py-5">
-          <p className="kicker">Profiles for</p>
-          {MARQUEE.map((app) => (
-            <span key={app} className="text-sm text-neutral-600">
-              {app}
-            </span>
-          ))}
+      <section className="overflow-hidden border-b-2 border-divider">
+        <div className="mx-auto flex max-w-shell items-center gap-6 px-5 py-[18px]">
+          <p className="shrink-0 text-[10px] uppercase tracking-[0.16em] text-neutral-500">Profiles for</p>
+          <div
+            className="relative flex-1 overflow-hidden"
+            style={{ maskImage: 'linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent)' }}
+          >
+            <div className="flex w-max animate-marquee gap-10 hover:[animation-play-state:paused]">
+              {MARQUEE.map((app, i) => (
+                <span key={`${app}-${i}`} className="whitespace-nowrap text-sm text-neutral-600">
+                  {app}
+                </span>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* ---------------------------------- products ---------------------------------- */}
-      <section id="shop" className="py-20">
+      {/* ---------------------------- range (#boards) ---------------------------- */}
+      <section id="boards" className="scroll-mt-20 py-[88px]">
         <div className="mx-auto max-w-shell px-5">
-          <p className="kicker-accent">01 — Range</p>
-          <h2 className="mt-3 text-3xl font-heading tracking-heading text-neutral-100 sm:text-4xl">
-            Pick your size
-          </h2>
-          <p className="mt-4 max-w-lg text-neutral-400">
-            Three, six or nine keys. They all do the same thing — you just decide how
-            much of it you want.
-          </p>
+          <div className="flex flex-wrap items-end justify-between gap-8">
+            <div>
+              <p className="kicker-accent">01 — Range</p>
+              <h2 className="mt-3 text-3xl font-heading tracking-heading text-neutral-100 sm:text-4xl">
+                Pick your size
+              </h2>
+              <p className="mt-4 max-w-lg text-neutral-400">
+                Four, nine or fifteen keys. All three run the same configurator and store the layout
+                on the board — you just decide how much desk you want to give it.
+              </p>
+            </div>
+            <p className="max-w-[260px] text-[13px] text-neutral-600">
+              Nothing is on sale yet. Tell us which one you want and you&apos;ll hear about that batch first.
+            </p>
+          </div>
 
-          <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {PRODUCTS.map((product) => (
-              <Link
-                key={product.slug}
-                to={`/product/${product.slug}`}
-                className="card group flex flex-col overflow-hidden"
+          <div className="mt-12 grid items-start gap-12 lg:grid-cols-[minmax(280px,380px)_minmax(0,1fr)]">
+            {/* left column: picker + active details */}
+            <div className="flex flex-col">
+              <div className="flex flex-wrap gap-[18px]">
+                {DEMO_PRODUCTS.map((p, i) => {
+                  const on = i === rangeIndex;
+                  return (
+                    <button
+                      key={p.slug}
+                      type="button"
+                      onClick={() => chooseRange(i)}
+                      aria-pressed={on}
+                      className="flex flex-col items-center gap-3"
+                    >
+                      <span
+                        className="relative grid h-[104px] w-[104px] place-items-center rounded-full border transition-all duration-200"
+                        style={{
+                          borderColor: on ? 'rgba(255,255,255,.5)' : 'rgba(255,255,255,.12)',
+                          background: on
+                            ? 'linear-gradient(150deg, rgba(255,255,255,.16), rgba(255,255,255,.05))'
+                            : 'linear-gradient(150deg, rgba(255,255,255,.06), rgba(255,255,255,.02))',
+                          boxShadow: on
+                            ? '0 18px 40px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.3)'
+                            : '0 8px 20px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.12)',
+                          transform: on ? 'scale(1.06)' : 'scale(1)',
+                        }}
+                      >
+                        <span
+                          className="pointer-events-none absolute inset-px rounded-full"
+                          style={{ background: 'linear-gradient(160deg, rgba(255,255,255,.16), rgba(255,255,255,0) 46%)' }}
+                        />
+                        <span className="grid gap-[3px]" style={{ gridTemplateColumns: `repeat(${p.cols}, 7px)` }}>
+                          {p.keys.map((k, di) => (
+                            <span
+                              key={`${k}-${di}`}
+                              className="h-[7px] w-[7px] rounded-[2px]"
+                              style={{
+                                background: on
+                                  ? di === 0
+                                    ? '#f8f4f4'
+                                    : 'rgba(248,244,244,.62)'
+                                  : 'rgba(248,244,244,.3)',
+                              }}
+                            />
+                          ))}
+                        </span>
+                      </span>
+                      <span className="flex flex-col items-center gap-0.5">
+                        <span
+                          className="text-sm font-heading"
+                          style={{ color: on ? '#f8f4f4' : '#7d7979' }}
+                        >
+                          {p.name.replace('Taptile ', '')}
+                        </span>
+                        <span
+                          className="text-[11px] tracking-[0.02em]"
+                          style={{ color: on ? '#9b9797' : '#605d5d' }}
+                        >
+                          {p.keys.length} keys · {p.dials.length} dial{p.dials.length > 1 ? 's' : ''}
+                        </span>
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className="mt-8 flex items-baseline gap-3 border-t border-white/10 pt-5">
+                <h3 className="text-2xl font-heading tracking-heading text-neutral-100">{range.name}</h3>
+                <span className="ml-auto text-[11px] tracking-[0.12em] text-neutral-700">{range.model}</span>
+              </div>
+
+              <p className="mt-3.5 text-sm leading-relaxed text-neutral-500">{range.description}</p>
+
+              <button
+                type="button"
+                onClick={jumpToWaitlist}
+                className="mt-[22px] inline-flex w-full items-center justify-center gap-2 rounded-full border px-[18px] py-3.5 text-sm font-heading transition"
+                style={{
+                  borderColor: rangeChosen ? '#f8f4f4' : 'rgba(255,255,255,.12)',
+                  background: rangeChosen ? '#f8f4f4' : 'rgba(255,255,255,.02)',
+                  color: rangeChosen ? '#131111' : '#f8f4f4',
+                }}
               >
-                <ProductArt product={product} className="rounded-none" />
+                {rangeChosen ? 'On your list ✓' : `Tell me about the ${range.name.replace('Taptile ', '')}`}
+              </button>
+            </div>
 
-                <div className="border-t border-hairline p-5">
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <h3 className="font-semibold text-neutral-100">{product.name}</h3>
-                      <p className="mt-1 text-sm text-neutral-500">{product.tagline}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-bold text-neutral-100">{formatPrice(product.price)}</p>
-                      {product.compareAt && (
-                        <p className="text-xs text-neutral-600 line-through">
-                          {formatPrice(product.compareAt)}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    <span className="rounded-full border border-hairline px-2.5 py-1 text-[11px] text-neutral-400">
-                      {product.keyCount} keys
-                    </span>
-                    <span className="rounded-full border border-hairline px-2.5 py-1 text-[11px] text-neutral-400">
-                      {product.dialCount === 0
-                        ? 'No dial'
-                        : `${product.dialCount} dial${product.dialCount > 1 ? 's' : ''}`}
-                    </span>
-                    <span className="rounded-full border border-hairline px-2.5 py-1 text-[11px] text-neutral-400">
-                      USB-C
-                    </span>
-                  </div>
-
-                  <p className="mt-5 text-sm font-medium text-neutral-100">
-                    {product.inStock ? 'View details →' : 'Out of stock'}
-                  </p>
+            {/* right column: board preview */}
+            <div className="stage-soft flex min-h-[520px] items-center justify-center rounded-2xl border border-white/[0.07] bg-[#121110] px-6 py-10">
+              <div className="relative max-w-full rounded-2xl border border-white/[0.09] bg-surface p-5 shadow-[0_40px_90px_rgba(0,0,0,.7),inset_0_1px_0_rgba(255,255,255,.06)]">
+                <div className="flex items-center gap-2.5 px-0.5 pb-4">
+                  <span className="h-2.5 w-[18px] shrink-0 rounded-[3px] border border-neutral-900 bg-bezel" />
+                  <span className="whitespace-nowrap text-[10px] font-heading uppercase tracking-[0.16em] text-neutral-400">
+                    {range.name}
+                  </span>
+                  <span className="ml-auto whitespace-nowrap text-[9.5px] tracking-[0.12em] text-neutral-700">
+                    {range.model}
+                  </span>
+                  <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#3ec95f]" />
                 </div>
-              </Link>
+
+                <div
+                  className="grid justify-center gap-2.5"
+                  style={{
+                    gridTemplateColumns: `repeat(${range.cols}, ${range.keySize}px)`,
+                    gridAutoRows: `${range.keySize}px`,
+                  }}
+                >
+                  {range.keys.map((k, i) => (
+                    <div
+                      key={`${k}-${i}`}
+                      className="rounded-lg border border-white/[0.07] bg-bezel p-[3px] shadow-[0_6px_14px_rgba(0,0,0,.5),inset_0_1px_0_rgba(255,255,255,.06)]"
+                    >
+                      <div className="relative grid h-full w-full place-items-center rounded-md bg-keycap">
+                        <span className="absolute left-1.5 top-1.5 text-[8.5px] font-heading tracking-[0.1em] text-[#3d3a3a]">
+                          K{i + 1}
+                        </span>
+                        <span className="px-1.5 text-center text-[10.5px] leading-tight text-neutral-400">
+                          {LABELS[k] ?? k}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="my-5 mb-3.5 flex items-center gap-2.5">
+                  <span className="text-[9.5px] uppercase tracking-[0.16em] text-neutral-700">Rotary</span>
+                  <span className="h-px flex-1 bg-white/[0.08]" />
+                </div>
+
+                <div className="flex flex-wrap justify-center gap-[26px]">
+                  {range.dials.map((d, i) => (
+                    <div key={`${d}-${i}`} className="flex flex-col items-center gap-1.5">
+                      <span
+                        className="grid h-[74px] w-[74px] place-items-center rounded-full border-2 border-bezel bg-bezel p-1 shadow-[0_6px_14px_rgba(0,0,0,.5),inset_0_1px_0_rgba(255,255,255,.06)]"
+                      >
+                        <span
+                          className="grid h-full w-full place-items-center rounded-full bg-keycap text-[10px] text-neutral-400"
+                          style={{
+                            backgroundImage:
+                              'repeating-conic-gradient(from 0deg, rgba(255,255,255,.07) 0deg 3deg, transparent 3deg 9deg)',
+                          }}
+                        >
+                          {LABELS[d] ?? d}
+                        </span>
+                      </span>
+                      <span className="text-[8.5px] font-heading tracking-[0.14em] text-neutral-700">D{i + 1}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* --------------------------- software (#software) --------------------------- */}
+      <section id="software" className="scroll-mt-20 border-t-2 border-divider py-[88px]">
+        <div className="mx-auto max-w-shell px-5">
+          <div className="flex flex-wrap items-end justify-between gap-8">
+            <div>
+              <p className="kicker-accent">02 — Software</p>
+              <h2 className="mt-3 text-3xl font-heading tracking-heading text-neutral-100 sm:text-4xl">
+                The app comes with it
+              </h2>
+              <p className="mt-4 max-w-lg text-neutral-400">
+                Taptile ships with the configurator — no subscription, no account required. Map a
+                key, name it, pick an icon, set the light. It writes straight to the board.
+              </p>
+            </div>
+            <p className="max-w-[260px] text-[13px] text-neutral-600">
+              The mapping page, exactly as it ships. Open the full configurator to try it end to end.
+            </p>
+          </div>
+
+          <div className="mt-11 overflow-hidden rounded-2xl border border-white/10 bg-keycap shadow-[0_40px_90px_rgba(0,0,0,.6)]">
+            <div className="flex items-center gap-3.5 border-b border-hairline bg-white/[0.02] px-4 py-3">
+              <span className="flex gap-1.5">
+                <span className="h-2.5 w-2.5 rounded-full bg-[#3d3a3a]" />
+                <span className="h-2.5 w-2.5 rounded-full bg-[#3d3a3a]" />
+                <span className="h-2.5 w-2.5 rounded-full bg-[#3d3a3a]" />
+              </span>
+              <span className="text-[11.5px] uppercase tracking-[0.1em] text-neutral-600">Taptile — Configurator</span>
+              <span className="ml-auto text-[11px] text-neutral-700">Included · macOS, Windows, Linux</span>
+            </div>
+            <Link to="/configurator" className="group relative block" aria-label="Open the configurator">
+              <img
+                src="/configurator-preview.png"
+                alt="The Taptile configurator key-mapping screen"
+                className="block w-full"
+                loading="lazy"
+              />
+              <span className="absolute inset-0 grid place-items-center bg-ground/0 transition group-hover:bg-ground/40">
+                <span className="btn-primary translate-y-1 px-6 py-3 text-base opacity-0 transition group-hover:translate-y-0 group-hover:opacity-100">
+                  Open the configurator →
+                </span>
+              </span>
+            </Link>
+          </div>
+
+          <div className="mt-9 grid border-t-2 border-divider sm:grid-cols-3">
+            {APP_POINTS.map((pt) => (
+              <div key={pt.title} className="border-hairline pr-7 pt-7 sm:border-r sm:last:border-r-0">
+                <p className="font-heading text-base text-neutral-100">{pt.title}</p>
+                <p className="mt-2 text-sm leading-relaxed text-neutral-500">{pt.body}</p>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ---------------------------------- how ---------------------------------- */}
-      <section id="how" className="border-t-2 border-divider py-20">
+      {/* ------------------------------- how (#how) ------------------------------- */}
+      <section id="how" className="scroll-mt-20 border-t-2 border-divider py-[88px]">
         <div className="mx-auto max-w-shell px-5">
-          <p className="kicker-accent">02 — Setup</p>
+          <p className="kicker-accent">03 — Setup</p>
           <h2 className="mt-3 text-3xl font-heading tracking-heading text-neutral-100 sm:text-4xl">
             How it works
           </h2>
-          <div className="mt-12 grid gap-6 sm:grid-cols-3">
+          <div className="mt-11 grid border-t-2 border-divider sm:grid-cols-3">
             {STEPS.map((step, index) => (
-              <div
-                key={step.title}
-                className="rounded-xl border border-hairline bg-surface p-6"
-              >
-                <span className="grid h-10 w-10 place-items-center rounded-full bg-neutral-100 font-heading text-sm text-keycap shadow-glow">
+              <div key={step.title} className="border-hairline pr-7 pt-8 pb-8 sm:border-r sm:last:border-r-0">
+                <span className="grid h-11 w-11 place-items-center rounded-full bg-neutral-100 font-heading text-[15px] text-keycap shadow-glow">
                   {index + 1}
                 </span>
-                <h3 className="mt-5 font-semibold text-neutral-100">{step.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-neutral-400">{step.body}</p>
+                <h3 className="mt-[22px] text-lg font-heading text-neutral-100">{step.title}</h3>
+                <p className="mt-2.5 max-w-xs text-[15px] leading-relaxed text-neutral-400">{step.body}</p>
               </div>
             ))}
           </div>
@@ -210,64 +752,171 @@ export default function Landing() {
       </section>
 
       {/* ------------------------------ poster statement ------------------------------ */}
-      <section className="border-t-2 border-divider py-20">
+      <section className="border-t-2 border-divider py-[88px]">
         <div className="mx-auto max-w-shell px-5">
-          <div className="overflow-hidden rounded-2xl bg-neutral-100 px-8 py-14 shadow-glow sm:px-12">
-            <p className="text-[10px] uppercase tracking-[0.16em] text-neutral-700">
-              Taptile Mini · TP-09D2
-            </p>
-            <h2 className="mt-3 max-w-3xl text-4xl font-heading leading-[1.05] tracking-heading text-ground sm:text-5xl">
+          <div className="overflow-hidden rounded-2xl bg-neutral-100 px-14 py-16 shadow-glow">
+            <p className="text-[10px] uppercase tracking-[0.16em] text-neutral-700">Taptile Mini · TP-09D2</p>
+            <h2 className="mt-3.5 max-w-3xl text-4xl font-heading leading-[1.02] tracking-heading text-ground sm:text-5xl">
               Nine keys. Two dials.
               <br />
               Every shortcut you own.
             </h2>
-            <Link
-              to="/product/taptile-mini"
-              className="btn mt-9 bg-ground px-6 py-3 text-base text-neutral-100 hover:bg-neutral-900"
-            >
-              See the Mini
-            </Link>
+            <div className="mt-9 flex flex-wrap items-center gap-5">
+              <button
+                type="button"
+                onClick={jumpToWaitlist}
+                className="inline-flex items-center rounded-full bg-ground px-6 py-3.5 font-heading text-base text-neutral-100 transition hover:bg-neutral-900"
+              >
+                Get told when it ships
+              </button>
+              <span className="text-sm text-neutral-700">
+                Or the Nano and the Pro, if nine is the wrong number.
+              </span>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* -------------------------------- waitlist -------------------------------- */}
-      <section id="waitlist" className="border-t-2 border-divider py-20">
-        <div className="mx-auto max-w-2xl px-5">
-          <p className="kicker-accent">03 — Early access</p>
-          <h2 className="mt-3 text-3xl font-heading tracking-heading text-neutral-100 sm:text-4xl">
-            Want one first?
-          </h2>
-          <p className="mt-4 text-neutral-400">
-            We&apos;ll email you once these are ready to order. One email, no newsletter.
-          </p>
+      {/* ---------------------------- waitlist (#waitlist) ---------------------------- */}
+      <section
+        id="waitlist"
+        className="scroll-mt-20 border-t-2 border-divider"
+        style={{
+          backgroundImage:
+            'radial-gradient(circle at 50% 0%, rgba(236,48,19,.16), transparent 58%), linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px)',
+          backgroundSize: '100% 100%, 32px 32px, 32px 32px',
+        }}
+      >
+        <div className="mx-auto grid max-w-shell items-start gap-16 px-5 py-24 lg:grid-cols-2">
+          <div>
+            <p className="kicker-accent">04 — Early access</p>
+            <h2 className="mt-3 text-4xl font-heading leading-[1.05] tracking-heading text-neutral-100 sm:text-5xl">
+              Want one first?
+            </h2>
+            <p className="mt-[18px] max-w-md text-lg leading-relaxed text-neutral-400">
+              Tell us which board you want and we&apos;ll email you once it&apos;s ready to order.
+            </p>
 
-          <div className="mt-8">
-            <WaitlistForm source="landing" />
+            <div className="mt-8 flex flex-col gap-3.5">
+              {PROMISES.map((item) => (
+                <div key={item} className="flex items-start gap-3">
+                  <span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full border border-white/[0.16] text-[11px] text-neutral-100">
+                    ✓
+                  </span>
+                  <p className="text-[15px] text-neutral-400">{item}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-white/[0.12] bg-surface p-8 shadow-shell">
+            {saved ? (
+              <div role="status" aria-live="polite">
+                <span className="grid h-11 w-11 place-items-center rounded-full bg-[#3ec95f] text-[22px] text-ground">
+                  ✓
+                </span>
+                <h3 className="mt-5 text-2xl font-heading tracking-heading text-neutral-100">
+                  You&apos;re on the list.
+                </h3>
+                <p className="mt-2.5 text-[15px] leading-relaxed text-neutral-400">
+                  We&apos;ll email {saved.email} once these are ready to order. Nothing else.
+                </p>
+                <div className="mt-6 border-t border-hairline pt-5">
+                  <p className="text-[10px] uppercase tracking-[0.14em] text-neutral-700">Interested in</p>
+                  <p className="mt-1 text-[22px] font-heading text-neutral-100">{saved.interest}</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={resetWaitlist}
+                  className="mt-[22px] text-[13px] text-neutral-600 underline"
+                >
+                  Use a different email
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={(e) => submit(e, `landing:${interest}`)} noValidate>
+                <p className="mb-2.5 text-xs text-neutral-500">Which board do you want?</p>
+                <div className="flex flex-wrap gap-2">
+                  {INTERESTS.map((label) => {
+                    const on = interest === label;
+                    return (
+                      <button
+                        key={label}
+                        type="button"
+                        onClick={() => {
+                          setInterest(label);
+                          setError(null);
+                        }}
+                        aria-pressed={on}
+                        className="rounded-full border px-4 py-2.5 text-[13px] font-semibold transition"
+                        style={{
+                          borderColor: on ? '#f8f4f4' : 'rgba(255,255,255,.12)',
+                          background: on ? '#f8f4f4' : 'rgba(255,255,255,.02)',
+                          color: on ? '#131111' : '#bab6b6',
+                        }}
+                      >
+                        {label}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <label htmlFor="waitlist-email" className="mb-2 mt-6 block text-xs text-neutral-500">
+                  Email address
+                </label>
+                <input
+                  id="waitlist-email"
+                  type="email"
+                  inputMode="email"
+                  autoComplete="email"
+                  placeholder="you@example.com"
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    setError(null);
+                  }}
+                  className="field"
+                  disabled={status === 'busy'}
+                />
+
+                {error && (
+                  <p role="alert" className="mt-2.5 text-sm text-accent-400">
+                    {error}
+                  </p>
+                )}
+
+                <button
+                  type="submit"
+                  className="btn-primary mt-4 w-full py-3.5"
+                  disabled={status === 'busy'}
+                >
+                  {submitLabel}
+                </button>
+
+                <p className="mt-3.5 text-xs leading-relaxed text-neutral-500">
+                  We&apos;ll only use your address for the launch email.
+                </p>
+              </form>
+            )}
           </div>
         </div>
       </section>
 
-      {/* ---------------------------------- faq ---------------------------------- */}
-      <section id="faq" className="border-t-2 border-divider py-20">
-        <div className="mx-auto max-w-3xl px-5">
-          <p className="kicker-accent">04 — Questions</p>
+      {/* ------------------------------- faq (#faq) ------------------------------- */}
+      <section id="faq" className="scroll-mt-20 border-t-2 border-divider py-[88px]">
+        <div className="mx-auto max-w-[820px] px-5">
+          <p className="kicker-accent">05 — Questions</p>
           <h2 className="mt-3 text-3xl font-heading tracking-heading text-neutral-100 sm:text-4xl">
             Questions
           </h2>
-          <div className="mt-10 space-y-3">
+          <div className="mt-9 border-t border-hairline">
             {FAQ.map((item) => (
-              <details
-                key={item.q}
-                className="group rounded-xl border border-hairline bg-surface px-5 py-4 transition hover:border-white/[0.16]"
-              >
-                <summary className="flex cursor-pointer items-center justify-between gap-4 text-left font-medium text-neutral-100 marker:content-['']">
+              <details key={item.q} className="group border-b border-hairline px-1 py-[22px]">
+                <summary className="flex cursor-pointer items-center justify-between gap-4 text-left text-[17px] font-medium text-neutral-100 marker:content-['']">
                   {item.q}
-                  <span className="shrink-0 text-neutral-500 transition group-open:rotate-45">
-                    +
-                  </span>
+                  <span className="shrink-0 text-xl text-neutral-500 transition group-open:rotate-45">+</span>
                 </summary>
-                <p className="mt-3 text-sm leading-relaxed text-neutral-400">{item.a}</p>
+                <p className="mt-3.5 max-w-[640px] text-[15px] leading-relaxed text-neutral-400">{item.a}</p>
               </details>
             ))}
           </div>

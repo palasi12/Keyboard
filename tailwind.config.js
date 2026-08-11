@@ -83,10 +83,26 @@ export default {
             boxShadow: '0 0 18px rgba(255,255,255,.5)',
           },
         },
+        marquee: {
+          from: { transform: 'translateX(0)' },
+          to: { transform: 'translateX(-50%)' },
+        },
+        pulse: {
+          '0%,100%': { opacity: '1' },
+          '50%': { opacity: '.35' },
+        },
+        keypop: {
+          '0%': { transform: 'scale(1)' },
+          '40%': { transform: 'scale(.94)' },
+          '100%': { transform: 'scale(1)' },
+        },
       },
       animation: {
         rise: 'rise .5s cubic-bezier(.2,.8,.3,1) both',
         pop: 'pop 1.8s ease-in-out infinite',
+        marquee: 'marquee 26s linear infinite',
+        pulse: 'pulse 2.4s ease-in-out infinite',
+        keypop: 'keypop .22s ease-out',
       },
     },
   },
