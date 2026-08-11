@@ -1,6 +1,7 @@
-import { useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { joinWaitlist } from '../lib/waitlist';
+import { isSupabaseConfigured } from '../lib/supabase';
 import Seo from '../components/Seo';
 
 /**
@@ -147,6 +148,9 @@ const MARQUEE = (() => {
 
 const INTERESTS = ['Taptile Nano', 'Taptile Mini', 'Taptile Pro', 'Not sure yet'];
 
+const WAITLIST_KEY = 'taptile-waitlist-v1';
+const EMAIL_SHAPE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+
 const APP_POINTS = [
   {
     title: 'Map anything',
@@ -226,6 +230,17 @@ export default function Landing() {
   const [status, setStatus] = useState<'idle' | 'busy'>('idle');
   const [saved, setSaved] = useState<Saved | null>(null);
 
+  // Remember a signup across reloads so returning visitors keep the confirmed
+  // state — the same thing the design mockup did.
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(WAITLIST_KEY);
+      if (raw) setSaved(JSON.parse(raw) as Saved);
+    } catch {
+      /* ignore unreadable storage */
+    }
+  }, []);
+
   const active = PROFILES[profile]!;
   const pressedKey = active.keys[pressed] ?? active.keys[0]!;
   const range = DEMO_PRODUCTS[rangeIndex]!;
@@ -233,21 +248,46 @@ export default function Landing() {
 
   async function submit(event: FormEvent, source: string) {
     event.preventDefault();
+    const trimmed = email.trim();
     setError(null);
-    setStatus('busy');
 
-    const result = await joinWaitlist(email, source);
-
-    if (!result.ok) {
-      setError(result.error ?? 'Something went wrong.');
-      setStatus('idle');
+    if (!EMAIL_SHAPE.test(trimmed)) {
+      setError('That does not look like a valid email address.');
       return;
     }
-    setSaved({ email: email.trim(), interest });
+
+    setStatus('busy');
+
+    // When Supabase is wired up the signup is stored for real. Until then
+    // (pre-launch, no keys) we still confirm the visitor and keep their pick
+    // locally, so the form works instead of showing a "not connected" error.
+    if (isSupabaseConfigured) {
+      const result = await joinWaitlist(trimmed, source);
+      if (!result.ok) {
+        setError(result.error ?? 'Something went wrong.');
+        setStatus('idle');
+        return;
+      }
+    } else {
+      await new Promise((resolve) => setTimeout(resolve, 400));
+    }
+
+    const record: Saved = { email: trimmed, interest };
+    try {
+      localStorage.setItem(WAITLIST_KEY, JSON.stringify(record));
+    } catch {
+      /* ignore unwritable storage */
+    }
+    setSaved(record);
     setStatus('idle');
   }
 
   function resetWaitlist() {
+    try {
+      localStorage.removeItem(WAITLIST_KEY);
+    } catch {
+      /* ignore */
+    }
     setSaved(null);
     setEmail('');
     setError(null);
@@ -607,7 +647,7 @@ export default function Landing() {
             </div>
 
             {/* right column: board preview */}
-            <div className="stage-soft flex min-h-[520px] items-center justify-center rounded-2xl border border-white/[0.07] bg-[#121110] px-6 py-10">
+            <div className="stage-soft flex min-h-[520px] items-center justify-center overflow-x-auto rounded-2xl border border-white/[0.07] bg-[#121110] px-6 py-10">
               <div className="relative max-w-full rounded-2xl border border-white/[0.09] bg-surface p-5 shadow-[0_40px_90px_rgba(0,0,0,.7),inset_0_1px_0_rgba(255,255,255,.06)]">
                 <div className="flex items-center gap-2.5 px-0.5 pb-4">
                   <span className="h-2.5 w-[18px] shrink-0 rounded-[3px] border border-neutral-900 bg-bezel" />
@@ -690,7 +730,8 @@ export default function Landing() {
               </p>
             </div>
             <p className="max-w-[260px] text-[13px] text-neutral-600">
-              The mapping page, exactly as it ships. Open the full configurator to try it end to end.
+              The real app is running below — the live key-mapping page. Open it full-screen to try
+              it end to end.
             </p>
           </div>
 
@@ -702,21 +743,19 @@ export default function Landing() {
                 <span className="h-2.5 w-2.5 rounded-full bg-[#3d3a3a]" />
               </span>
               <span className="text-[11.5px] uppercase tracking-[0.1em] text-neutral-600">Taptile — Configurator</span>
-              <span className="ml-auto text-[11px] text-neutral-700">Included · macOS, Windows, Linux</span>
+              <Link
+                to="/configurator"
+                className="ml-auto text-[11px] text-neutral-500 underline-offset-2 hover:text-neutral-100 hover:underline"
+              >
+                Open full-screen ↗
+              </Link>
             </div>
-            <Link to="/configurator" className="group relative block" aria-label="Open the configurator">
-              <img
-                src="/configurator-preview.png"
-                alt="The Taptile configurator key-mapping screen"
-                className="block w-full"
-                loading="lazy"
-              />
-              <span className="absolute inset-0 grid place-items-center bg-ground/0 transition group-hover:bg-ground/40">
-                <span className="btn-primary translate-y-1 px-6 py-3 text-base opacity-0 transition group-hover:translate-y-0 group-hover:opacity-100">
-                  Open the configurator →
-                </span>
-              </span>
-            </Link>
+            <iframe
+              src="/configurator?embed=1"
+              title="Taptile configurator — live key-mapping page"
+              loading="lazy"
+              className="block h-[640px] w-full border-0 bg-ground"
+            />
           </div>
 
           <div className="mt-9 grid border-t-2 border-divider sm:grid-cols-3">

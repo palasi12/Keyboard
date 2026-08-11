@@ -34,7 +34,52 @@ function ScrollBehaviour() {
   return null;
 }
 
+const routes = (
+  <Routes>
+    <Route path="/" element={<Landing />} />
+    <Route path="/shop" element={<Shop />} />
+    <Route path="/product/:slug" element={<Product />} />
+    <Route path="/cart" element={<Cart />} />
+    <Route path="/configurator" element={<Configurator />} />
+    <Route path="/login" element={<Login />} />
+    <Route path="/forgot-password" element={<ForgotPassword />} />
+    <Route path="/reset-password" element={<ResetPassword />} />
+    <Route path="/order/success" element={<OrderSuccess />} />
+    <Route
+      path="/admin"
+      element={
+        <ProtectedRoute>
+          <Admin />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/account"
+      element={
+        <ProtectedRoute>
+          <Account />
+        </ProtectedRoute>
+      }
+    />
+    <Route path="*" element={<Navigate to="/" replace />} />
+  </Routes>
+);
+
 export default function App() {
+  const { search } = useLocation();
+  // `?embed=1` strips the site chrome so a page can be shown inside an iframe
+  // (the landing page frames the configurator this way).
+  const embedded = new URLSearchParams(search).get('embed') === '1';
+
+  if (embedded) {
+    return (
+      <div className="min-h-screen bg-ground">
+        <ScrollBehaviour />
+        {routes}
+      </div>
+    );
+  }
+
   return (
     <div className="flex min-h-screen flex-col bg-ground">
       <ScrollBehaviour />
@@ -52,34 +97,7 @@ export default function App() {
       <CartDrawer />
 
       <main id="main" className="flex-1">
-        <Routes>
-          <Route path="/" element={<Landing />} />
-          <Route path="/shop" element={<Shop />} />
-          <Route path="/product/:slug" element={<Product />} />
-          <Route path="/cart" element={<Cart />} />
-          <Route path="/configurator" element={<Configurator />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/order/success" element={<OrderSuccess />} />
-          <Route
-            path="/admin"
-            element={
-              <ProtectedRoute>
-                <Admin />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/account"
-            element={
-              <ProtectedRoute>
-                <Account />
-              </ProtectedRoute>
-            }
-          />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
+        {routes}
       </main>
 
       <Footer />
