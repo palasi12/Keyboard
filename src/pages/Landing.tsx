@@ -1,5 +1,4 @@
 import { useEffect, useState, type FormEvent } from 'react';
-import { Link } from 'react-router-dom';
 import { joinWaitlist } from '../lib/waitlist';
 import { isSupabaseConfigured } from '../lib/supabase';
 import Seo from '../components/Seo';
@@ -150,21 +149,6 @@ const INTERESTS = ['Taptile Nano', 'Taptile Mini', 'Taptile Pro', 'Not sure yet'
 
 const WAITLIST_KEY = 'taptile-waitlist-v1';
 const EMAIL_SHAPE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
-
-const APP_POINTS = [
-  {
-    title: 'Map anything',
-    body: 'Shortcuts, text snippets, macros, app launches — pick from the library or record your own combination.',
-  },
-  {
-    title: 'Label and light it',
-    body: 'Rename a key, choose its icon, set its colour. What you see in the app is what sits on the desk.',
-  },
-  {
-    title: 'Stored on the board',
-    body: 'Profiles live in the hardware. Plug it into another machine and the layout comes with it.',
-  },
-];
 
 const STEPS = [
   { title: 'Plug it in', body: 'USB-C into any computer. No drivers, no install, no account needed to use it.' },
@@ -715,64 +699,10 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* --------------------------- software (#software) --------------------------- */}
-      <section id="software" className="scroll-mt-20 border-t-2 border-divider py-[88px]">
-        <div className="mx-auto max-w-shell px-5">
-          <div className="flex flex-wrap items-end justify-between gap-8">
-            <div>
-              <p className="kicker-accent">02 — Software</p>
-              <h2 className="mt-3 text-3xl font-heading tracking-heading text-neutral-100 sm:text-4xl">
-                The app comes with it
-              </h2>
-              <p className="mt-4 max-w-lg text-neutral-400">
-                Taptile ships with the configurator — no subscription, no account required. Map a
-                key, name it, pick an icon, set the light. It writes straight to the board.
-              </p>
-            </div>
-            <p className="max-w-[260px] text-[13px] text-neutral-600">
-              The real app is running below — the live key-mapping page. Open it full-screen to try
-              it end to end.
-            </p>
-          </div>
-
-          <div className="mt-11 overflow-hidden rounded-2xl border border-white/10 bg-keycap shadow-[0_40px_90px_rgba(0,0,0,.6)]">
-            <div className="flex items-center gap-3.5 border-b border-hairline bg-white/[0.02] px-4 py-3">
-              <span className="flex gap-1.5">
-                <span className="h-2.5 w-2.5 rounded-full bg-[#3d3a3a]" />
-                <span className="h-2.5 w-2.5 rounded-full bg-[#3d3a3a]" />
-                <span className="h-2.5 w-2.5 rounded-full bg-[#3d3a3a]" />
-              </span>
-              <span className="text-[11.5px] uppercase tracking-[0.1em] text-neutral-600">Taptile — Configurator</span>
-              <Link
-                to="/configurator"
-                className="ml-auto text-[11px] text-neutral-500 underline-offset-2 hover:text-neutral-100 hover:underline"
-              >
-                Open full-screen ↗
-              </Link>
-            </div>
-            <iframe
-              src="/configurator?embed=1"
-              title="Taptile configurator — live key-mapping page"
-              loading="lazy"
-              className="block h-[640px] w-full border-0 bg-ground"
-            />
-          </div>
-
-          <div className="mt-9 grid border-t-2 border-divider sm:grid-cols-3">
-            {APP_POINTS.map((pt) => (
-              <div key={pt.title} className="border-hairline pr-7 pt-7 sm:border-r sm:last:border-r-0">
-                <p className="font-heading text-base text-neutral-100">{pt.title}</p>
-                <p className="mt-2 text-sm leading-relaxed text-neutral-500">{pt.body}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* ------------------------------- how (#how) ------------------------------- */}
       <section id="how" className="scroll-mt-20 border-t-2 border-divider py-[88px]">
         <div className="mx-auto max-w-shell px-5">
-          <p className="kicker-accent">03 — Setup</p>
+          <p className="kicker-accent">02 — Setup</p>
           <h2 className="mt-3 text-3xl font-heading tracking-heading text-neutral-100 sm:text-4xl">
             How it works
           </h2>
@@ -828,7 +758,7 @@ export default function Landing() {
       >
         <div className="mx-auto grid max-w-shell items-start gap-16 px-5 py-24 lg:grid-cols-2">
           <div>
-            <p className="kicker-accent">04 — Early access</p>
+            <p className="kicker-accent">03 — Early access</p>
             <h2 className="mt-3 text-4xl font-heading leading-[1.05] tracking-heading text-neutral-100 sm:text-5xl">
               Want one first?
             </h2>
@@ -944,7 +874,7 @@ export default function Landing() {
       {/* ------------------------------- faq (#faq) ------------------------------- */}
       <section id="faq" className="scroll-mt-20 border-t-2 border-divider py-[88px]">
         <div className="mx-auto max-w-[820px] px-5">
-          <p className="kicker-accent">05 — Questions</p>
+          <p className="kicker-accent">04 — Questions</p>
           <h2 className="mt-3 text-3xl font-heading tracking-heading text-neutral-100 sm:text-4xl">
             Questions
           </h2>
