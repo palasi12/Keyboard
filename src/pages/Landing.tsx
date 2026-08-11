@@ -204,8 +204,12 @@ const DEMO_H = 905;
 
 function SoftwareDemo() {
   const frameRef = useRef<HTMLDivElement>(null);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
   const [scale, setScale] = useState(0);
+  const [blockedMsg, setBlockedMsg] = useState(false);
+  const toastTimer = useRef<number | undefined>(undefined);
 
+  // Scale the fixed 1440×905 demo down to fit the section width.
   useEffect(() => {
     const el = frameRef.current;
     if (!el) return;
@@ -214,6 +218,72 @@ function SoftwareDemo() {
     const observer = new ResizeObserver(update);
     observer.observe(el);
     return () => observer.disconnect();
+  }, []);
+
+  // Demo lock: keep visitors on the sign-in → Test mode → Key Mapping path.
+  // The other left-rail sections (Dial Sensitivity, RGB Lighting, Advanced
+  // Keys, Firmware) and the Settings gear are dimmed and click-blocked, with an
+  // "Unavailable in demo mode" note. Applied from here because the iframe is
+  // same-origin; the demo file itself is left untouched.
+  useEffect(() => {
+    function flashBlocked() {
+      setBlockedMsg(true);
+      window.clearTimeout(toastTimer.current);
+      toastTimer.current = window.setTimeout(() => setBlockedMsg(false), 1900);
+    }
+
+    function applyLock() {
+      const iframe = iframeRef.current;
+      if (!iframe) return;
+      let doc: Document | null = null;
+      try {
+        doc = iframe.contentDocument;
+      } catch {
+        return; // cross-origin — shouldn't happen for a same-origin file
+      }
+      if (!doc || !doc.head) return;
+
+      if (!doc.getElementById('tt-demo-lock')) {
+        const style = doc.createElement('style');
+        style.id = 'tt-demo-lock';
+        style.textContent =
+          '.tt-navrow[data-nav]:not([data-nav="0"]){opacity:.4 !important;cursor:not-allowed !important}' +
+          '.tt-navrow[data-nav]:not([data-nav="0"]):hover{background:transparent !important}' +
+          '[title="Settings"]{opacity:.4 !important;cursor:not-allowed !important}';
+        doc.head.appendChild(style);
+      }
+
+      const marked = doc as Document & { __ttLocked?: boolean };
+      if (!marked.__ttLocked) {
+        marked.__ttLocked = true;
+        const guard = (event: Event) => {
+          const target = event.target as HTMLElement | null;
+          if (!target || !target.closest) return;
+          const navrow = target.closest('.tt-navrow');
+          const lockedNav = !!navrow && navrow.getAttribute('data-nav') !== '0';
+          const gear = target.closest('[title="Settings"]');
+          if (lockedNav || gear) {
+            event.preventDefault();
+            event.stopPropagation();
+            flashBlocked();
+          }
+        };
+        doc.addEventListener('mousedown', guard, true);
+        doc.addEventListener('click', guard, true);
+      }
+    }
+
+    // The demo renders asynchronously via support.js, so retry for a few seconds.
+    applyLock();
+    let tries = 0;
+    const id = window.setInterval(() => {
+      applyLock();
+      if (++tries > 24) window.clearInterval(id);
+    }, 250);
+    return () => {
+      window.clearInterval(id);
+      window.clearTimeout(toastTimer.current);
+    };
   }, []);
 
   return (
@@ -225,14 +295,7 @@ function SoftwareDemo() {
           <span className="h-2.5 w-2.5 rounded-full bg-[#3d3a3a]" />
         </span>
         <span className="text-[11.5px] uppercase tracking-[0.1em] text-neutral-600">Taptile — Configurator</span>
-        <a
-          href="/software-demo/Taptile.dc.html"
-          target="_blank"
-          rel="noreferrer"
-          className="ml-auto text-[11px] text-neutral-500 underline-offset-2 hover:text-neutral-100 hover:underline"
-        >
-          Open full-screen ↗
-        </a>
+        <span className="ml-auto text-[11px] uppercase tracking-[0.14em] text-neutral-700">Demo mode</span>
       </div>
       <div
         ref={frameRef}
@@ -240,6 +303,7 @@ function SoftwareDemo() {
         style={{ height: scale ? DEMO_H * scale : 560 }}
       >
         <iframe
+          ref={iframeRef}
           src="/software-demo/Taptile.dc.html"
           title="Taptile configurator demo — sign in, then the key-mapping page"
           loading="lazy"
@@ -251,6 +315,14 @@ function SoftwareDemo() {
             transform: `scale(${scale || 0.01})`,
           }}
         />
+
+        {blockedMsg && (
+          <div className="pointer-events-none absolute inset-x-0 bottom-4 flex justify-center">
+            <span className="rounded-full border border-white/15 bg-black/80 px-4 py-2 text-[13px] text-neutral-100 shadow-[0_10px_30px_rgba(0,0,0,.5)] backdrop-blur">
+              Unavailable in demo mode
+            </span>
+          </div>
+        )}
       </div>
     </div>
   );
