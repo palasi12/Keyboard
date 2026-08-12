@@ -48,8 +48,8 @@ export default function Footer() {
         </div>
 
         <p className="mt-10 border-t-2 border-divider pt-6 text-xs text-neutral-600">
-          © {new Date().getFullYear()} Taptile. Placeholder site — product details, prices and
-          policies are not final.
+          © {new Date().getFullYear()} Taptile. Pre-launch. Product details, prices and policies are not final and
+          nothing is on sale yet.
         </p>
       </div>
     </footer>

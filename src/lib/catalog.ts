@@ -5,6 +5,10 @@
  * site has something to render. Replace all of it with the real vendor listing
  * before launch — see docs/PRODUCTS.md.
  *
+ * `inStock` is false on every board on purpose: there is no supplier and no
+ * stock, so the product pages must not offer an "Add to basket" that implies
+ * an order can be placed.
+ *
  * Naming and model codes follow the configuration mockup, which shows
  * "Taptile Mini · TP-09D2" as the nine-key board.
  *
@@ -43,8 +47,8 @@ export function formatPrice(pence: number): string {
 
 export const PRODUCTS: Product[] = [
   {
-    slug: 'taptile-three',
-    name: 'Taptile Three',
+    slug: 'taptile-nano',
+    name: 'Taptile Nano',
     model: 'TP-03D0',
     tagline: 'Three keys. Start somewhere.',
     price: 2400,
@@ -68,15 +72,14 @@ export const PRODUCTS: Product[] = [
       'Braided USB-C cable included',
     ],
     swatch: '#2f2b2a',
-    inStock: true,
+    inStock: false,
   },
   {
-    slug: 'taptile-six',
-    name: 'Taptile Six',
+    slug: 'taptile-mini',
+    name: 'Taptile Mini',
     model: 'TP-06D1',
     tagline: 'Six keys and a dial.',
     price: 3900,
-    compareAt: 4900,
     keyCount: 6,
     dialCount: 1,
     description:
@@ -97,11 +100,11 @@ export const PRODUCTS: Product[] = [
       'Hot-swappable switches, no soldering',
     ],
     swatch: '#3a3634',
-    inStock: true,
+    inStock: false,
   },
   {
-    slug: 'taptile-mini',
-    name: 'Taptile Mini',
+    slug: 'taptile-pro',
+    name: 'Taptile Pro',
     model: 'TP-09D2',
     tagline: 'Nine keys, two dials.',
     price: 5400,
@@ -125,7 +128,7 @@ export const PRODUCTS: Product[] = [
       'Hot-swappable switches, no soldering',
     ],
     swatch: '#ec3013',
-    inStock: true,
+    inStock: false,
   },
 ];
 

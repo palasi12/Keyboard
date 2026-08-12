@@ -91,12 +91,12 @@ export default function Product() {
                 Add to basket
               </button>
             ) : (
-              <button type="button" disabled className="btn-secondary w-full py-3 text-base sm:w-auto sm:px-10">
-                Out of stock
-              </button>
+              <Link to="/#waitlist" className="btn-primary w-full justify-center py-3 text-base sm:w-auto sm:px-10">
+                Join the waitlist
+              </Link>
             )}
             <p className="mt-3 text-sm text-neutral-500">
-              Free UK delivery over £30 · 30-day returns
+              Not on sale yet — join the waitlist and you&apos;ll hear about the first batch.
             </p>
           </div>
 
