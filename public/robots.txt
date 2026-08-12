@@ -7,4 +7,4 @@ Disallow: /admin
 Disallow: /cart
 Disallow: /order/
 
-Sitemap: /sitemap.xml
+Sitemap: https://trytaptile.com/sitemap.xml

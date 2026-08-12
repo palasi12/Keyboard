@@ -16,80 +16,6 @@ import Seo from '../components/Seo';
 
 /* --------------------------------- data --------------------------------- */
 
-const LABELS: Record<string, string> = {
-  scrub: 'Scrub',
-  cut: 'Cut',
-  ripple: 'Ripple Del',
-  undo: 'Undo',
-  redo: 'Redo',
-  save: 'Save',
-  zoomin: 'Zoom In',
-  zoomout: 'Zoom Out',
-  play: 'Play',
-  mark: 'Mark I/O',
-  layer: 'Layer',
-  crop: 'Crop',
-  bright: 'Exposure',
-  contrast: 'Contrast',
-  fx: 'Effect',
-  vol: 'Volume',
-};
-
-interface DemoProduct {
-  slug: string;
-  name: string;
-  model: string;
-  tagline: string;
-  cols: number;
-  keySize: number;
-  keys: string[];
-  dials: string[];
-  description: string;
-}
-
-const DEMO_PRODUCTS: DemoProduct[] = [
-  {
-    slug: 'nano',
-    name: 'Taptile Nano',
-    model: 'TP-04D1',
-    tagline: 'Four keys, one dial.',
-    cols: 2,
-    keySize: 66,
-    keys: ['play', 'cut', 'undo', 'save'],
-    dials: ['vol'],
-    description:
-      'The smallest board. Four mechanical keys for the four things you do a hundred times a day, and one encoder for volume.',
-  },
-  {
-    slug: 'mini',
-    name: 'Taptile Mini',
-    model: 'TP-09D2',
-    tagline: 'Nine keys, two dials.',
-    cols: 3,
-    keySize: 74,
-    keys: ['scrub', 'cut', 'ripple', 'mark', 'undo', 'redo', 'save', 'zoomin', 'play'],
-    dials: ['scrub', 'vol'],
-    description:
-      'A full 3×3 grid with two encoders — scrub and volume out of the box. The one most people should start with.',
-  },
-  {
-    slug: 'pro',
-    name: 'Taptile Pro',
-    model: 'TP-15D3',
-    tagline: 'Fifteen keys, three dials.',
-    cols: 5,
-    keySize: 66,
-    keys: [
-      'scrub', 'cut', 'ripple', 'mark', 'play',
-      'undo', 'redo', 'save', 'zoomin', 'zoomout',
-      'layer', 'fx', 'bright', 'contrast', 'crop',
-    ],
-    dials: ['scrub', 'vol', 'bright'],
-    description:
-      'For a timeline you live in. Fifteen keys, three encoders, and enough room to keep a whole edit on the desk.',
-  },
-];
-
 interface Profile {
   name: string;
   keys: Array<[string, string]>;
@@ -339,9 +265,6 @@ export default function Landing() {
   const [pressed, setPressed] = useState(4);
   const [pressTick, setPressTick] = useState(0);
 
-  // Range picker — which hardware variant is selected.
-  const [rangeIndex, setRangeIndex] = useState(1);
-
   // Waitlist — shared across both forms, exactly like the mockup.
   const [email, setEmail] = useState('');
   const [interest, setInterest] = useState('Not sure yet');
@@ -362,8 +285,6 @@ export default function Landing() {
 
   const active = PROFILES[profile]!;
   const pressedKey = active.keys[pressed] ?? active.keys[0]!;
-  const range = DEMO_PRODUCTS[rangeIndex]!;
-  const rangeChosen = interest === range.name;
 
   async function submit(event: FormEvent, source: string) {
     event.preventDefault();
@@ -413,13 +334,7 @@ export default function Landing() {
     setInterest('Not sure yet');
   }
 
-  function chooseRange(index: number) {
-    setRangeIndex(index);
-    setInterest(DEMO_PRODUCTS[index]!.name);
-  }
-
   function jumpToWaitlist() {
-    setInterest(range.name);
     const el = document.getElementById('waitlist');
     if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 70, behavior: 'smooth' });
   }
@@ -659,187 +574,12 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ---------------------------- range (#boards) ---------------------------- */}
-      <section id="boards" className="scroll-mt-20 py-[88px]">
-        <div className="mx-auto max-w-shell px-5">
-          <div className="flex flex-wrap items-end justify-between gap-8">
-            <div>
-              <p className="kicker-accent">01 — Range</p>
-              <h2 className="mt-3 text-3xl font-heading tracking-heading text-neutral-100 sm:text-4xl">
-                Pick your size
-              </h2>
-              <p className="mt-4 max-w-lg text-neutral-400">
-                Four, nine or fifteen keys. All three run the same configurator and store the layout
-                on the board — you just decide how much desk you want to give it.
-              </p>
-            </div>
-            <p className="max-w-[260px] text-[13px] text-neutral-600">
-              Nothing is on sale yet. Tell us which one you want and you&apos;ll hear about that batch first.
-            </p>
-          </div>
-
-          <div className="mt-12 grid items-start gap-12 lg:grid-cols-[minmax(280px,380px)_minmax(0,1fr)]">
-            {/* left column: picker + active details */}
-            <div className="flex flex-col">
-              <div className="flex flex-wrap gap-[18px]">
-                {DEMO_PRODUCTS.map((p, i) => {
-                  const on = i === rangeIndex;
-                  return (
-                    <button
-                      key={p.slug}
-                      type="button"
-                      onClick={() => chooseRange(i)}
-                      aria-pressed={on}
-                      className="flex flex-col items-center gap-3"
-                    >
-                      <span
-                        className="relative grid h-[104px] w-[104px] place-items-center rounded-full border transition-all duration-200"
-                        style={{
-                          borderColor: on ? 'rgba(255,255,255,.5)' : 'rgba(255,255,255,.12)',
-                          background: on
-                            ? 'linear-gradient(150deg, rgba(255,255,255,.16), rgba(255,255,255,.05))'
-                            : 'linear-gradient(150deg, rgba(255,255,255,.06), rgba(255,255,255,.02))',
-                          boxShadow: on
-                            ? '0 18px 40px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.3)'
-                            : '0 8px 20px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.12)',
-                          transform: on ? 'scale(1.06)' : 'scale(1)',
-                        }}
-                      >
-                        <span
-                          className="pointer-events-none absolute inset-px rounded-full"
-                          style={{ background: 'linear-gradient(160deg, rgba(255,255,255,.16), rgba(255,255,255,0) 46%)' }}
-                        />
-                        <span className="grid gap-[3px]" style={{ gridTemplateColumns: `repeat(${p.cols}, 7px)` }}>
-                          {p.keys.map((k, di) => (
-                            <span
-                              key={`${k}-${di}`}
-                              className="h-[7px] w-[7px] rounded-[2px]"
-                              style={{
-                                background: on
-                                  ? di === 0
-                                    ? '#f8f4f4'
-                                    : 'rgba(248,244,244,.62)'
-                                  : 'rgba(248,244,244,.3)',
-                              }}
-                            />
-                          ))}
-                        </span>
-                      </span>
-                      <span className="flex flex-col items-center gap-0.5">
-                        <span
-                          className="text-sm font-heading"
-                          style={{ color: on ? '#f8f4f4' : '#7d7979' }}
-                        >
-                          {p.name.replace('Taptile ', '')}
-                        </span>
-                        <span
-                          className="text-[11px] tracking-[0.02em]"
-                          style={{ color: on ? '#9b9797' : '#605d5d' }}
-                        >
-                          {p.keys.length} keys · {p.dials.length} dial{p.dials.length > 1 ? 's' : ''}
-                        </span>
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-
-              <div className="mt-8 flex items-baseline gap-3 border-t border-white/10 pt-5">
-                <h3 className="text-2xl font-heading tracking-heading text-neutral-100">{range.name}</h3>
-                <span className="ml-auto text-[11px] tracking-[0.12em] text-neutral-700">{range.model}</span>
-              </div>
-
-              <p className="mt-3.5 text-sm leading-relaxed text-neutral-500">{range.description}</p>
-
-              <button
-                type="button"
-                onClick={jumpToWaitlist}
-                className="mt-[22px] inline-flex w-full items-center justify-center gap-2 rounded-full border px-[18px] py-3.5 text-sm font-heading transition"
-                style={{
-                  borderColor: rangeChosen ? '#f8f4f4' : 'rgba(255,255,255,.12)',
-                  background: rangeChosen ? '#f8f4f4' : 'rgba(255,255,255,.02)',
-                  color: rangeChosen ? '#131111' : '#f8f4f4',
-                }}
-              >
-                {rangeChosen ? 'On your list ✓' : `Tell me about the ${range.name.replace('Taptile ', '')}`}
-              </button>
-            </div>
-
-            {/* right column: board preview */}
-            <div className="stage-soft flex min-h-[520px] items-center justify-center overflow-x-auto rounded-2xl border border-white/[0.07] bg-[#121110] px-6 py-10">
-              <div className="relative max-w-full rounded-2xl border border-white/[0.09] bg-surface p-5 shadow-[0_40px_90px_rgba(0,0,0,.7),inset_0_1px_0_rgba(255,255,255,.06)]">
-                <div className="flex items-center gap-2.5 px-0.5 pb-4">
-                  <span className="h-2.5 w-[18px] shrink-0 rounded-[3px] border border-neutral-900 bg-bezel" />
-                  <span className="whitespace-nowrap text-[10px] font-heading uppercase tracking-[0.16em] text-neutral-400">
-                    {range.name}
-                  </span>
-                  <span className="ml-auto whitespace-nowrap text-[9.5px] tracking-[0.12em] text-neutral-700">
-                    {range.model}
-                  </span>
-                  <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#3ec95f]" />
-                </div>
-
-                <div
-                  className="grid justify-center gap-2.5"
-                  style={{
-                    gridTemplateColumns: `repeat(${range.cols}, ${range.keySize}px)`,
-                    gridAutoRows: `${range.keySize}px`,
-                  }}
-                >
-                  {range.keys.map((k, i) => (
-                    <div
-                      key={`${k}-${i}`}
-                      className="rounded-lg border border-white/[0.07] bg-bezel p-[3px] shadow-[0_6px_14px_rgba(0,0,0,.5),inset_0_1px_0_rgba(255,255,255,.06)]"
-                    >
-                      <div className="relative grid h-full w-full place-items-center rounded-md bg-keycap">
-                        <span className="absolute left-1.5 top-1.5 text-[8.5px] font-heading tracking-[0.1em] text-[#3d3a3a]">
-                          K{i + 1}
-                        </span>
-                        <span className="px-1.5 text-center text-[10.5px] leading-tight text-neutral-400">
-                          {LABELS[k] ?? k}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="my-5 mb-3.5 flex items-center gap-2.5">
-                  <span className="text-[9.5px] uppercase tracking-[0.16em] text-neutral-700">Rotary</span>
-                  <span className="h-px flex-1 bg-white/[0.08]" />
-                </div>
-
-                <div className="flex flex-wrap justify-center gap-[26px]">
-                  {range.dials.map((d, i) => (
-                    <div key={`${d}-${i}`} className="flex flex-col items-center gap-1.5">
-                      <span
-                        className="grid h-[74px] w-[74px] place-items-center rounded-full border-2 border-bezel bg-bezel p-1 shadow-[0_6px_14px_rgba(0,0,0,.5),inset_0_1px_0_rgba(255,255,255,.06)]"
-                      >
-                        <span
-                          className="grid h-full w-full place-items-center rounded-full bg-keycap text-[10px] text-neutral-400"
-                          style={{
-                            backgroundImage:
-                              'repeating-conic-gradient(from 0deg, rgba(255,255,255,.07) 0deg 3deg, transparent 3deg 9deg)',
-                          }}
-                        >
-                          {LABELS[d] ?? d}
-                        </span>
-                      </span>
-                      <span className="text-[8.5px] font-heading tracking-[0.14em] text-neutral-700">D{i + 1}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* --------------------------- software (#software) --------------------------- */}
       <section id="software" className="scroll-mt-20 border-t-2 border-divider py-[88px]">
         <div className="mx-auto max-w-shell px-5">
           <div className="flex flex-wrap items-end justify-between gap-8">
             <div>
-              <p className="kicker-accent">02 — Software</p>
+              <p className="kicker-accent">01 — Software</p>
               <h2 className="mt-3 text-3xl font-heading tracking-heading text-neutral-100 sm:text-4xl">
                 The app comes with it
               </h2>
@@ -861,7 +601,7 @@ export default function Landing() {
       {/* ------------------------------- how (#how) ------------------------------- */}
       <section id="how" className="scroll-mt-20 border-t-2 border-divider py-[88px]">
         <div className="mx-auto max-w-shell px-5">
-          <p className="kicker-accent">03 — Setup</p>
+          <p className="kicker-accent">02 — Setup</p>
           <h2 className="mt-3 text-3xl font-heading tracking-heading text-neutral-100 sm:text-4xl">
             How it works
           </h2>
@@ -917,7 +657,7 @@ export default function Landing() {
       >
         <div className="mx-auto grid max-w-shell items-start gap-16 px-5 py-24 lg:grid-cols-2">
           <div>
-            <p className="kicker-accent">04 — Early access</p>
+            <p className="kicker-accent">03 — Early access</p>
             <h2 className="mt-3 text-4xl font-heading leading-[1.05] tracking-heading text-neutral-100 sm:text-5xl">
               Want one first?
             </h2>
@@ -1033,7 +773,7 @@ export default function Landing() {
       {/* ------------------------------- faq (#faq) ------------------------------- */}
       <section id="faq" className="scroll-mt-20 border-t-2 border-divider py-[88px]">
         <div className="mx-auto max-w-[820px] px-5">
-          <p className="kicker-accent">05 — Questions</p>
+          <p className="kicker-accent">04 — Questions</p>
           <h2 className="mt-3 text-3xl font-heading tracking-heading text-neutral-100 sm:text-4xl">
             Questions
           </h2>
