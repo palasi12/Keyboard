@@ -47,5 +47,43 @@ export async function joinWaitlist(email: string, source = 'landing'): Promise<W
     return { ok: false, error: 'Could not save that just now. Please try again in a moment.' };
   }
 
+  // Fire the confirmation email. Deliberately not awaited: the address is
+  // already saved, which is the part that matters, and blocking the success
+  // state on an email send makes the form feel slow — or worse, shows an error
+  // for something that actually worked.
+  void sendConfirmation(trimmed, source);
+
   return { ok: true };
+}
+
+/**
+ * Ask the edge function to send the "you're on the list" email.
+ *
+ * The function holds the Resend API key. It cannot live here: everything in
+ * src/ is compiled into the bundle every visitor downloads.
+ *
+ * Silent on failure by design — a missed confirmation email is a small problem,
+ * and telling someone their signup failed when it did not is a bigger one.
+ */
+async function sendConfirmation(email: string, source: string): Promise<void> {
+  const projectUrl = import.meta.env['VITE_SUPABASE_URL'] as string | undefined;
+  const anonKey = import.meta.env['VITE_SUPABASE_ANON_KEY'] as string | undefined;
+  if (!projectUrl || !anonKey) return;
+
+  // Source looks like "landing:Taptile Nano" — the part after the colon is
+  // whichever board they picked.
+  const interest = source.includes(':') ? source.slice(source.indexOf(':') + 1) : 'Not sure yet';
+
+  try {
+    await fetch(`${projectUrl}/functions/v1/waitlist-confirmation`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${anonKey}`,
+      },
+      body: JSON.stringify({ email, interest }),
+    });
+  } catch {
+    /* nothing useful to do here — see the note above */
+  }
 }
