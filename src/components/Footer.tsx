@@ -18,8 +18,8 @@ export default function Footer() {
               <p className="font-semibold text-neutral-100">Shop</p>
               <ul className="mt-3 space-y-2 text-neutral-500">
                 <li>
-                  <Link to="/shop" className="transition hover:text-neutral-100">
-                    All keyboards
+                  <Link to="/product/taptile-mini" className="transition hover:text-neutral-100">
+                    Taptile Mini
                   </Link>
                 </li>
                 <li>

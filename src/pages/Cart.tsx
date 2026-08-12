@@ -29,8 +29,8 @@ export default function Cart() {
         <Seo title="Your basket" description="Your Taptile basket." path="/cart" />
         <h1 className="text-2xl font-heading text-neutral-100">Your basket is empty</h1>
         <p className="mt-3 text-neutral-400">Have a look at what we make.</p>
-        <Link to="/shop" className="btn-primary mt-7">
-          Shop keyboards
+        <Link to="/product/taptile-mini" className="btn-primary mt-7">
+          See the Mini
         </Link>
       </section>
     );

@@ -35,8 +35,8 @@ export default function Account() {
             Order history appears here once checkout is connected and Stripe webhooks are
             writing orders to the database.
           </p>
-          <Link to="/shop" className="btn-secondary mt-5">
-            Start shopping
+          <Link to="/product/taptile-mini" className="btn-secondary mt-5">
+            See the Mini
           </Link>
         </div>
 

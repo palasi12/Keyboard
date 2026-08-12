@@ -21,7 +21,6 @@ export function Logo({ className = '', size = 44 }: { className?: string; size?:
 }
 
 const LINKS = [
-  { to: '/shop', label: 'Shop' },
   { to: '/configurator', label: 'Configurator' },
   { to: '/#how', label: 'How it works' },
   { to: '/#faq', label: 'FAQ' },

@@ -14,8 +14,8 @@ export default function Product() {
       <section className="mx-auto max-w-2xl px-5 py-24 text-center">
         <Seo title="Product not found" description="That product does not exist." />
         <h1 className="text-2xl font-heading text-neutral-100">We could not find that product</h1>
-        <Link to="/shop" className="btn-primary mt-6">
-          Back to the shop
+        <Link to="/" className="btn-primary mt-6">
+          Back to the site
         </Link>
       </section>
     );
@@ -30,8 +30,8 @@ export default function Product() {
         image="/og.svg"
       />
       <nav className="mb-8 text-sm text-neutral-500">
-        <Link to="/shop" className="transition hover:text-neutral-100">
-          Shop
+        <Link to="/" className="transition hover:text-neutral-100">
+          Home
         </Link>
         <span className="mx-2">/</span>
         <span className="text-neutral-400">{product.name}</span>

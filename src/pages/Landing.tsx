@@ -7,9 +7,9 @@ import Seo from '../components/Seo';
  * Landing page (V5).
  *
  * The hero board, the range picker and the profile marquee run on the
- * self-contained demo data below — deliberately kept out of `lib/catalog.ts`
+ * self-contained demo data below — deliberately self-contained
  * so the interactive toy here can drift from the real shop listing without
- * touching /shop or /product. The two email forms go through the real
+ * touching any commerce route. The two email forms go through the real
  * `joinWaitlist` RPC; whichever board the visitor picked rides along in the
  * `source` field.
  */

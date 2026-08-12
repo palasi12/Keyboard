@@ -16,7 +16,7 @@ import { useEffect } from 'react';
 interface SeoProps {
   title: string;
   description: string;
-  /** Path-relative canonical, e.g. "/shop". */
+  /** Path-relative canonical, e.g. "/configurator". */
   path?: string;
   image?: string;
 }

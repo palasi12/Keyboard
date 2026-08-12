@@ -5,7 +5,6 @@ import Footer from './components/Footer';
 import CartDrawer from './components/CartDrawer';
 import ProtectedRoute from './components/ProtectedRoute';
 import Landing from './pages/Landing';
-import Shop from './pages/Shop';
 import Product from './pages/Product';
 import Cart from './pages/Cart';
 import Login from './pages/Login';
@@ -37,7 +36,6 @@ function ScrollBehaviour() {
 const routes = (
   <Routes>
     <Route path="/" element={<Landing />} />
-    <Route path="/shop" element={<Shop />} />
     <Route path="/product/:slug" element={<Product />} />
     <Route path="/cart" element={<Cart />} />
     <Route path="/configurator" element={<Configurator />} />

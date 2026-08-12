@@ -26,8 +26,8 @@ A single HTTPS endpoint that accepts:
 {
   "items": [{ "slug": "taptile-six", "quantity": 2 }],
   "email": "customer@example.com",
-  "successUrl": "https://trytaptile.com/order/success",
-  "cancelUrl": "https://trytaptile.com/cart"
+  "successUrl": "https://www.trytaptile.com/order/success",
+  "cancelUrl": "https://www.trytaptile.com/cart"
 }
 ```
 
