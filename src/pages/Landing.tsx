@@ -101,11 +101,11 @@ const FAQ = [
   },
   {
     q: 'Does it work with my computer?',
-    a: 'Yes — Windows, macOS and Linux. The board stores your layout on itself, so it behaves the same on any machine you plug it into.',
+    a: 'Yes — Windows, macOS and Linux. The board stores your layout on itself, so it behaves the same on any machine you plug it into. Remapping is done in the browser, which needs Chrome or Edge; Firefox and Safari do not support WebHID yet.',
   },
   {
     q: 'Do I need to solder anything?',
-    a: 'No. Switches are hot-swappable, so you can pull them out and try different ones by hand.',
+    a: 'No. Every board arrives assembled and tested — plug it in and start mapping keys. The switches are soldered to the board, so changing them later is a desoldering job rather than a pull-and-push.',
   },
   {
     q: 'When can I buy one?',
@@ -345,7 +345,7 @@ export default function Landing() {
     <>
       <Seo
         title="Taptile — programmable mini keyboards"
-        description="Programmable mini keyboards for the shortcuts you use every day. Hot-swappable, USB-C, Windows and macOS. Nano, Mini or Pro."
+        description="Programmable mini keyboards for the shortcuts you use every day. USB-C, Windows and macOS, remapped in the browser. Nano, Mini or Pro."
         path="/"
         image="/og.svg"
       />
@@ -432,7 +432,7 @@ export default function Landing() {
             <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-neutral-500">
               <span>Windows, macOS, Linux</span>
               <span className="h-3 w-px bg-divider" />
-              <span>Hot-swappable switches</span>
+              <span>Remapped in the browser</span>
               <span className="h-3 w-px bg-divider" />
               <span>Layout stored on the board</span>
             </div>
