@@ -13,7 +13,10 @@ import OrderSuccess from './pages/OrderSuccess';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import Admin from './pages/Admin';
+import AdminUpdates from './pages/AdminUpdates';
 import Configurator from './pages/Configurator';
+import Updates from './pages/Updates';
+import Update from './pages/Update';
 
 /** Jump to the top on navigation, or to the #anchor when there is one. */
 function ScrollBehaviour() {
@@ -39,6 +42,8 @@ const routes = (
     <Route path="/product/:slug" element={<Product />} />
     <Route path="/cart" element={<Cart />} />
     <Route path="/configurator" element={<Configurator />} />
+    <Route path="/updates" element={<Updates />} />
+    <Route path="/updates/:slug" element={<Update />} />
     <Route path="/login" element={<Login />} />
     <Route path="/forgot-password" element={<ForgotPassword />} />
     <Route path="/reset-password" element={<ResetPassword />} />
@@ -48,6 +53,14 @@ const routes = (
       element={
         <ProtectedRoute>
           <Admin />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/admin/updates"
+      element={
+        <ProtectedRoute>
+          <AdminUpdates />
         </ProtectedRoute>
       }
     />

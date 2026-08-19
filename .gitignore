@@ -22,3 +22,7 @@ coverage/
 
 # Claude Code local settings
 .claude/
+
+# Python bytecode from the hardware scripts
+__pycache__/
+*.pyc

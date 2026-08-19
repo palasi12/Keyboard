@@ -119,6 +119,9 @@ export default function Admin() {
         </div>
 
         <div className="flex flex-wrap gap-2.5">
+          <Link to="/admin/updates" className="btn-secondary py-2">
+            Manage updates
+          </Link>
           <button type="button" onClick={() => void load()} className="btn-secondary py-2">
             Refresh
           </button>
