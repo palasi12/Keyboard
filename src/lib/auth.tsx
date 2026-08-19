@@ -15,6 +15,8 @@ interface AuthResult {
   error?: string;
   /** Set when sign-up succeeded but the user must confirm their email. */
   needsEmailConfirmation?: boolean;
+  /** The address already has an account. Supabase sent nothing. */
+  alreadyRegistered?: boolean;
 }
 
 interface AuthContextValue {
@@ -88,6 +90,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       options: { emailRedirectTo: `${window.location.origin}/account` },
     });
     if (error) return { ok: false, error: friendlyAuthError(error.message) };
+
+    // Signing up an address that already exists does NOT return an error.
+    // Supabase deliberately fakes a success so an attacker cannot use this
+    // endpoint to discover which addresses are registered. It returns no
+    // session, an obfuscated user, and -- the one reliable tell -- an EMPTY
+    // identities array. It also sends no email.
+    //
+    // Without this check the app reads "no session" as "confirmation email
+    // sent" and tells the person to go and look for a message that does not
+    // exist. That is exactly what happened to taptile.admin@gmail.com: the
+    // account had been created via Google 35 seconds earlier, so the email
+    // signup was a repeat, nothing was sent, and the UI still said to check
+    // the inbox.
+    if (data.session === null && data.user && data.user.identities?.length === 0) {
+      return { ok: true, alreadyRegistered: true };
+    }
+
     // No session back means the project has email confirmation switched on.
     return { ok: true, needsEmailConfirmation: data.session === null };
   }, []);

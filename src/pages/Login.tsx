@@ -70,6 +70,17 @@ export default function Login() {
       return;
     }
 
+    if (result.alreadyRegistered) {
+      // switchMode clears error and notice, so flip the mode FIRST and set the
+      // message after -- the other order looks right and silently shows nothing.
+      switchMode('signin');
+      setError(
+        'That address already has an account. Sign in instead — or use ' +
+          'Continue with Google if that is how you set it up.',
+      );
+      return;
+    }
+
     if (result.needsEmailConfirmation) {
       setNotice(`Check ${email} for a confirmation link, then sign in.`);
       setAwaitingConfirmation(true);
