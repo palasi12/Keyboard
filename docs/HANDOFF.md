@@ -232,8 +232,12 @@ Supabase project: `jjndhbyawnbohobjwzue`.
 
 **Infrastructure:**
 
-- [ ] `hello@trytaptile.com` can send but has **no inbox**. Cloudflare Email
-      Routing, 10 minutes, free. It is on the site footer and business card.
+- [x] Contact address is now `hello.taptile@gmail.com` — a real Gmail inbox, so
+      the dead-address problem is gone. `hello@trytaptile.com` stays as the
+      Resend **sender** only (a gmail.com From would fail SPF/DKIM and land in
+      spam); the edge function sets `reply_to` to the Gmail address.
+- [ ] Business cards still print `hello@trytaptile.com` — either reprint or set
+      up Cloudflare Email Routing to forward it to the Gmail.
 - [ ] Remove `propalasi80-debug` as a repo collaborator
 - [ ] Supabase Site URL → `https://www.trytaptile.com`
 

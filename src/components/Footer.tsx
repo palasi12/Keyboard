@@ -38,9 +38,24 @@ export default function Footer() {
                   </Link>
                 </li>
                 <li>
-                  <a href="mailto:hello@trytaptile.com" className="transition hover:text-neutral-100">
+                  <a href="mailto:hello.taptile@gmail.com" className="transition hover:text-neutral-100">
                     Contact
                   </a>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <p className="font-semibold text-neutral-100">Legal</p>
+              <ul className="mt-3 space-y-2 text-neutral-500">
+                <li>
+                  <Link to="/privacy" className="transition hover:text-neutral-100">
+                    Privacy Policy
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/terms" className="transition hover:text-neutral-100">
+                    Terms of Service
+                  </Link>
                 </li>
               </ul>
             </div>

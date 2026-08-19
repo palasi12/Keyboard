@@ -20,15 +20,21 @@ Then → **Authentication → Emails**, paste in:
 
 Test it by signing up with a real address and clicking the link.
 
-## 2. An inbox for hello@trytaptile.com — blocking
+## 2. Contact address — resolved
 
-`hello@trytaptile.com` is printed in the site footer and set as the reply-to on
-every email. Resend **only sends**. Mail to that address currently goes nowhere.
+The contact address is `hello.taptile@gmail.com`: a real Gmail inbox, so mail
+sent to it actually arrives. It is what the footer, the privacy policy and the
+terms all point at.
 
-Cheapest fix: Cloudflare Email Routing (free) forwards it to your Gmail. Vercel
-may also offer forwarding in the DNS panel you already have open.
+`hello@trytaptile.com` remains the Resend **sender** and nothing else. That
+split is deliberate — Resend can only sign mail for a domain you control, so a
+`gmail.com` From address would fail SPF and DKIM and get filtered as spoofed.
+The edge function sets `reply_to` to the Gmail address, so a reply to the
+waitlist confirmation reaches a person.
 
-A contact address that silently swallows mail is worse than no contact address.
+Still open: `hello@trytaptile.com` has no inbox, so anyone mailing the address
+on the old business cards gets nothing. Cloudflare Email Routing (free) will
+forward it to the Gmail in about ten minutes.
 
 ## 3. Waitlist confirmation email
 

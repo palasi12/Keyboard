@@ -65,7 +65,11 @@ Deno.serve(async (request: Request) => {
       'Idempotency-Key': `waitlist-${email}`,
     },
     body: JSON.stringify({
+      // Sender stays on the verified domain: Resend can only sign mail
+      // for domains you control, and a gmail.com From would fail SPF and
+      // DKIM and land in spam. reply_to is what gets a reply to a human.
       from: 'Taptile <hello@trytaptile.com>',
+      reply_to: 'hello.taptile@gmail.com',
       to: [email],
       template: 'waitlist-confirmation',
       variables: {

@@ -17,6 +17,8 @@ import AdminUpdates from './pages/AdminUpdates';
 import Configurator from './pages/Configurator';
 import Updates from './pages/Updates';
 import Update from './pages/Update';
+import Privacy from './pages/Privacy';
+import Terms from './pages/Terms';
 
 /** Jump to the top on navigation, or to the #anchor when there is one. */
 function ScrollBehaviour() {
@@ -44,6 +46,8 @@ const routes = (
     <Route path="/configurator" element={<Configurator />} />
     <Route path="/updates" element={<Updates />} />
     <Route path="/updates/:slug" element={<Update />} />
+    <Route path="/privacy" element={<Privacy />} />
+    <Route path="/terms" element={<Terms />} />
     <Route path="/login" element={<Login />} />
     <Route path="/forgot-password" element={<ForgotPassword />} />
     <Route path="/reset-password" element={<ResetPassword />} />
