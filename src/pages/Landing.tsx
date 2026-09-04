@@ -3,6 +3,8 @@ import { joinWaitlist } from '../lib/waitlist';
 import { isSupabaseConfigured } from '../lib/supabase';
 import Seo from '../components/Seo';
 import { LogoMark } from '../components/ProductArt';
+import CompatibilityCarousel, { type CompatApp } from '../components/CompatibilityCarousel';
+import BuildQuality from '../components/BuildQuality';
 
 /**
  * Landing page (V5).
@@ -67,10 +69,11 @@ const PROFILES: Profile[] = [
 ];
 
 const MARQUEE_EXTRA = ['Lightroom', 'DaVinci Resolve', 'After Effects', 'Ableton'];
-const MARQUEE = (() => {
-  const one = [...PROFILES.map((p) => p.name), ...MARQUEE_EXTRA];
-  return [...one, ...one];
-})();
+
+/* Names only. Read the header of CompatibilityCarousel before adding a logo. */
+const COMPAT_APPS: CompatApp[] = [...PROFILES.map((p) => p.name), ...MARQUEE_EXTRA].map(
+  (name) => ({ name }),
+);
 
 const INTERESTS = ['Taptile Dialect', 'Just following along'];
 
@@ -114,7 +117,7 @@ const FAQ = [
   },
   {
     q: 'What is actually in the box?',
-    a: 'The Taptile Dialect: nine Gateron tactile switches and two rotary encoders with machined aluminium caps, in a 3D-printed case on a cast acrylic base that doubles as the diffuser for the underglow. Designed and built in New Zealand.',
+    a: 'The Taptile Dialect: nine Gateron tactile switches and two rotary encoders with machined aluminium caps, on XDA keycaps, in a 3D-printed case on a laser-cut acrylic base that doubles as the diffuser for the underglow. Designed and built in New Zealand.',
   },
 ];
 
@@ -471,6 +474,9 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* ------------------------------ build quality ------------------------------ */}
+      <BuildQuality />
+
       {/* -------------------------------- dialects -------------------------------- */}
       <section id="dialects" className="relative overflow-hidden border-t border-hairline">
         <div className="aurora-soft pointer-events-none absolute inset-0" aria-hidden="true" />
@@ -611,24 +617,8 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* --------------------------------- marquee --------------------------------- */}
-      <section className="overflow-hidden border-b border-hairline">
-        <div className="mx-auto flex max-w-shell items-center gap-6 px-5 py-[18px]">
-          <p className="shrink-0 text-[10px] uppercase tracking-[0.16em] text-neutral-500">Profiles for</p>
-          <div
-            className="relative flex-1 overflow-hidden"
-            style={{ maskImage: 'linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent)' }}
-          >
-            <div className="flex w-max animate-marquee gap-10 hover:[animation-play-state:paused]">
-              {MARQUEE.map((app, i) => (
-                <span key={`${app}-${i}`} className="whitespace-nowrap text-sm text-neutral-600">
-                  {app}
-                </span>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* ------------------------------ compatibility ------------------------------ */}
+      <CompatibilityCarousel apps={COMPAT_APPS} />
 
       {/* --------------------------- software (#software) --------------------------- */}
       <section id="software" className="scroll-mt-20 border-t border-hairline py-[88px]">
@@ -707,33 +697,23 @@ export default function Landing() {
         className="scroll-mt-20 border-t border-hairline"
         style={{
           backgroundImage:
-            'radial-gradient(circle at 50% 0%, rgba(236,48,19,.16), transparent 58%), linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px)',
-          backgroundSize: '100% 100%, 32px 32px, 32px 32px',
+            'radial-gradient(circle at 50% 0%, rgba(139,107,255,.18), transparent 60%), radial-gradient(circle at 78% 40%, rgba(233,107,216,.10), transparent 62%)',
+          backgroundSize: '100% 100%, 100% 100%',
         }}
       >
-        <div className="mx-auto grid max-w-shell items-start gap-16 px-5 py-24 lg:grid-cols-2">
+        <div className="mx-auto grid max-w-shell items-center gap-10 px-5 py-16 lg:grid-cols-[.9fr_1.1fr]">
           <div>
             <p className="kicker-accent">03 — Early access</p>
-            <h2 className="mt-3 text-4xl font-heading leading-[1.05] tracking-heading text-neutral-100 sm:text-5xl">
-              Want one first?
+            <h2 className="mt-3 text-[clamp(24px,2.6vw,34px)] font-heading leading-[1.1] tracking-heading text-neutral-100">
+              Want one
+              <span className="serif text-[clamp(28px,3.1vw,42px)]"> first?</span>
             </h2>
-            <p className="mt-[18px] max-w-md text-lg leading-relaxed text-neutral-400">
-              Tell us which board you want and we&apos;ll email you once it&apos;s ready to order.
+            <p className="mt-3 max-w-sm text-[15px] leading-relaxed text-neutral-500">
+              {PROMISES[0]} Your address is only used for that email.
             </p>
-
-            <div className="mt-8 flex flex-col gap-3.5">
-              {PROMISES.map((item) => (
-                <div key={item} className="flex items-start gap-3">
-                  <span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full border border-white/[0.16] text-[11px] text-neutral-100">
-                    ✓
-                  </span>
-                  <p className="text-[15px] text-neutral-400">{item}</p>
-                </div>
-              ))}
-            </div>
           </div>
 
-          <div className="rounded-2xl border border-white/[0.12] bg-surface p-8 shadow-shell">
+          <div className="card p-7">
             {saved ? (
               <div role="status" aria-live="polite">
                 <span className="grid h-11 w-11 place-items-center rounded-full bg-[#3ec95f] text-[22px] text-ground">

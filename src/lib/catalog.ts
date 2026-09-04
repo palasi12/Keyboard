@@ -64,11 +64,12 @@ export const PRODUCTS: Product[] = [
       'Nine mechanical keys and two rotary encoders, designed by a video editor for the shortcuts you hit a hundred times a day. Scrub with one dial, ride levels with the other, and put the nine things you actually use under your left hand.',
     specs: [
       { label: 'Switches', value: 'Gateron tactile, 9 keys' },
+      { label: 'Keycaps', value: 'XDA profile' },
       { label: 'Key spacing', value: '19.05 mm — standard MX pitch' },
       { label: 'Dials', value: '2 rotary encoders, push to click' },
-      { label: 'Dial caps', value: 'CNC-machined aluminium' },
+      { label: 'Dial caps', value: 'Machined aluminium' },
       { label: 'Lighting', value: '10-LED perimeter underglow' },
-      { label: 'Case', value: '3D-printed shell, cast acrylic base plate' },
+      { label: 'Case', value: '3D-printed shell, laser-cut acrylic base plate' },
       { label: 'Controller', value: 'RP2040' },
       { label: 'Connection', value: 'USB-C' },
       { label: 'Polling', value: '1000 Hz' },
@@ -80,7 +81,7 @@ export const PRODUCTS: Product[] = [
     features: [
       'Two rotary encoders with independent sensitivity',
       'Gateron tactile switches on a standard 19.05 mm grid',
-      'CNC-machined aluminium dial caps',
+      'Machined aluminium dial caps',
       'Acrylic base plate that doubles as the underglow diffuser',
       'Fully programmable — any key, combo, or macro',
       'Designed and assembled in New Zealand',
