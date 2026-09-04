@@ -16,14 +16,14 @@ export interface CartLine {
 
 export interface ResolvedLine extends CartLine {
   product: Product;
-  /** quantity × unit price, in pence. */
+  /** quantity × unit price, in cents. */
   lineTotal: number;
 }
 
 interface CartContextValue {
   lines: ResolvedLine[];
   itemCount: number;
-  /** Sum of all lines in pence. Shipping and tax are added by Stripe at checkout. */
+  /** Sum of all lines in cents. Shipping and tax are added by Stripe at checkout. */
   subtotal: number;
   add(slug: string, quantity?: number): void;
   setQuantity(slug: string, quantity: number): void;

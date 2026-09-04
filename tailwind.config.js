@@ -1,9 +1,13 @@
 /**
  * Tailwind theme for the Taptile storefront.
  *
- * Colours and type come from the Modernist system; the shape language comes
- * from the Taptile configurator (rounded keycaps, pill controls, soft depth)
- * so the site and the software read as one product.
+ * Colours, type and shape come from the V5 brand handoff: near-black ground,
+ * one panel tone, and a single blue→violet→pink gradient carrying every accent.
+ * Headings are Archivo 800 with an Instrument Serif italic second line.
+ *
+ * The gradient is the brand. Use `text-grad` / `bg-grad` / `border-grad`
+ * rather than picking one of its stops — a flat purple reads as a mistake
+ * next to the real thing.
  */
 
 /** @type {import('tailwindcss').Config} */
@@ -30,21 +34,22 @@ export default {
           800: '#444141',
           900: '#2d2b2b',
         },
+        /* The three stops of the brand gradient. Reach for these only when a
+           gradient is impossible (an SVG stroke, a canvas fill). */
+        /* Errors and destructive states. Deliberately outside the brand
+           gradient — a failed form should not look like a feature. */
+        danger: '#ff6b5c',
         accent: {
-          DEFAULT: '#ec3013',
-          100: '#fff2ef',
-          200: '#ffe0d9',
-          300: '#ffc4b8',
-          400: '#ff9783',
-          500: '#ff563c',
-          600: '#dd2b0f',
-          700: '#ae1800',
-          800: '#7c1405',
-          900: '#4d170e',
+          DEFAULT: '#8b6bff',
+          blue: '#3fa0ff',
+          violet: '#8b6bff',
+          pink: '#e96bd8',
         },
       },
       fontFamily: {
         sans: ['Archivo', 'system-ui', '-apple-system', 'sans-serif'],
+        /* The italic second line of every heading. */
+        serif: ['"Instrument Serif"', 'Georgia', 'serif'],
       },
       fontWeight: {
         heading: '800',
@@ -62,7 +67,10 @@ export default {
       boxShadow: {
         cap: '0 4px 10px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.05)',
         shell: '0 24px 60px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.05)',
-        glow: '0 8px 24px rgba(255,255,255,.18)',
+        glow: '0 3px 10px rgba(255,255,255,.07)',
+        lift: '0 5px 14px rgba(255,255,255,.11)',
+        nav: '0 10px 30px rgba(0,0,0,.45)',
+        panel: '0 20px 60px rgba(0,0,0,.45)',
       },
       letterSpacing: {
         heading: '-0.015em',

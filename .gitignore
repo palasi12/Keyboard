@@ -1,5 +1,6 @@
 node_modules/
 dist/
+dist-preview/
 build/
 out/
 release/
@@ -26,3 +27,9 @@ coverage/
 # Python bytecode from the hardware scripts
 __pycache__/
 *.pyc
+
+# vite writes these when it reloads its config
+vite.config.ts.timestamp-*.mjs
+
+# Screenshots the desktop app saves from this chat
+Claude outputs/

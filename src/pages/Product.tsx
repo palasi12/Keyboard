@@ -38,7 +38,18 @@ export default function Product() {
       </nav>
 
       <div className="grid gap-12 lg:grid-cols-2">
-        <ProductArt product={product} />
+        {product.image ? (
+          <div className="stage-soft relative flex items-center justify-center rounded-3xl px-6 py-10">
+            <img
+              src={product.image}
+              alt={`The ${product.name}`}
+              className="w-full max-w-[440px] select-none"
+              draggable={false}
+            />
+          </div>
+        ) : (
+          <ProductArt product={product} detailed />
+        )}
 
         <div>
           <h1 className="text-3xl font-heading tracking-heading text-neutral-100 sm:text-4xl">
@@ -63,7 +74,7 @@ export default function Product() {
             {product.features.map((feature) => (
               <li key={feature} className="flex gap-2.5 text-sm text-neutral-300">
                 <svg
-                  className="mt-0.5 h-4 w-4 shrink-0 text-accent-500"
+                  className="mt-0.5 h-4 w-4 shrink-0 text-accent"
                   viewBox="0 0 16 16"
                   fill="none"
                   aria-hidden="true"

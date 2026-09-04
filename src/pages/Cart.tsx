@@ -29,7 +29,7 @@ export default function Cart() {
         <Seo title="Your basket" description="Your Taptile basket." path="/cart" />
         <h1 className="text-2xl font-heading text-neutral-100">Your basket is empty</h1>
         <p className="mt-3 text-neutral-400">Have a look at what we make.</p>
-        <Link to="/product/taptile-mini" className="btn-primary mt-7">
+        <Link to="/product/taptile-dialect" className="btn-primary mt-7">
           See the Mini
         </Link>
       </section>
@@ -52,7 +52,7 @@ export default function Cart() {
             <div className="min-w-0 flex-1">
               <Link
                 to={`/product/${line.slug}`}
-                className="font-semibold text-neutral-100 transition hover:text-accent-500"
+                className="font-semibold text-neutral-100 transition hover:text-accent"
               >
                 {line.product.name}
               </Link>

@@ -70,7 +70,7 @@ async function sendConfirmation(email: string, source: string): Promise<void> {
   const anonKey = import.meta.env['VITE_SUPABASE_ANON_KEY'] as string | undefined;
   if (!projectUrl || !anonKey) return;
 
-  // Source looks like "landing:Taptile Nano" — the part after the colon is
+  // Source looks like "landing:Taptile Dialect" — the part after the colon is
   // whichever board they picked.
   const interest = source.includes(':') ? source.slice(source.indexOf(':') + 1) : 'Not sure yet';
 

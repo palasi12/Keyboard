@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { joinWaitlist } from '../lib/waitlist';
 import { isSupabaseConfigured } from '../lib/supabase';
 import Seo from '../components/Seo';
+import { LogoMark } from '../components/ProductArt';
 
 /**
  * Landing page (V5).
@@ -71,7 +72,7 @@ const MARQUEE = (() => {
   return [...one, ...one];
 })();
 
-const INTERESTS = ['Taptile Nano', 'Taptile Mini', 'Taptile Pro', 'Not sure yet'];
+const INTERESTS = ['Taptile Dialect', 'Just following along'];
 
 const WAITLIST_KEY = 'taptile-waitlist-v1';
 const EMAIL_SHAPE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
@@ -112,18 +113,18 @@ const FAQ = [
     a: 'When the first batch is finished. The list gets the email before anything is listed publicly, so joining is the only way to hear about it early.',
   },
   {
-    q: 'Which board should I pick?',
-    a: 'Nano if you want a handful of shortcuts on the desk, Mini if you are not sure, Pro if you already know nine keys will not be enough. You can change your mind before the batch opens.',
+    q: 'What is actually in the box?',
+    a: 'The Taptile Dialect: nine Gateron tactile switches and two rotary encoders with machined aluminium caps, in a 3D-printed case on a cast acrylic base that doubles as the diffuser for the underglow. Designed and built in New Zealand.',
   },
 ];
 
 /* ------------------------------- component ------------------------------- */
 
 /**
- * The configurator demo (the standalone `Taptile.dc.html` mockup in
- * `public/software-demo/`). It is authored for a 1280px+ desktop window, so we
- * render it at a fixed 1440×905 and scale that down to whatever width the
- * section gets — the frame height follows the scale so nothing clips.
+ * The configurator demo — the standalone Taptile Configurator build, copied to
+ * `public/software-demo/Taptile.dc.html`. It is authored for a 1280px+ desktop
+ * window, so we render it at a fixed 1440×905 and scale that down to whatever
+ * width the section gets — the frame height follows the scale so nothing clips.
  */
 const DEMO_W = 1440;
 const DEMO_H = 905;
@@ -231,7 +232,7 @@ function SoftwareDemo() {
         <iframe
           ref={iframeRef}
           src="/software-demo/Taptile.dc.html"
-          title="Taptile configurator demo — sign in, then the key-mapping page"
+          title="Taptile configurator demo — key mapping, dials, lighting"
           loading="lazy"
           style={{
             width: DEMO_W,
@@ -345,30 +346,48 @@ export default function Landing() {
     <>
       <Seo
         title="Taptile — programmable mini keyboards"
-        description="Programmable mini keyboards for the shortcuts you use every day. USB-C, Windows and macOS, remapped in the browser. Nano, Mini or Pro."
+        description="The Taptile Dialect: nine programmable mechanical keys and two rotary dials for the shortcuts you use every day. Designed in Auckland, New Zealand. NZ$70."
         path="/"
         image="/og.svg"
       />
 
       {/* ---------------------------------- hero ---------------------------------- */}
-      <section className="stage border-b-2 border-divider">
-        <div className="mx-auto grid max-w-shell items-center gap-16 px-5 py-20 lg:grid-cols-[1.05fr_.95fr] lg:py-[104px]">
+      {/* Runs up under the fixed nav — the pill floats over the artwork. */}
+      <section className="relative -mt-[88px] overflow-hidden">
+        <div className="aurora pointer-events-none absolute inset-0" aria-hidden="true" />
+        <div
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-1/4"
+          aria-hidden="true"
+          style={{
+            background:
+              'linear-gradient(180deg, rgba(11,10,10,0), rgba(11,10,10,.72) 78%, rgba(11,10,10,.96))',
+          }}
+        />
+        <div className="relative z-[3] mx-auto grid min-h-screen max-w-shell items-center gap-12 px-5 pb-16 pt-[112px] lg:grid-cols-[1.05fr_.95fr] lg:gap-8">
           {/* left: pitch + inline waitlist */}
           <div className="animate-rise">
             <p className="inline-flex items-center gap-2 rounded-full border border-hairline bg-white/[0.03] px-3.5 py-1.5 text-[11px] tracking-[0.06em] text-neutral-400">
-              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-accent" />
+              <span className="dot-grad animate-pulse" />
               Not shipping yet — first batch opens to the list
             </p>
 
-            <h1 className="mt-6 text-5xl font-heading leading-[1.03] tracking-heading text-neutral-100 sm:text-6xl lg:text-7xl">
-              Your shortcuts,
+            <h1 className="mt-6 whitespace-nowrap text-[clamp(26px,3vw,46px)] font-heading leading-[1.1] tracking-heading text-neutral-100">
+              Nine keys. Two dials.
               <br />
-              on real keys.
+              <span className="serif whitespace-normal text-[clamp(32px,3.8vw,58px)]">
+                As many dialects as you need.
+              </span>
             </h1>
 
             <p className="mt-6 max-w-lg text-lg leading-relaxed text-neutral-400">
-              A programmable mini keyboard for the things you do a hundred times a day.
-              Mute, switch scenes, paste the thing, run the macro. One press.
+              The Dialect is a nine-key macro pad with two clicking dials and a lit acrylic
+              base. Map it once in the configurator and the layout lives on the board.
+            </p>
+
+            <p className="mt-5 max-w-lg text-[13px] leading-relaxed text-neutral-600">
+              <span className="font-semibold text-neutral-400">Designed in Auckland, New Zealand</span>
+              {' \u00B7 '}
+              Drawn up by a working video editor, for the timeline.
             </p>
 
             <div className="mt-9 max-w-lg">
@@ -418,7 +437,7 @@ export default function Landing() {
                     </button>
                   </div>
                   {error && (
-                    <p role="alert" className="mt-2.5 text-sm text-accent-400">
+                    <p role="alert" className="mt-2.5 text-sm text-danger">
                       {error}
                     </p>
                   )}
@@ -438,7 +457,40 @@ export default function Landing() {
             </div>
           </div>
 
-          {/* right: interactive board demo */}
+          {/* right: the product itself */}
+          <div className="relative animate-rise lg:-mr-8">
+            <img
+              src="/dialect-hero.png"
+              alt="The Taptile Dialect — nine keys, two dials, and its lit acrylic base"
+              width={2200}
+              height={2750}
+              className="mx-auto w-full max-w-[440px] select-none lg:max-w-none"
+              draggable={false}
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* -------------------------------- dialects -------------------------------- */}
+      <section id="dialects" className="relative overflow-hidden border-t border-hairline">
+        <div className="aurora-soft pointer-events-none absolute inset-0" aria-hidden="true" />
+        <div className="relative z-[2] mx-auto grid max-w-shell items-center gap-12 px-5 py-[88px] lg:grid-cols-[.85fr_1.15fr]">
+          <div>
+            <p className="kicker">
+              <span className="dot-grad" />
+              Dialects
+            </p>
+            <h2 className="mt-3.5 text-[clamp(26px,3.2vw,40px)] font-heading leading-[1.1] tracking-heading text-neutral-100">
+              Nine keys, two dials,
+              <br />
+              <span className="serif text-[clamp(30px,3.9vw,50px)]">relabelled per app.</span>
+            </h2>
+            <p className="mt-5 max-w-md text-[17px] leading-relaxed text-neutral-400">
+              Each dialect remaps the keys and the dials to the app you are already in.
+              Switch between them below and watch the same board change its mind.
+            </p>
+          </div>
+
           <div id="try" className="animate-rise scroll-mt-24">
             <div className="mb-3.5 flex items-center gap-2.5">
               <span className="text-[10px] uppercase tracking-[0.16em] text-neutral-500">Try a profile</span>
@@ -472,13 +524,33 @@ export default function Landing() {
                 <div className="flex items-center gap-2.5 border-b border-hairline bg-white/[0.02] px-4 py-2.5">
                   <span className="h-2 w-4 rounded-[3px] border border-neutral-900 bg-bezel" />
                   <span className="text-[9px] font-heading uppercase tracking-[0.18em] text-neutral-400">
-                    Taptile Mini
+                    Taptile Dialect
                   </span>
                   <span className="ml-auto text-[8.5px] tracking-[0.14em] text-neutral-700">TP-09D2</span>
                   <span className="h-1.5 w-1.5 rounded-full bg-[#3ec95f]" />
                 </div>
 
                 <div className="px-6 pb-6 pt-5">
+                  {/* Rear strip — logo left, both encoders right. This is where they
+                      sit on the real top plate: behind the key cluster, not in front. */}
+                  <div className="mb-3.5 flex items-center gap-2.5 rounded-lg border border-hairline bg-keycap/60 px-3.5 py-2.5">
+                    <span className="shrink-0 text-neutral-600">
+                      <LogoMark size={24} />
+                    </span>
+                    <div className="flex flex-1 justify-end gap-5">
+                      {active.dials.map((label, i) => (
+                        <span key={label} className="flex flex-col items-center gap-1.5">
+                          <span className="grid h-[56px] w-[56px] place-items-center rounded-full border border-bezel shadow-cap"
+                                style={{ background: 'radial-gradient(circle at 50% 34%, #2b2826, #131111 72%)' }}>
+                            <span className="text-[9px] text-neutral-500">{label}</span>
+                          </span>
+                          <span className="text-[8px] font-heading tracking-[0.14em] text-neutral-700">D{i + 1}</span>
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="rounded-lg border border-hairline bg-ground p-3">
                   <div className="grid grid-cols-3 gap-2.5" style={{ gridAutoRows: '78px', gridTemplateColumns: 'repeat(3, 78px)' }}>
                     {active.keys.map((k, i) => {
                       const on = i === pressed;
@@ -520,22 +592,6 @@ export default function Landing() {
                     })}
                   </div>
 
-                  <div className="my-4 flex items-center gap-2.5">
-                    <span className="text-[9.5px] uppercase tracking-[0.16em] text-neutral-500">Rotary</span>
-                    <span className="h-0.5 flex-1 bg-divider" />
-                  </div>
-
-                  <div className="flex justify-center gap-8">
-                    {active.dials.map((label, i) => (
-                      <span key={label} className="flex flex-col items-center gap-1.5">
-                        <span className="grid h-[78px] w-[78px] place-items-center rounded-full border-2 border-bezel bg-bezel p-1 shadow-cap">
-                          <span className="grid h-full w-full place-items-center rounded-full bg-keycap text-[9px] text-neutral-500">
-                            {label}
-                          </span>
-                        </span>
-                        <span className="text-[8px] font-heading tracking-[0.14em] text-neutral-700">D{i + 1}</span>
-                      </span>
-                    ))}
                   </div>
                 </div>
               </div>
@@ -556,7 +612,7 @@ export default function Landing() {
       </section>
 
       {/* --------------------------------- marquee --------------------------------- */}
-      <section className="overflow-hidden border-b-2 border-divider">
+      <section className="overflow-hidden border-b border-hairline">
         <div className="mx-auto flex max-w-shell items-center gap-6 px-5 py-[18px]">
           <p className="shrink-0 text-[10px] uppercase tracking-[0.16em] text-neutral-500">Profiles for</p>
           <div
@@ -575,7 +631,7 @@ export default function Landing() {
       </section>
 
       {/* --------------------------- software (#software) --------------------------- */}
-      <section id="software" className="scroll-mt-20 border-t-2 border-divider py-[88px]">
+      <section id="software" className="scroll-mt-20 border-t border-hairline py-[88px]">
         <div className="mx-auto max-w-shell px-5">
           <div className="flex flex-wrap items-end justify-between gap-8">
             <div>
@@ -599,13 +655,13 @@ export default function Landing() {
       </section>
 
       {/* ------------------------------- how (#how) ------------------------------- */}
-      <section id="how" className="scroll-mt-20 border-t-2 border-divider py-[88px]">
+      <section id="how" className="scroll-mt-20 border-t border-hairline py-[88px]">
         <div className="mx-auto max-w-shell px-5">
           <p className="kicker-accent">02 — Setup</p>
           <h2 className="mt-3 text-3xl font-heading tracking-heading text-neutral-100 sm:text-4xl">
             How it works
           </h2>
-          <div className="mt-11 grid border-t-2 border-divider sm:grid-cols-3">
+          <div className="mt-11 grid border-t border-hairline sm:grid-cols-3">
             {STEPS.map((step, index) => (
               <div key={step.title} className="border-hairline pr-7 pt-8 pb-8 sm:border-r sm:last:border-r-0">
                 <span className="grid h-11 w-11 place-items-center rounded-full bg-neutral-100 font-heading text-[15px] text-keycap shadow-glow">
@@ -620,14 +676,14 @@ export default function Landing() {
       </section>
 
       {/* ------------------------------ poster statement ------------------------------ */}
-      <section className="border-t-2 border-divider py-[88px]">
+      <section className="border-t border-hairline py-[88px]">
         <div className="mx-auto max-w-shell px-5">
           <div className="overflow-hidden rounded-2xl bg-neutral-100 px-14 py-16 shadow-glow">
-            <p className="text-[10px] uppercase tracking-[0.16em] text-neutral-700">Taptile Mini · TP-09D2</p>
+            <p className="text-[10px] uppercase tracking-[0.16em] text-neutral-700">Taptile Dialect · TP-09D2</p>
             <h2 className="mt-3.5 max-w-3xl text-4xl font-heading leading-[1.02] tracking-heading text-ground sm:text-5xl">
               Nine keys. Two dials.
               <br />
-              Every shortcut you own.
+              <span className="serif">Every shortcut you own.</span>
             </h2>
             <div className="mt-9 flex flex-wrap items-center gap-5">
               <button
@@ -638,7 +694,7 @@ export default function Landing() {
                 Get told when it ships
               </button>
               <span className="text-sm text-neutral-700">
-                Or the Nano and the Pro, if nine is the wrong number.
+                NZ$70. One board, built properly.
               </span>
             </div>
           </div>
@@ -648,7 +704,7 @@ export default function Landing() {
       {/* ---------------------------- waitlist (#waitlist) ---------------------------- */}
       <section
         id="waitlist"
-        className="scroll-mt-20 border-t-2 border-divider"
+        className="scroll-mt-20 border-t border-hairline"
         style={{
           backgroundImage:
             'radial-gradient(circle at 50% 0%, rgba(236,48,19,.16), transparent 58%), linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px)',
@@ -748,7 +804,7 @@ export default function Landing() {
                 />
 
                 {error && (
-                  <p role="alert" className="mt-2.5 text-sm text-accent-400">
+                  <p role="alert" className="mt-2.5 text-sm text-danger">
                     {error}
                   </p>
                 )}
@@ -771,7 +827,7 @@ export default function Landing() {
       </section>
 
       {/* ------------------------------- faq (#faq) ------------------------------- */}
-      <section id="faq" className="scroll-mt-20 border-t-2 border-divider py-[88px]">
+      <section id="faq" className="scroll-mt-20 border-t border-hairline py-[88px]">
         <div className="mx-auto max-w-[820px] px-5">
           <p className="kicker-accent">04 — Questions</p>
           <h2 className="mt-3 text-3xl font-heading tracking-heading text-neutral-100 sm:text-4xl">

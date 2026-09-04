@@ -2,10 +2,11 @@
 
 Storefront for Taptile — programmable mini keyboards.
 
-> **Status: template.** The site is complete and buildable, but the products are
-> placeholders and checkout is not connected. Read
-> [docs/PRODUCTS.md](docs/PRODUCTS.md) and [docs/CHECKOUT.md](docs/CHECKOUT.md)
-> before this goes anywhere near a real customer.
+> **Status: pre-launch.** The site sells one real board — the Taptile Dialect,
+> NZ$70 — but checkout is not connected, so the product page offers the waitlist
+> instead of a basket. Read [docs/CHECKOUT.md](docs/CHECKOUT.md) before that
+> changes. Some specs are still unconfirmed; see the OPEN note at the top of
+> `src/lib/catalog.ts`.
 
 ## Running it
 
@@ -21,7 +22,8 @@ can check the mobile layout on your phone.
 
 ## What works
 
-- Landing page, shop, product detail pages
+- Landing page and the Taptile Dialect product page
+- Scroll-driven turntable render on the landing page — see [docs/RENDER.md](docs/RENDER.md)
 - Basket with quantities, persists across refreshes
 - Sign in and sign up (needs Supabase keys — see below)
 - Account page
@@ -31,7 +33,11 @@ can check the mobile layout on your phone.
 ## What does not
 
 - **Checkout.** Needs a server endpoint. See [docs/CHECKOUT.md](docs/CHECKOUT.md).
-- **Real products.** All placeholder. See [docs/PRODUCTS.md](docs/PRODUCTS.md).
+- **A measured case.** The footprint on the product page is derived from the
+  board plus 3 mm walls, not measured off a printed shell. Correct it once one
+  exists. Case height is absent because nothing about it is known yet.
+- **The turntable frames.** The component is wired but `public/render/dialect/`
+  is empty, so the section hides itself. See [docs/RENDER.md](docs/RENDER.md).
 - **Order history.** Arrives once Stripe webhooks write orders to a database.
 - **Configurator against real hardware.** Written to spec, never tested on a
   board. See [docs/CONFIGURATOR.md](docs/CONFIGURATOR.md) for the checklist.
@@ -50,29 +56,28 @@ into the public JavaScript bundle.
 
 ## Design system
 
-The look comes from the **Modernist** system in
-`Taptile Configuration UI Mockup/_ds/`. Read its `readme.md` before changing any
-styling. The rules that matter most:
+The look comes from the **V5 brand handoff** (`Taptile V5 brand handoff/site-handoff/`).
+It replaces the old Modernist system — if you find zero-radius, 2px-divider styling
+anywhere, it is a leftover, not the target.
 
-- **Zero corner radius.** Nothing is rounded, anywhere.
-- **2px dividers**, never hairlines. Alignment and rules do the organising.
-- **Flush left** — headings, copy, and labels inside wide buttons.
-- **Accent used sparingly.** Mostly ink on ground; red carries the primary
-  action and the one poster statement per page.
-- Type is Archivo throughout, headings at weight 800.
+- **Rounded, not square.** Pills for controls, `rounded-3xl` for panels.
+- **One accent: the gradient.** `#3fa0ff → #8b6bff 52% → #e96bd8`. Use `text-grad`,
+  `bg-grad`, `rule-grad` or `dot-grad` rather than picking a single stop — a flat
+  purple reads as a mistake next to the real thing. Errors use `danger`, deliberately
+  outside the gradient.
+- **Headings end on a serif italic line.** Archivo 800, then Instrument Serif italic
+  via the `serif` class. Never both lines in the same face.
+- **Colour lives in the background, not the chrome.** `aurora` / `aurora-soft` wash a
+  section; buttons stay white pills.
 
-Tokens live in `tailwind.config.js` and `src/index.css`. Take colours, spacing
-and type from there rather than hard-coding values.
-
-Note the mockup's own chrome rounds its corners and the design system says not
-to. The system's readme wins here — that rounding is specific to rendering the
-hardware.
+Tokens live in `tailwind.config.js` and `src/index.css`. Take colours, spacing and type
+from there rather than hard-coding values.
 
 ## Project layout
 
 ```
 src/
-  lib/catalog.ts     Product data (placeholder)
+  lib/catalog.ts     Product data — one board, the Taptile Dialect
   lib/cart.tsx       Basket state, persisted to localStorage
   lib/checkout.ts    Talks to your Stripe endpoint
   lib/auth.tsx       Supabase auth

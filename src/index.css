@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;800&family=Instrument+Serif:ital@1&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -9,6 +9,9 @@
     color-scheme: dark;
     --divider: color-mix(in srgb, #f8f4f4 14%, transparent);
     --hairline: rgba(255, 255, 255, 0.08);
+    /* The brand. Every accent on the site is this gradient, never one stop. */
+    --grad: linear-gradient(135deg, #3fa0ff, #8b6bff 52%, #e96bd8);
+    --grad-h: linear-gradient(90deg, #3fa0ff, #8b6bff 52%, #e96bd8);
   }
 
   body {
@@ -32,7 +35,7 @@
     outline-offset: 2px;
   }
   ::selection {
-    background: rgba(255, 255, 255, 0.24);
+    background: rgba(139, 107, 255, 0.32);
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -44,22 +47,65 @@
 }
 
 @layer components {
+  /* -------------------------------- brand --------------------------------- */
+
+  /* The italic second line every V5 heading ends on. */
+  .serif {
+    @apply font-serif font-normal italic;
+    letter-spacing: -0.012em;
+    line-height: 1.16;
+  }
+
+  .text-grad {
+    background: var(--grad-h);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .bg-grad { background: var(--grad); }
+
+  /* 2px gradient rule — section dividers, the nav's scroll progress bar. */
+  .rule-grad {
+    height: 2px;
+    border-radius: 2px;
+    background: var(--grad-h);
+  }
+
+  /* The small gradient dot that opens a kicker. */
+  .dot-grad {
+    @apply inline-block h-1.5 w-1.5 shrink-0 rounded-full;
+    background: var(--grad);
+  }
+
+  /* Ambient colour wash. Sits behind a section, never on top of content. */
+  .aurora {
+    background:
+      radial-gradient(58% 52% at 68% 46%, rgba(139, 107, 255, 0.20), rgba(11, 10, 10, 0) 70%),
+      radial-gradient(44% 40% at 82% 72%, rgba(233, 107, 216, 0.13), rgba(11, 10, 10, 0) 70%),
+      radial-gradient(50% 46% at 56% 30%, rgba(63, 160, 255, 0.12), rgba(11, 10, 10, 0) 72%);
+  }
+  .aurora-soft {
+    background:
+      radial-gradient(60% 60% at 30% 30%, rgba(139, 107, 255, 0.13), rgba(11, 10, 10, 0) 70%),
+      radial-gradient(50% 50% at 78% 70%, rgba(63, 160, 255, 0.10), rgba(11, 10, 10, 0) 72%);
+  }
+
   /* ------------------------------- buttons -------------------------------- */
-  /* Pill controls, matching the configurator's toolbar. */
   .btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-full px-4 py-2.5
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5
            font-heading text-sm leading-tight transition
            disabled:cursor-not-allowed disabled:opacity-45;
   }
   .btn:active { transform: scale(0.97); }
 
-  /* The interface accent is white — red is reserved for the hardware itself. */
+  /* White pill. The gradient belongs to the product, not to the controls. */
   .btn-primary {
     @apply btn bg-neutral-100 text-keycap shadow-glow hover:bg-white;
   }
   .btn-primary:hover {
     transform: translateY(-1px);
-    box-shadow: 0 12px 30px rgba(255, 255, 255, 0.26);
+    @apply shadow-lift;
   }
 
   .btn-secondary {
@@ -69,21 +115,20 @@
   }
   .btn-secondary:hover { background: rgba(255, 255, 255, 0.07); }
 
-  .btn-ghost {
-    @apply btn px-2 text-neutral-100;
-  }
+  .btn-ghost { @apply btn px-2 text-neutral-100; }
   .btn-ghost:hover { background: rgba(255, 255, 255, 0.08); }
 
   /* -------------------------------- fields -------------------------------- */
   .field {
-    @apply w-full rounded-full border bg-surface px-4 py-2.5 text-sm
+    @apply w-full rounded-full border px-5 py-3 text-sm
            text-neutral-100 placeholder-neutral-600 transition;
+    background: rgba(255, 255, 255, 0.03);
     border-color: var(--hairline);
-    caret-color: theme('colors.accent.DEFAULT');
+    caret-color: theme('colors.accent.violet');
   }
   .field:focus-visible {
-    border-color: rgba(255, 255, 255, 0.65);
-    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.1);
+    border-color: rgba(139, 107, 255, 0.7);
+    box-shadow: 0 0 0 4px rgba(139, 107, 255, 0.15);
     outline: none;
   }
 
@@ -91,37 +136,33 @@
 
   /* ------------------------------- surfaces ------------------------------- */
   .kicker {
-    @apply text-[10px] uppercase tracking-[0.16em] text-neutral-500;
+    @apply inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.16em] text-neutral-500;
   }
-  .kicker-accent { @apply kicker text-neutral-100; }
+  /* A kicker that opens a numbered section — brighter, with the brand dot. */
+  .kicker-accent {
+    @apply kicker text-neutral-300;
+  }
+  .kicker-accent::before {
+    content: '';
+    @apply dot-grad;
+  }
 
+  /* Rounded panel — the V5 card. */
   .card {
-    @apply rounded-xl border bg-surface transition;
+    @apply rounded-3xl border transition;
+    background: theme('colors.keycap');
     border-color: var(--hairline);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    @apply shadow-panel;
   }
   .card:hover {
     transform: translateY(-3px);
     border-color: rgba(255, 255, 255, 0.16);
-    box-shadow: 0 18px 44px rgba(0, 0, 0, 0.5);
   }
 
-  /* The technical grid + accent glow the configurator sits on. */
-  .stage {
-    background-image:
-      linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-      radial-gradient(circle at 50% 45%, rgba(255, 255, 255, 0.09), transparent 62%);
-    background-size: 32px 32px, 32px 32px, 100% 100%;
-  }
-  .stage-soft {
-    background-image:
-      linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
-    background-size: 32px 32px, 32px 32px;
-  }
+  .stage { @apply aurora; }
+  .stage-soft { @apply aurora-soft; }
 
-  /* A pressable keycap — bezel ring, recessed face, soft depth. */
+  /* A pressable keycap. */
   .cap {
     @apply rounded-md p-[3px] shadow-cap transition;
     background: theme('colors.bezel');
@@ -131,16 +172,15 @@
     @apply grid h-full w-full place-items-center rounded-sm;
     background: theme('colors.keycap');
   }
-  /* Selected key — the state the configurator shows on the active mapping. */
   .cap-selected { border-color: rgba(255, 255, 255, 0.45); }
   .cap-selected .cap-face { background: theme('colors.neutral.100'); }
 
   .rule {
-    @apply border-0 border-t-2;
-    border-color: var(--divider);
+    @apply border-0 border-t;
+    border-color: var(--hairline);
   }
   .divide-rule > * + * {
-    @apply border-t-2;
-    border-color: var(--divider);
+    @apply border-t;
+    border-color: var(--hairline);
   }
 }

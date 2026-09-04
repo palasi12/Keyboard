@@ -65,7 +65,7 @@ export default function CartDrawer() {
         {lines.length === 0 ? (
           <div className="flex flex-1 flex-col items-center justify-center gap-4 px-6 text-center">
             <p className="text-sm text-neutral-500">Nothing in here yet.</p>
-            <Link to="/product/taptile-mini" onClick={() => setOpen(false)} className="btn-secondary">
+            <Link to="/product/taptile-dialect" onClick={() => setOpen(false)} className="btn-secondary">
               See the Mini
             </Link>
           </div>

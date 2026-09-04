@@ -290,7 +290,7 @@ export default function Configurator() {
         </p>
       )}
       {error && (
-        <p className="mt-4 text-sm text-accent-400" role="alert">
+        <p className="mt-4 text-sm text-danger" role="alert">
           {error}
         </p>
       )}

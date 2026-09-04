@@ -66,7 +66,7 @@ export default function WaitlistForm({ source = 'landing' }: { source?: string }
       </div>
 
       {error && (
-        <p id={`${inputId}-error`} className="mt-2.5 text-sm text-accent-400" role="alert">
+        <p id={`${inputId}-error`} className="mt-2.5 text-sm text-danger" role="alert">
           {error}
         </p>
       )}

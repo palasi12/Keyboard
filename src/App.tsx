@@ -111,7 +111,9 @@ export default function App() {
       <Nav />
       <CartDrawer />
 
-      <main id="main" className="flex-1">
+      {/* The nav floats over the page, so everything except the landing hero
+          (which pulls itself back up) starts below it. */}
+      <main id="main" className="flex-1 pt-[88px]">
         {routes}
       </main>
 

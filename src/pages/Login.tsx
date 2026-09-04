@@ -253,7 +253,7 @@ export default function Login() {
                 <button
                   type="button"
                   onClick={() => switchMode('signup')}
-                  className="font-semibold text-accent-500 hover:text-accent-500"
+                  className="font-semibold text-accent hover:text-accent-pink"
                 >
                   Create one
                 </button>
@@ -264,7 +264,7 @@ export default function Login() {
                 <button
                   type="button"
                   onClick={() => switchMode('signin')}
-                  className="font-semibold text-accent-500 hover:text-accent-500"
+                  className="font-semibold text-accent hover:text-accent-pink"
                 >
                   Sign in
                 </button>

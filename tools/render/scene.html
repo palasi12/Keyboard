@@ -1,0 +1,345 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  html, body { margin: 0; background: #0b0a0a; overflow: hidden; }
+  canvas { display: block; }
+</style>
+<script src="three.min.js"></script>
+</head>
+<body>
+<script>
+/* =============================================================================
+   Taptile Dialect — turntable render rig.
+
+   All dimensions in millimetres, taken from the Rev A9 board brief:
+     board      64 x 91 mm, centre origin, +y = rear
+     key grid   cols x = -19.05 / 0 / 19.05,  rows y = 9.05 / -10 / -29.05
+     encoders   x = +/-9.525, y = 28
+     USB-C      rear edge
+
+   THE ONE ASSUMPTION: the case is not built yet, so its wall thickness and
+   height are parameters, not measurements. Change CASE below and re-render
+   once the shell is printed and measured.
+   ========================================================================== */
+
+const BOARD = { w: 64, d: 91 };
+const KEY_COLS = [-19.05, 0, 19.05];
+const KEY_ROWS = [9.05, -10, -29.05];
+const ENC_X = [-9.525, 9.525];
+const ENC_Y = 28;
+
+const CASE = {
+  wall: 3,          // ASSUMPTION
+  bodyH: 14,        // ASSUMPTION — plate top sits here
+  baseH: 4,         // acrylic base plate
+  radius: 6,
+};
+const OUT_W = BOARD.w + CASE.wall * 2;   // 70
+const OUT_D = BOARD.d + CASE.wall * 2;   // 97
+
+const CAP = { size: 17.6, h: 9, r: 2.2 };
+const KNOB = { d: 15.5, h: 9.5 };
+
+const ACCENT = 0xec3013;
+const GLOW = 0x8e1505;   // pre-tonemap value that resolves to ACCENT after ACES
+
+/* --- renderer ------------------------------------------------------------- */
+
+const W = 900, H = 675;
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+renderer.setPixelRatio(2);
+renderer.setSize(W, H);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.outputEncoding = THREE.sRGBEncoding;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 0.95;
+document.body.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0b0a0a);
+
+const camera = new THREE.PerspectiveCamera(30, W / H, 1, 2000);
+camera.position.set(0, 138, 214);
+camera.lookAt(0, 6, -4);
+
+/* --- environment ---------------------------------------------------------- */
+/* Metals need something to reflect. A studio gradient in a canvas, mapped
+   equirectangularly, is enough — softbox above, dark floor below. */
+function studioEnv() {
+  const c = document.createElement('canvas');
+  c.width = 512; c.height = 256;
+  const g = c.getContext('2d');
+  const grad = g.createLinearGradient(0, 0, 0, 256);
+  grad.addColorStop(0.00, '#141417');
+  grad.addColorStop(0.34, '#4c4c52');
+  grad.addColorStop(0.50, '#0f0f11');
+  grad.addColorStop(1.00, '#050506');
+  g.fillStyle = grad;
+  g.fillRect(0, 0, 512, 256);
+  // two soft boxes, so the aluminium has highlights to catch
+  const box = (x, y, w, h, a) => {
+    const rg = g.createRadialGradient(x, y, 0, x, y, Math.max(w, h));
+    rg.addColorStop(0, `rgba(255,255,255,${a})`);
+    rg.addColorStop(1, 'rgba(255,255,255,0)');
+    g.fillStyle = rg;
+    g.fillRect(x - w, y - h, w * 2, h * 2);
+  };
+  box(140, 58, 110, 62, 0.85);
+  box(392, 74, 78, 46, 0.42);
+  const t = new THREE.CanvasTexture(c);
+  t.mapping = THREE.EquirectangularReflectionMapping;
+  t.encoding = THREE.sRGBEncoding;
+  return t;
+}
+scene.environment = studioEnv();
+
+/* --- lights --------------------------------------------------------------- */
+
+scene.add(new THREE.AmbientLight(0xffffff, 0.10));
+
+// fade the desk into the background rather than letting it fill the frame
+scene.fog = new THREE.Fog(0x0b0a0a, 210, 520);
+
+const key = new THREE.DirectionalLight(0xfff4ec, 1.55);
+key.position.set(-120, 190, 130);
+key.castShadow = true;
+key.shadow.mapSize.set(2048, 2048);
+key.shadow.camera.left = -110;
+key.shadow.camera.right = 110;
+key.shadow.camera.top = 110;
+key.shadow.camera.bottom = -110;
+key.shadow.camera.near = 40;
+key.shadow.camera.far = 460;
+key.shadow.bias = -0.0012;
+key.shadow.radius = 3;
+scene.add(key);
+
+const rim = new THREE.DirectionalLight(0xdfe6ff, 1.15);
+rim.position.set(150, 90, -150);
+scene.add(rim);
+
+const fill = new THREE.DirectionalLight(0xffffff, 0.22);
+fill.position.set(90, 40, 120);
+scene.add(fill);
+
+// the underglow itself, throwing accent onto the desk
+const glow = new THREE.PointLight(0xff3418, 1.15, 170, 2.2);
+glow.position.set(0, -1, 0);
+scene.add(glow);
+
+/* --- helpers -------------------------------------------------------------- */
+
+function roundedRect(w, d, r) {
+  const s = new THREE.Shape();
+  const x = -w / 2, y = -d / 2;
+  s.moveTo(x + r, y);
+  s.lineTo(x + w - r, y);
+  s.quadraticCurveTo(x + w, y, x + w, y + r);
+  s.lineTo(x + w, y + d - r);
+  s.quadraticCurveTo(x + w, y + d, x + w - r, y + d);
+  s.lineTo(x + r, y + d);
+  s.quadraticCurveTo(x, y + d, x, y + d - r);
+  s.lineTo(x, y + r);
+  s.quadraticCurveTo(x, y, x + r, y);
+  return s;
+}
+
+/** A slab lying flat in XZ, extruded upward in Y, with a chamfered edge. */
+function slab(w, d, h, r, bevel) {
+  const geo = new THREE.ExtrudeGeometry(roundedRect(w, d, r), {
+    depth: h - (bevel ? bevel * 2 : 0),
+    bevelEnabled: !!bevel,
+    bevelThickness: bevel || 0,
+    bevelSize: bevel || 0,
+    bevelSegments: bevel ? 3 : 0,
+    curveSegments: 12,
+  });
+  geo.rotateX(-Math.PI / 2);
+  geo.translate(0, bevel || 0, 0);
+  geo.computeVertexNormals();
+  return geo;
+}
+
+const board = new THREE.Group();
+scene.add(board);
+
+/* --- acrylic base --------------------------------------------------------- */
+/* Cast acrylic, lit from inside by the underglow chain. Rendered as a lightly
+   translucent emissive slab rather than true transmission — SwiftShader will
+   not thank us for refraction, and at this scale it reads the same. */
+const baseMat = new THREE.MeshStandardMaterial({
+  color: 0x2a1512,
+  emissive: GLOW,
+  emissiveIntensity: 1.0,
+  roughness: 0.22,
+  metalness: 0.0,
+  transparent: true,
+  opacity: 0.94,
+});
+const base = new THREE.Mesh(slab(OUT_W, OUT_D, CASE.baseH, CASE.radius, 0.6), baseMat);
+base.position.y = -CASE.baseH;
+board.add(base);
+
+/* --- case shell ----------------------------------------------------------- */
+const shellMat = new THREE.MeshStandardMaterial({
+  color: 0x121113,
+  roughness: 0.66,
+  metalness: 0.10,
+  envMapIntensity: 0.30,
+});
+const shell = new THREE.Mesh(slab(OUT_W, OUT_D, CASE.bodyH, CASE.radius, 1.1), shellMat);
+shell.castShadow = true;
+shell.receiveShadow = true;
+board.add(shell);
+
+/* recessed deck the keys sit in */
+const deckMat = new THREE.MeshStandardMaterial({ color: 0x070609, roughness: 0.9, metalness: 0.05, envMapIntensity: 0.18 });
+const deckW = KEY_COLS[2] - KEY_COLS[0] + CAP.size + 5;
+const deckD = KEY_ROWS[0] - KEY_ROWS[2] + CAP.size + 5;
+const deckCz = -(KEY_ROWS[0] + KEY_ROWS[2]) / 2;
+const deck = new THREE.Mesh(slab(deckW, deckD, 1.4, 3, 0.3), deckMat);
+deck.position.set(0, CASE.bodyH - 1.0, deckCz);
+deck.receiveShadow = true;
+board.add(deck);
+
+/* --- keycaps -------------------------------------------------------------- */
+/* MX-ish: a chamfered slab with a slight taper, dished top face. */
+const capMat = new THREE.MeshStandardMaterial({ color: 0x121011, roughness: 0.55, metalness: 0.04, envMapIntensity: 0.26 });
+const capGeo = slab(CAP.size, CAP.size, CAP.h, CAP.r, 0.7);
+{
+  // taper the upper vertices in so it reads as a keycap, not a block
+  const pos = capGeo.attributes.position;
+  for (let i = 0; i < pos.count; i++) {
+    const y = pos.getY(i);
+    if (y > CAP.h * 0.45) {
+      const k = 1 - 0.15 * ((y - CAP.h * 0.45) / (CAP.h * 0.55));
+      pos.setX(i, pos.getX(i) * k);
+      pos.setZ(i, pos.getZ(i) * k);
+    }
+    if (y > CAP.h - 0.75) {
+      // concave top face, so it catches light like a real MX cap
+      const x = pos.getX(i), z = pos.getZ(i);
+      const rr = Math.min(1, Math.hypot(x, z) / (CAP.size / 2));
+      pos.setY(i, y - 0.55 * (1 - rr * rr));
+    }
+  }
+  pos.needsUpdate = true;
+  capGeo.computeVertexNormals();
+}
+for (const cy of KEY_ROWS) {
+  for (const cx of KEY_COLS) {
+    const cap = new THREE.Mesh(capGeo, capMat);
+    // board +y is rear; three.js -z is away from camera, so z = -boardY
+    cap.position.set(cx, CASE.bodyH - 0.2, -cy);
+    cap.castShadow = true;
+    cap.receiveShadow = true;
+    board.add(cap);
+  }
+}
+
+/* --- encoder knobs -------------------------------------------------------- */
+/* CNC aluminium, knurled. The knurl is real geometry — every other radial
+   segment pulled in — because a normal map would not catch the rim light. */
+function knurledKnob() {
+  const seg = 40;
+  const geo = new THREE.CylinderGeometry(KNOB.d / 2, KNOB.d / 2, KNOB.h, seg, 1, false);
+  const pos = geo.attributes.position;
+  const v = new THREE.Vector3();
+  for (let i = 0; i < pos.count; i++) {
+    v.fromBufferAttribute(pos, i);
+    const r = Math.hypot(v.x, v.z);
+    if (r > 0.1 && Math.abs(v.y) < KNOB.h / 2 - 0.35) {
+      const a = Math.atan2(v.z, v.x);
+      const k = 1 + 0.045 * Math.sign(Math.sin(a * seg / 2));
+      pos.setX(i, v.x * k);
+      pos.setZ(i, v.z * k);
+    }
+  }
+  pos.needsUpdate = true;
+  geo.computeVertexNormals();
+  return geo;
+}
+const alu = new THREE.MeshStandardMaterial({
+  color: 0xc9c5c2,
+  roughness: 0.27,
+  metalness: 0.96,
+  envMapIntensity: 1.35,
+});
+const capTop = new THREE.MeshStandardMaterial({ color: 0x9d9996, roughness: 0.40, metalness: 0.92, envMapIntensity: 1.2 });
+const knobGeo = knurledKnob();
+for (const kx of ENC_X) {
+  const g = new THREE.Group();
+  const knob = new THREE.Mesh(knobGeo, alu);
+  knob.castShadow = true;
+  g.add(knob);
+  // chamfered top edge — a machined cap, not a cut tube
+  const chamfer = new THREE.Mesh(
+    new THREE.CylinderGeometry(KNOB.d / 2 - 1.1, KNOB.d / 2, 1.1, 48), alu);
+  chamfer.position.y = KNOB.h / 2 + 0.54;
+  chamfer.castShadow = true;
+  g.add(chamfer);
+  const dish = new THREE.Mesh(new THREE.CircleGeometry(KNOB.d / 2 - 1.1, 48), capTop);
+  dish.rotation.x = -Math.PI / 2;
+  dish.position.y = KNOB.h / 2 + 1.1;
+  g.add(dish);
+  g.position.set(kx, CASE.bodyH + KNOB.h / 2 - 1.4, -ENC_Y);
+  board.add(g);
+}
+
+/* --- logo emblem ---------------------------------------------------------- */
+/* Debossed hexagon on the top plate, left of the encoders. */
+{
+  const hex = new THREE.Mesh(
+    new THREE.CylinderGeometry(5.2, 5.2, 0.5, 6),
+    new THREE.MeshStandardMaterial({ color: 0x0d0c0e, roughness: 0.8, metalness: 0.1, envMapIntensity: 0.2 })
+  );
+  hex.rotation.y = Math.PI / 6;
+  hex.position.set(-23.5, CASE.bodyH - 0.28, -ENC_Y);
+  board.add(hex);
+}
+
+/* --- USB-C, rear edge ----------------------------------------------------- */
+const portMat = new THREE.MeshStandardMaterial({ color: 0x0c0c0d, roughness: 0.5, metalness: 0.5 });
+const port = new THREE.Mesh(new THREE.BoxGeometry(9.2, 3.4, 2.4), portMat);
+port.position.set(-12, CASE.bodyH * 0.45, -(OUT_D / 2) + 0.6);
+board.add(port);
+
+/* --- underglow seam ------------------------------------------------------- */
+/* The light escaping between shell and base. A thin emissive ring, plus the
+   point light above, is what sells "it is lit from underneath". */
+const seam = new THREE.Mesh(
+  slab(OUT_W + 0.5, OUT_D + 0.5, 1.6, CASE.radius, 0),
+  new THREE.MeshBasicMaterial({ color: GLOW, transparent: true, opacity: 0.95 })
+);
+seam.position.y = -1.5;
+board.add(seam);
+
+/* --- ground --------------------------------------------------------------- */
+const ground = new THREE.Mesh(
+  new THREE.PlaneGeometry(1400, 1400),
+  new THREE.MeshStandardMaterial({ color: 0x0a0909, roughness: 0.94, metalness: 0.0, envMapIntensity: 0.12 })
+);
+ground.rotation.x = -Math.PI / 2;
+ground.position.y = -CASE.baseH - 0.02;
+ground.receiveShadow = true;
+scene.add(ground);
+
+/* --- turntable ------------------------------------------------------------ */
+
+window.__frames = 72;
+window.__setFrame = (i) => {
+  const t = i / window.__frames;
+  board.rotation.y = t * Math.PI * 2;
+  // a gentle rise as it turns, so the scroll reads as movement not just spin
+  const tilt = 0.05 * Math.sin(t * Math.PI * 2);
+  board.rotation.x = tilt;
+  renderer.render(scene, camera);
+};
+window.__setFrame(0);
+window.__ready = true;
+</script>
+</body>
+</html>

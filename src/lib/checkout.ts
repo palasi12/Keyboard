@@ -9,7 +9,7 @@
  * is a published secret key.
  *
  * Equally important: the server decides the price. If the browser sent the
- * amount, anyone could open devtools and buy a £54 keyboard for 1p. This file
+ * amount, anyone could open devtools and buy a NZ$70 keyboard for a cent. This file
  * therefore sends only slugs and quantities, and the server looks up what
  * those actually cost.
  *

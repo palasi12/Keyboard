@@ -24,7 +24,7 @@ export default function OrderSuccess() {
         <Link to="/account" className="btn-secondary">
           View orders
         </Link>
-        <Link to="/product/taptile-mini" className="btn-primary">
+        <Link to="/product/taptile-dialect" className="btn-primary">
           Keep shopping
         </Link>
       </div>

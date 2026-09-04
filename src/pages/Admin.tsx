@@ -151,7 +151,7 @@ export default function Admin() {
       </div>
 
       {error && (
-        <p className="mt-6 text-sm text-accent-400" role="alert">
+        <p className="mt-6 text-sm text-danger" role="alert">
           {error}
         </p>
       )}
@@ -195,7 +195,7 @@ export default function Admin() {
                     <button
                       type="button"
                       onClick={() => void handleRemove(entry)}
-                      className="text-xs text-neutral-500 transition hover:text-accent-400"
+                      className="text-xs text-neutral-500 transition hover:text-danger"
                     >
                       Remove
                     </button>

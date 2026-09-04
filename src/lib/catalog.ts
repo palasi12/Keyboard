@@ -1,19 +1,20 @@
 /**
  * Product catalogue.
  *
- * PLACEHOLDER DATA. Every price, spec and model number here is invented so the
- * site has something to render. Replace all of it with the real vendor listing
- * before launch — see docs/PRODUCTS.md.
+ * One board, because one board exists: the Taptile Dialect, Rev A9. Nine keys,
+ * two encoders, RP2040. Everything here is either measured off the Rev A9 board
+ * brief or specified by the build — nothing is invented.
  *
- * `inStock` is false on every board on purpose: there is no supplier and no
- * stock, so the product pages must not offer an "Add to basket" that implies
+ * The footprint below is DERIVED, not measured: the case encases the Rev A9
+ * board (64 x 91 mm) with 3 mm walls. Measure the first printed shell and
+ * correct it. Height is still absent because nothing about it is known yet.
+ *
+ * `inStock` is false on purpose: there is no stock and no checkout, so the
+ * product page offers the waitlist rather than an "Add to basket" that implies
  * an order can be placed.
  *
- * Naming and model codes follow the configuration mockup, which shows
- * "Taptile Mini · TP-09D2" as the nine-key board.
- *
- * Prices are in pence. Floating-point money is how you end up charging
- * someone £19.999999.
+ * Prices are in cents. Floating-point money is how you end up charging someone
+ * $19.999999.
  */
 
 export interface Product {
@@ -22,119 +23,86 @@ export interface Product {
   /** Model code shown on the hardware, e.g. TP-09D2. */
   model: string;
   tagline: string;
-  /** Price in pence. 3900 = £39.00 */
+  /** Price in cents. 7000 = $70.00 */
   price: number;
   compareAt?: number;
   keyCount: number;
-  /** Rotary encoders. Zero on the smallest board. */
+  /** Rotary encoders. */
   dialCount: number;
   description: string;
   specs: Array<{ label: string; value: string }>;
   features: string[];
+  /** Product photography. Falls back to the drawn board when absent. */
+  image?: string;
   /** Fallback block colour used in the basket rows. */
   swatch: string;
   inStock: boolean;
 }
 
-export const CURRENCY = 'GBP';
+export const CURRENCY = 'NZD';
 
-export function formatPrice(pence: number): string {
-  return new Intl.NumberFormat('en-GB', {
+export function formatPrice(cents: number): string {
+  // en-US rather than en-NZ on purpose: it renders NZD as "NZ$70.00" instead of
+  // a bare "$70.00", which half the internet would read as US dollars.
+  return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: CURRENCY,
-  }).format(pence / 100);
+    currencyDisplay: 'symbol',
+  }).format(cents / 100);
 }
 
 export const PRODUCTS: Product[] = [
   {
-    slug: 'taptile-nano',
-    name: 'Taptile Nano',
-    model: 'TP-03D0',
-    tagline: 'Three keys. Start somewhere.',
-    price: 2400,
-    keyCount: 3,
-    dialCount: 0,
-    description:
-      'The smallest board. Three mechanical keys for the three things you do a hundred times a day — mute, cut, save, whatever you decide they are.',
-    specs: [
-      { label: 'Keys', value: '3 mechanical' },
-      { label: 'Dials', value: 'None' },
-      { label: 'Switch', value: 'Blue clicky, soldered' },
-      { label: 'Connection', value: 'USB-C' },
-      { label: 'Polling', value: '1000 Hz' },
-      { label: 'Dimensions', value: '70 × 40 × 30 mm' },
-      { label: 'Compatibility', value: 'Windows, macOS, Linux' },
-      { label: 'Configurator', value: 'In-browser — Chrome or Edge' },
-    ],
-    features: [
-      'Fully programmable — any key, combo, or macro',
-      'Arrives assembled and tested — nothing to solder',
-      'Layouts stored on the board itself',
-      'Braided USB-C cable included',
-    ],
-    swatch: '#2f2b2a',
-    inStock: false,
-  },
-  {
-    slug: 'taptile-mini',
-    name: 'Taptile Mini',
-    model: 'TP-06D1',
-    tagline: 'Six keys and a dial.',
-    price: 3900,
-    keyCount: 6,
-    dialCount: 1,
-    description:
-      'Six keys plus a rotary encoder for volume, scrubbing, or brush size. The one most people should buy.',
-    specs: [
-      { label: 'Keys', value: '6 mechanical' },
-      { label: 'Dials', value: '1 rotary encoder, push to click' },
-      { label: 'Switch', value: 'Red linear, soldered' },
-      { label: 'Connection', value: 'USB-C' },
-      { label: 'Polling', value: '1000 Hz' },
-      { label: 'Dimensions', value: '95 × 65 × 30 mm' },
-      { label: 'Compatibility', value: 'Windows, macOS, Linux' },
-      { label: 'Configurator', value: 'In-browser — Chrome or Edge' },
-    ],
-    features: [
-      'Rotary encoder with push-to-click',
-      'Fully programmable — any key, combo, or macro',
-      'Multiple profiles, switched per application',
-      'Arrives assembled and tested — nothing to solder',
-    ],
-    swatch: '#3a3634',
-    inStock: false,
-  },
-  {
-    slug: 'taptile-pro',
-    name: 'Taptile Pro',
+    slug: 'taptile-dialect',
+    name: 'Taptile Dialect',
     model: 'TP-09D2',
     tagline: 'Nine keys, two dials.',
-    price: 5400,
+    price: 7000,
     keyCount: 9,
     dialCount: 2,
     description:
-      'For people who already know they need more keys. Nine of them, two encoders, and a stand that sets it at a sensible angle.',
+      'Nine mechanical keys and two rotary encoders, designed by a video editor for the shortcuts you hit a hundred times a day. Scrub with one dial, ride levels with the other, and put the nine things you actually use under your left hand.',
     specs: [
-      { label: 'Keys', value: '9 mechanical' },
+      { label: 'Switches', value: 'Gateron tactile, 9 keys' },
+      { label: 'Key spacing', value: '19.05 mm — standard MX pitch' },
       { label: 'Dials', value: '2 rotary encoders, push to click' },
-      { label: 'Switch', value: 'Brown tactile, soldered' },
+      { label: 'Dial caps', value: 'CNC-machined aluminium' },
+      { label: 'Lighting', value: '10-LED perimeter underglow' },
+      { label: 'Case', value: '3D-printed shell, cast acrylic base plate' },
+      { label: 'Controller', value: 'RP2040' },
       { label: 'Connection', value: 'USB-C' },
       { label: 'Polling', value: '1000 Hz' },
-      { label: 'Dimensions', value: '120 × 95 × 32 mm' },
+      { label: 'Board', value: '64 × 91 mm' },
+      { label: 'Footprint', value: '70 × 97 mm' },
       { label: 'Compatibility', value: 'Windows, macOS, Linux' },
-      { label: 'Configurator', value: 'In-browser — Chrome or Edge' },
+      { label: 'Designed in', value: 'Auckland, New Zealand' },
     ],
     features: [
       'Two rotary encoders with independent sensitivity',
-      'Adjustable aluminium stand included',
+      'Gateron tactile switches on a standard 19.05 mm grid',
+      'CNC-machined aluminium dial caps',
+      'Acrylic base plate that doubles as the underglow diffuser',
       'Fully programmable — any key, combo, or macro',
-      'Arrives assembled and tested — nothing to solder',
+      'Designed and assembled in New Zealand',
     ],
-    swatch: '#ec3013',
+    image: '/dialect-hero.png',
+    swatch: '#8b6bff',
     inStock: false,
   },
 ];
 
+/**
+ * Slugs the site used to publish. Anyone holding an old link — or an old
+ * basket in local storage — lands on the Dialect rather than a 404.
+ */
+const LEGACY_SLUGS: Record<string, string> = {
+  'taptile-nano': 'taptile-dialect',
+  'taptile-mini': 'taptile-dialect',
+  'taptile-pro': 'taptile-dialect',
+  'taptile-three': 'taptile-dialect',
+  'taptile-six': 'taptile-dialect',
+};
+
 export function findProduct(slug: string): Product | undefined {
-  return PRODUCTS.find((p) => p.slug === slug);
+  return PRODUCTS.find((p) => p.slug === (LEGACY_SLUGS[slug] ?? slug));
 }
