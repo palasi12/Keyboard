@@ -2,19 +2,13 @@ import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 import Nav from './components/Nav';
 import Footer from './components/Footer';
-import CartDrawer from './components/CartDrawer';
 import ProtectedRoute from './components/ProtectedRoute';
 import Landing from './pages/Landing';
-import Product from './pages/Product';
-import Cart from './pages/Cart';
 import Login from './pages/Login';
-import Account from './pages/Account';
-import OrderSuccess from './pages/OrderSuccess';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import Admin from './pages/Admin';
 import AdminUpdates from './pages/AdminUpdates';
-import Configurator from './pages/Configurator';
 import Updates from './pages/Updates';
 import Update from './pages/Update';
 import Privacy from './pages/Privacy';
@@ -38,12 +32,14 @@ function ScrollBehaviour() {
   return null;
 }
 
+/**
+ * There is no shop. One board exists, it is not orderable yet, and every route
+ * here ends at the waitlist or the devlog. Sign-in is kept because /admin is
+ * how updates get published — not because visitors have accounts.
+ */
 const routes = (
   <Routes>
     <Route path="/" element={<Landing />} />
-    <Route path="/product/:slug" element={<Product />} />
-    <Route path="/cart" element={<Cart />} />
-    <Route path="/configurator" element={<Configurator />} />
     <Route path="/updates" element={<Updates />} />
     <Route path="/updates/:slug" element={<Update />} />
     <Route path="/privacy" element={<Privacy />} />
@@ -51,7 +47,6 @@ const routes = (
     <Route path="/login" element={<Login />} />
     <Route path="/forgot-password" element={<ForgotPassword />} />
     <Route path="/reset-password" element={<ResetPassword />} />
-    <Route path="/order/success" element={<OrderSuccess />} />
     <Route
       path="/admin"
       element={
@@ -68,33 +63,11 @@ const routes = (
         </ProtectedRoute>
       }
     />
-    <Route
-      path="/account"
-      element={
-        <ProtectedRoute>
-          <Account />
-        </ProtectedRoute>
-      }
-    />
     <Route path="*" element={<Navigate to="/" replace />} />
   </Routes>
 );
 
 export default function App() {
-  const { search } = useLocation();
-  // `?embed=1` strips the site chrome so a page can be shown inside an iframe
-  // (the landing page frames the configurator this way).
-  const embedded = new URLSearchParams(search).get('embed') === '1';
-
-  if (embedded) {
-    return (
-      <div className="min-h-screen bg-ground">
-        <ScrollBehaviour />
-        {routes}
-      </div>
-    );
-  }
-
   return (
     <div className="flex min-h-screen flex-col bg-ground">
       <ScrollBehaviour />
@@ -109,7 +82,6 @@ export default function App() {
       </a>
 
       <Nav />
-      <CartDrawer />
 
       {/* The nav floats over the page, so everything except the landing hero
           (which pulls itself back up) starts below it. */}

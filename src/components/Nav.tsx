@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../lib/auth';
-import { useCart } from '../lib/cart';
 
 export function Logo({ className = '', size = 40 }: { className?: string; size?: number }) {
   return (
@@ -21,20 +20,22 @@ export function Logo({ className = '', size = 40 }: { className?: string; size?:
 }
 
 const LINKS = [
-  { to: '/configurator', label: 'Configurator' },
+  { to: '/#dialects', label: 'Dialects' },
   { to: '/updates', label: 'Updates' },
-  { to: '/#how', label: 'How it works' },
-  { to: '/#faq', label: 'FAQ' },
+  { to: '/#waitlist', label: 'Early access' },
 ];
 
 /**
  * The V5 nav: a floating pill that stays clear of the page until you scroll,
  * then fills in behind a blur. The gradient hairline along its bottom edge is
  * the scroll position — the only place the brand gradient appears in chrome.
+ *
+ * Signing in exists for the people who publish updates, not for customers:
+ * there is no basket and no account, so the only thing behind the door is
+ * /admin.
  */
 export default function Nav() {
   const { user, signOut } = useAuth();
-  const { itemCount, setOpen } = useCart();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -123,27 +124,10 @@ export default function Nav() {
         </div>
 
         <div className="ml-auto flex shrink-0 items-center gap-2 md:ml-0">
-          <button
-            type="button"
-            onClick={() => setOpen(true)}
-            className="btn-secondary relative px-4 py-2"
-            aria-label={`Basket, ${itemCount} item${itemCount === 1 ? '' : 's'}`}
-          >
-            Basket
-            {itemCount > 0 && (
-              <span
-                className="bg-grad absolute -right-1.5 -top-1.5 flex h-5 min-w-[20px] items-center
-                           justify-center rounded-full px-1 text-[11px] font-bold text-neutral-100"
-              >
-                {itemCount}
-              </span>
-            )}
-          </button>
-
           {user ? (
             <>
-              <Link to="/account" className="btn-secondary hidden px-4 py-2 sm:inline-flex">
-                Account
+              <Link to="/admin" className="btn-secondary hidden px-4 py-2 sm:inline-flex">
+                Admin
               </Link>
               <button
                 type="button"
@@ -192,8 +176,8 @@ export default function Nav() {
           <div className="mt-1 flex gap-2 border-t border-hairline p-2 pt-3 sm:hidden">
             {user ? (
               <>
-                <Link to="/account" className="btn-secondary flex-1 justify-center py-2.5">
-                  Account
+                <Link to="/admin" className="btn-secondary flex-1 justify-center py-2.5">
+                  Admin
                 </Link>
                 <button
                   type="button"

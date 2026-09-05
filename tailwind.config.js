@@ -104,6 +104,23 @@ export default {
           '40%': { transform: 'scale(.94)' },
           '100%': { transform: 'scale(1)' },
         },
+        /* The hero board hangs by its cable, so it never sits quite still. */
+        float: {
+          '0%,100%': { transform: 'translate(-50%, calc(-59% - 5px))' },
+          '50%': { transform: 'translate(-50%, calc(-59% + 5px))' },
+        },
+        /* A slow band of light crossing the hero, well under the artwork. */
+        sweep: {
+          '0%': { transform: 'translate3d(-40%,-20%,0) rotate(8deg)', opacity: '0' },
+          '22%': { opacity: '.45' },
+          '60%': { opacity: '.24' },
+          '100%': { transform: 'translate3d(60%,30%,0) rotate(8deg)', opacity: '0' },
+        },
+        /* The colour wash behind the board and the orb. */
+        breathe: {
+          '0%,100%': { opacity: '.82', transform: 'scale(1)' },
+          '50%': { opacity: '1', transform: 'scale(1.05)' },
+        },
       },
       animation: {
         rise: 'rise .5s cubic-bezier(.2,.8,.3,1) both',
@@ -111,6 +128,9 @@ export default {
         marquee: 'marquee 26s linear infinite',
         pulse: 'pulse 2.4s ease-in-out infinite',
         keypop: 'keypop .22s ease-out',
+        float: 'float 13s ease-in-out infinite',
+        sweep: 'sweep 24s linear infinite',
+        breathe: 'breathe 11s ease-in-out infinite',
       },
     },
   },

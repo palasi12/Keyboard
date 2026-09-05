@@ -1,262 +1,39 @@
-import { useEffect, useRef, useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 import { joinWaitlist } from '../lib/waitlist';
 import { isSupabaseConfigured } from '../lib/supabase';
 import Seo from '../components/Seo';
-import { LogoMark } from '../components/ProductArt';
-import CompatibilityCarousel, { type CompatApp } from '../components/CompatibilityCarousel';
-import BuildQuality from '../components/BuildQuality';
+import Reveal from '../components/Reveal';
+import Dialects from '../components/Dialects';
 
 /**
- * Landing page (V5).
+ * Landing page (V5 brand handoff).
  *
- * The hero board, the range picker and the profile marquee run on the
- * self-contained demo data below — deliberately self-contained
- * so the interactive toy here can drift from the real shop listing without
- * touching any commerce route. The two email forms go through the real
- * `joinWaitlist` RPC; whichever board the visitor picked rides along in the
- * `source` field.
+ * Three sections and nothing else: the board, the dialects it ships with, and
+ * a way to hear when it is orderable. There is one product and no checkout, so
+ * every route the page offers ends at the same place — the waitlist.
+ *
+ * Both email forms share one piece of state, so an address typed into the hero
+ * is still there at the bottom of the page. Signups go through the real
+ * `joinWaitlist` RPC; the local copy only exists so a returning visitor keeps
+ * the confirmed state instead of being asked twice.
  */
 
-/* --------------------------------- data --------------------------------- */
-
-interface Profile {
-  name: string;
-  keys: Array<[string, string]>;
-  dials: string[];
-}
-
-const PROFILES: Profile[] = [
-  {
-    name: 'Premiere Pro',
-    keys: [
-      ['Scrub', '⌘←/→'], ['Cut', '⌘K'], ['Ripple Del', '⇧⌦'], ['Mark In/Out', 'I / O'],
-      ['Undo', '⌘Z'], ['Redo', '⇧⌘Z'], ['Save', '⌘S'], ['Zoom In', '='], ['Play/Pause', 'Space'],
-    ],
-    dials: ['Scrub', 'Volume'],
-  },
-  {
-    name: 'Photoshop',
-    keys: [
-      ['Brush', 'B'], ['Eraser', 'E'], ['Clone', 'S'], ['Lasso', 'L'],
-      ['Undo', '⌘Z'], ['New Layer', '⇧⌘N'], ['Save', '⌘S'], ['Fit Screen', '⌘0'], ['Flatten', '⇧⌘E'],
-    ],
-    dials: ['Brush size', 'Opacity'],
-  },
-  {
-    name: 'Figma',
-    keys: [
-      ['Frame', 'F'], ['Text', 'T'], ['Pen', 'P'], ['Component', '⌥⌘K'],
-      ['Undo', '⌘Z'], ['Duplicate', '⌘D'], ['Group', '⌘G'], ['Zoom Fit', '⇧1'], ['Comment', 'C'],
-    ],
-    dials: ['Zoom', 'Opacity'],
-  },
-  {
-    name: 'Illustrator',
-    keys: [
-      ['Selection', 'V'], ['Pen', 'P'], ['Shape', 'M'], ['Pathfinder', '⌘⌥⇧F9'],
-      ['Undo', '⌘Z'], ['Group', '⌘G'], ['Save', '⌘S'], ['Zoom Fit', '⌘0'], ['Outline', '⌘Y'],
-    ],
-    dials: ['Stroke', 'Zoom'],
-  },
-  {
-    name: 'OBS',
-    keys: [
-      ['Scene 1', 'F1'], ['Scene 2', 'F2'], ['Scene 3', 'F3'], ['Mute Mic', '⌥M'],
-      ['Start Rec', '⌥R'], ['Replay', '⌥B'], ['Studio', '⌥S'], ['Transition', 'T'], ['Go Live', '⌥L'],
-    ],
-    dials: ['Mic gain', 'Desktop'],
-  },
-];
-
-const MARQUEE_EXTRA = ['Lightroom', 'DaVinci Resolve', 'After Effects', 'Ableton'];
-
-/* Names only. Read the header of CompatibilityCarousel before adding a logo. */
-const COMPAT_APPS: CompatApp[] = [...PROFILES.map((p) => p.name), ...MARQUEE_EXTRA].map(
-  (name) => ({ name }),
-);
-
-const INTERESTS = ['Taptile Dialect', 'Just following along'];
-
+/** One board exists, so there is nothing to choose between. */
+const INTEREST = 'Taptile Dialect';
 const WAITLIST_KEY = 'taptile-waitlist-v1';
 const EMAIL_SHAPE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 
-const STEPS = [
-  { title: 'Plug it in', body: 'USB-C into any computer. No drivers, no install, no account needed to use it.' },
-  {
-    title: 'Assign your keys',
-    body: 'Open the configurator and tell each key what to do — a shortcut, a macro, a whole sequence.',
-  },
-  {
-    title: 'Stop hunting for shortcuts',
-    body: 'The things you do fifty times a day become one press. That is the entire pitch.',
-  },
-];
-
 const PROMISES = [
   'You hear from us when the first batch is ready to order, and not before.',
-  'Early access to the board you picked, before the general listing.',
+  'Early access to the board, before the general listing.',
   'Your address is only used for the launch email. Leave the list in one click.',
 ];
 
-const FAQ = [
-  {
-    q: 'What can I actually program the keys to do?',
-    a: 'Keyboard shortcuts, text snippets, media controls, and multi-step macros with timing between steps. Anything your keyboard can already do, on one key.',
-  },
-  {
-    q: 'Does it work with my computer?',
-    a: 'Yes — Windows, macOS and Linux. The board stores your layout on itself, so it behaves the same on any machine you plug it into. Remapping is done in the browser, which needs Chrome or Edge; Firefox and Safari do not support WebHID yet.',
-  },
-  {
-    q: 'Do I need to solder anything?',
-    a: 'No. Every board arrives assembled and tested — plug it in and start mapping keys. The switches are soldered to the board, so changing them later is a desoldering job rather than a pull-and-push.',
-  },
-  {
-    q: 'When can I buy one?',
-    a: 'When the first batch is finished. The list gets the email before anything is listed publicly, so joining is the only way to hear about it early.',
-  },
-  {
-    q: 'What is actually in the box?',
-    a: 'The Taptile Dialect: nine Gateron tactile switches and two rotary encoders with machined aluminium caps, on XDA keycaps, in a 3D-printed case on a laser-cut acrylic base that doubles as the diffuser for the underglow. Designed and built in New Zealand.',
-  },
+const SPECS = [
+  ['Layout', '3x3 + 2'],
+  ['Board', 'RP2040'],
+  ['Firmware', 'QMK / VIA'],
 ];
-
-/* ------------------------------- component ------------------------------- */
-
-/**
- * The configurator demo — the standalone Taptile Configurator build, copied to
- * `public/software-demo/Taptile.dc.html`. It is authored for a 1280px+ desktop
- * window, so we render it at a fixed 1440×905 and scale that down to whatever
- * width the section gets — the frame height follows the scale so nothing clips.
- */
-const DEMO_W = 1440;
-const DEMO_H = 905;
-
-function SoftwareDemo() {
-  const frameRef = useRef<HTMLDivElement>(null);
-  const iframeRef = useRef<HTMLIFrameElement>(null);
-  const [scale, setScale] = useState(0);
-  const [blockedMsg, setBlockedMsg] = useState(false);
-  const toastTimer = useRef<number | undefined>(undefined);
-
-  // Scale the fixed 1440×905 demo down to fit the section width.
-  useEffect(() => {
-    const el = frameRef.current;
-    if (!el) return;
-    const update = () => setScale(Math.min(1, el.clientWidth / DEMO_W));
-    update();
-    const observer = new ResizeObserver(update);
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
-
-  // Demo lock: keep visitors on the sign-in → Test mode → Key Mapping path.
-  // The other left-rail sections (Dial Sensitivity, RGB Lighting, Advanced
-  // Keys, Firmware) and the Settings gear are dimmed and click-blocked, with an
-  // "Unavailable in demo mode" note. Applied from here because the iframe is
-  // same-origin; the demo file itself is left untouched.
-  useEffect(() => {
-    function flashBlocked() {
-      setBlockedMsg(true);
-      window.clearTimeout(toastTimer.current);
-      toastTimer.current = window.setTimeout(() => setBlockedMsg(false), 1900);
-    }
-
-    function applyLock() {
-      const iframe = iframeRef.current;
-      if (!iframe) return;
-      let doc: Document | null = null;
-      try {
-        doc = iframe.contentDocument;
-      } catch {
-        return; // cross-origin — shouldn't happen for a same-origin file
-      }
-      if (!doc || !doc.head) return;
-
-      if (!doc.getElementById('tt-demo-lock')) {
-        const style = doc.createElement('style');
-        style.id = 'tt-demo-lock';
-        style.textContent =
-          '.tt-navrow[data-nav]:not([data-nav="0"]){opacity:.4 !important;cursor:not-allowed !important}' +
-          '.tt-navrow[data-nav]:not([data-nav="0"]):hover{background:transparent !important}' +
-          '[title="Settings"]{opacity:.4 !important;cursor:not-allowed !important}';
-        doc.head.appendChild(style);
-      }
-
-      const marked = doc as Document & { __ttLocked?: boolean };
-      if (!marked.__ttLocked) {
-        marked.__ttLocked = true;
-        const guard = (event: Event) => {
-          const target = event.target as HTMLElement | null;
-          if (!target || !target.closest) return;
-          const navrow = target.closest('.tt-navrow');
-          const lockedNav = !!navrow && navrow.getAttribute('data-nav') !== '0';
-          const gear = target.closest('[title="Settings"]');
-          if (lockedNav || gear) {
-            event.preventDefault();
-            event.stopPropagation();
-            flashBlocked();
-          }
-        };
-        doc.addEventListener('mousedown', guard, true);
-        doc.addEventListener('click', guard, true);
-      }
-    }
-
-    // The demo renders asynchronously via support.js, so retry for a few seconds.
-    applyLock();
-    let tries = 0;
-    const id = window.setInterval(() => {
-      applyLock();
-      if (++tries > 24) window.clearInterval(id);
-    }, 250);
-    return () => {
-      window.clearInterval(id);
-      window.clearTimeout(toastTimer.current);
-    };
-  }, []);
-
-  return (
-    <div className="mt-11 overflow-hidden rounded-2xl border border-white/10 bg-keycap shadow-[0_40px_90px_rgba(0,0,0,.6)]">
-      <div className="flex items-center gap-3.5 border-b border-hairline bg-white/[0.02] px-4 py-3">
-        <span className="flex gap-1.5">
-          <span className="h-2.5 w-2.5 rounded-full bg-[#3d3a3a]" />
-          <span className="h-2.5 w-2.5 rounded-full bg-[#3d3a3a]" />
-          <span className="h-2.5 w-2.5 rounded-full bg-[#3d3a3a]" />
-        </span>
-        <span className="text-[11.5px] uppercase tracking-[0.1em] text-neutral-600">Taptile — Configurator</span>
-        <span className="ml-auto text-[11px] uppercase tracking-[0.14em] text-neutral-700">Demo mode</span>
-      </div>
-      <div
-        ref={frameRef}
-        className="relative w-full overflow-hidden bg-ground"
-        style={{ height: scale ? DEMO_H * scale : 560 }}
-      >
-        <iframe
-          ref={iframeRef}
-          src="/software-demo/Taptile.dc.html"
-          title="Taptile configurator demo — key mapping, dials, lighting"
-          loading="lazy"
-          style={{
-            width: DEMO_W,
-            height: DEMO_H,
-            border: 0,
-            transformOrigin: 'top left',
-            transform: `scale(${scale || 0.01})`,
-          }}
-        />
-
-        {blockedMsg && (
-          <div className="pointer-events-none absolute inset-x-0 bottom-4 flex justify-center">
-            <span className="rounded-full border border-white/15 bg-black/80 px-4 py-2 text-[13px] text-neutral-100 shadow-[0_10px_30px_rgba(0,0,0,.5)] backdrop-blur">
-              Unavailable in demo mode
-            </span>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
 
 interface Saved {
   email: string;
@@ -264,20 +41,13 @@ interface Saved {
 }
 
 export default function Landing() {
-  // Hero board demo — which app profile is showing and which key is lit.
-  const [profile, setProfile] = useState(0);
-  const [pressed, setPressed] = useState(4);
-  const [pressTick, setPressTick] = useState(0);
-
-  // Waitlist — shared across both forms, exactly like the mockup.
   const [email, setEmail] = useState('');
-  const [interest, setInterest] = useState('Not sure yet');
   const [error, setError] = useState<string | null>(null);
   const [status, setStatus] = useState<'idle' | 'busy'>('idle');
   const [saved, setSaved] = useState<Saved | null>(null);
+  // Keystroke count, so the nine keys on the signup card light under typing.
+  const [typed, setTyped] = useState(0);
 
-  // Remember a signup across reloads so returning visitors keep the confirmed
-  // state — the same thing the design mockup did.
   useEffect(() => {
     try {
       const raw = localStorage.getItem(WAITLIST_KEY);
@@ -287,26 +57,27 @@ export default function Landing() {
     }
   }, []);
 
-  const active = PROFILES[profile]!;
-  const pressedKey = active.keys[pressed] ?? active.keys[0]!;
-
   async function submit(event: FormEvent, source: string) {
     event.preventDefault();
     const trimmed = email.trim();
     setError(null);
 
+    if (!trimmed) {
+      setError('Enter your email address.');
+      return;
+    }
     if (!EMAIL_SHAPE.test(trimmed)) {
-      setError('That does not look like a valid email address.');
+      setError('That does not look like an email address.');
       return;
     }
 
     setStatus('busy');
 
-    // When Supabase is wired up the signup is stored for real. Until then
-    // (pre-launch, no keys) we still confirm the visitor and keep their pick
-    // locally, so the form works instead of showing a "not connected" error.
+    // With Supabase wired up the signup is stored for real. Before that
+    // (pre-launch, no keys) confirm the visitor anyway rather than showing them
+    // an error for something they did nothing wrong in.
     if (isSupabaseConfigured) {
-      const result = await joinWaitlist(trimmed, source);
+      const result = await joinWaitlist(trimmed, `${source}:${INTEREST}`);
       if (!result.ok) {
         setError(result.error ?? 'Something went wrong.');
         setStatus('idle');
@@ -316,7 +87,7 @@ export default function Landing() {
       await new Promise((resolve) => setTimeout(resolve, 400));
     }
 
-    const record: Saved = { email: trimmed, interest };
+    const record: Saved = { email: trimmed, interest: INTEREST };
     try {
       localStorage.setItem(WAITLIST_KEY, JSON.stringify(record));
     } catch {
@@ -335,12 +106,13 @@ export default function Landing() {
     setSaved(null);
     setEmail('');
     setError(null);
-    setInterest('Not sure yet');
+    setTyped(0);
   }
 
-  function jumpToWaitlist() {
-    const el = document.getElementById('waitlist');
-    if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 70, behavior: 'smooth' });
+  function onEmailChange(value: string) {
+    setEmail(value);
+    setError(null);
+    setTyped((count) => count + 1);
   }
 
   const submitLabel = status === 'busy' ? 'Joining…' : 'Join the list';
@@ -356,68 +128,64 @@ export default function Landing() {
 
       {/* ---------------------------------- hero ---------------------------------- */}
       {/* Runs up under the fixed nav — the pill floats over the artwork. */}
-      <section className="relative -mt-[88px] overflow-hidden">
+      <section className="relative -mt-[88px] overflow-hidden bg-ground">
         <div className="aurora pointer-events-none absolute inset-0" aria-hidden="true" />
         <div
-          className="pointer-events-none absolute inset-x-0 bottom-0 h-1/4"
           aria-hidden="true"
+          className="pointer-events-none absolute -left-1/5 -top-[30%] h-[170%] w-[70%] animate-sweep blur-[60px]"
+          style={{
+            background:
+              'linear-gradient(100deg, rgba(255,255,255,0), rgba(201,180,255,.05) 46%, rgba(255,255,255,0))',
+          }}
+        />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-[24%]"
           style={{
             background:
               'linear-gradient(180deg, rgba(11,10,10,0), rgba(11,10,10,.72) 78%, rgba(11,10,10,.96))',
           }}
         />
-        <div className="relative z-[3] mx-auto grid min-h-screen max-w-shell items-center gap-12 px-5 pb-16 pt-[112px] lg:grid-cols-[1.05fr_.95fr] lg:gap-8">
-          {/* left: pitch + inline waitlist */}
-          <div className="animate-rise">
-            <p className="inline-flex items-center gap-2 rounded-full border border-hairline bg-white/[0.03] px-3.5 py-1.5 text-[11px] tracking-[0.06em] text-neutral-400">
-              <span className="dot-grad animate-pulse" />
-              Not shipping yet — first batch opens to the list
-            </p>
 
-            <h1 className="mt-6 whitespace-nowrap text-[clamp(26px,3vw,46px)] font-heading leading-[1.1] tracking-heading text-neutral-100">
+        <div
+          className="relative z-[3] mx-auto grid min-h-screen max-w-[1200px] items-center gap-8
+                     px-5 pb-7 pt-24 lg:grid-cols-[minmax(0,1fr)_minmax(0,470px)] lg:gap-0"
+        >
+          <div className="animate-rise relative z-[3] w-full max-w-[600px] lg:justify-self-end">
+            <h1 className="text-[clamp(26px,3vw,46px)] leading-[1.1] text-neutral-100 sm:whitespace-nowrap">
               Nine keys. Two dials.
               <br />
-              <span className="serif whitespace-normal text-[clamp(32px,3.8vw,58px)]">
+              <span className="serif text-[clamp(32px,3.8vw,58px)]">
                 As many dialects as you need.
               </span>
             </h1>
 
-            <p className="mt-6 max-w-lg text-lg leading-relaxed text-neutral-400">
-              The Dialect is a nine-key macro pad with two clicking dials and a lit acrylic
-              base. Map it once in the configurator and the layout lives on the board.
+            <p className="mt-5 max-w-[470px] text-[17.5px] leading-[1.62] text-neutral-400">
+              The Dialect is a nine-key macro pad with two clicking dials and a lit acrylic base.
+              Map it once in the configurator and the layout lives on the board.
             </p>
 
-            <p className="mt-5 max-w-lg text-[13px] leading-relaxed text-neutral-600">
-              <span className="font-semibold text-neutral-400">Designed in Auckland, New Zealand</span>
-              {' \u00B7 '}
-              Drawn up by a working video editor, for the timeline.
-            </p>
-
-            <div className="mt-9 max-w-lg">
+            <div className="mt-7 max-w-[470px]">
               {saved ? (
                 <div
                   role="status"
                   aria-live="polite"
-                  className="rounded-xl border border-white/[0.16] bg-surface px-6 py-5 shadow-[0_10px_30px_rgba(0,0,0,.35)]"
+                  className="rounded-[18px] border border-white/[0.16] bg-surface px-[22px] py-5 shadow-panel"
                 >
-                  <p className="flex items-center gap-2.5 font-heading text-base text-neutral-100">
-                    <span className="grid h-6 w-6 place-items-center rounded-full bg-[#3ec95f] text-[13px] text-ground">
+                  <p className="flex items-center gap-2.5 font-heading text-[17px] text-neutral-100">
+                    <span className="grid h-[22px] w-[22px] place-items-center rounded-full bg-[#3ec95f] text-[13px] text-ground">
                       ✓
                     </span>
-                    You&apos;re on the list.
+                    You are on the list.
                   </p>
                   <p className="mt-2 text-sm text-neutral-400">
-                    We&apos;ll email {saved.email} once these are ready to order. Nothing else.
+                    We will email {saved.email} once the first run opens. We have noted the{' '}
+                    {saved.interest}.
                   </p>
-                  {saved.interest !== 'Not sure yet' && (
-                    <p className="mt-2 text-[13px] text-neutral-600">
-                      We&apos;ve noted the {saved.interest}.
-                    </p>
-                  )}
                 </div>
               ) : (
-                <form onSubmit={(e) => submit(e, `landing-hero:${interest}`)} noValidate>
-                  <div className="flex gap-2.5">
+                <form onSubmit={(event) => submit(event, 'hero')} noValidate>
+                  <div className="flex flex-col gap-2.5 sm:flex-row">
                     <label htmlFor="hero-email" className="sr-only">
                       Email address
                     </label>
@@ -428,344 +196,194 @@ export default function Landing() {
                       autoComplete="email"
                       placeholder="you@example.com"
                       value={email}
-                      onChange={(e) => {
-                        setEmail(e.target.value);
-                        setError(null);
-                      }}
-                      className="field flex-1"
-                      disabled={status === 'busy'}
+                      onChange={(event) => onEmailChange(event.target.value)}
+                      className="field h-[52px] flex-1 border-white/[0.14] bg-surface/70 px-5 text-[15.5px] backdrop-blur"
                     />
-                    <button type="submit" className="btn-primary shrink-0 px-6 py-3.5 text-base" disabled={status === 'busy'}>
+                    <button
+                      type="submit"
+                      disabled={status === 'busy'}
+                      className="btn-primary h-[52px] shrink-0 whitespace-nowrap px-7 text-[15px]"
+                    >
                       {submitLabel}
                     </button>
                   </div>
+
                   {error && (
                     <p role="alert" className="mt-2.5 text-sm text-danger">
                       {error}
                     </p>
                   )}
-                  <p className="mt-3 text-[13px] text-neutral-600">
-                    We&apos;ll email you when the first batch is ready to order.
+
+                  <p className="mt-3 max-w-[440px] text-[13.5px] text-neutral-600">
+                    No payment now · one email when the first run opens
                   </p>
                 </form>
               )}
             </div>
 
-            <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-neutral-500">
+            <div className="mt-6 flex flex-wrap items-center gap-x-[18px] gap-y-2 text-sm text-neutral-500">
+              <span>NZ$70</span>
+              <span className="h-3 w-px bg-neutral-100/[0.14]" />
               <span>Windows, macOS, Linux</span>
-              <span className="h-3 w-px bg-divider" />
+              <span className="h-3 w-px bg-neutral-100/[0.14]" />
               <span>Remapped in the browser</span>
-              <span className="h-3 w-px bg-divider" />
-              <span>Layout stored on the board</span>
             </div>
+
+            <div
+              className="mt-6 h-px w-full max-w-[470px]"
+              style={{
+                background: 'linear-gradient(90deg, rgba(255,255,255,.16), rgba(255,255,255,0))',
+              }}
+            />
+
+            <dl className="mt-[18px] grid w-full max-w-[470px] grid-cols-3 gap-[18px]">
+              {SPECS.map(([label, value]) => (
+                <div key={label} className="flex flex-col gap-1.5">
+                  <dt className="text-[10px] uppercase tracking-[0.18em] text-neutral-700">
+                    {label}
+                  </dt>
+                  <dd className="font-heading text-sm tracking-heading text-neutral-200">{value}</dd>
+                </div>
+              ))}
+            </dl>
           </div>
 
-          {/* right: the product itself */}
-          <div className="relative animate-rise lg:-mr-8">
-            <img
-              src="/dialect-hero.png"
-              alt="The Taptile Dialect — nine keys, two dials, and its lit acrylic base"
-              width={2200}
-              height={2750}
-              className="mx-auto w-full max-w-[440px] select-none lg:max-w-none"
-              draggable={false}
-            />
+          <div className="relative z-[1] h-[380px] min-w-0 sm:h-[480px] lg:h-auto lg:self-stretch">
+            <div
+              className="absolute left-1/2 top-1/2 h-[min(910px,168vh)] w-auto animate-float"
+              style={{ aspectRatio: '2200 / 2750' }}
+            >
+              <div
+                aria-hidden="true"
+                className="absolute left-[22%] top-[62%] h-[16%] w-[66%] rounded-full opacity-55 blur-[40px]"
+                style={{
+                  background:
+                    'radial-gradient(closest-side, rgba(198,150,255,.9), rgba(139,107,255,0) 78%)',
+                }}
+              />
+              <div
+                aria-hidden="true"
+                className="absolute left-[20%] top-[56%] w-[74%] animate-breathe rounded-full pb-[74%] blur-[74px]"
+                style={{
+                  background:
+                    'radial-gradient(closest-side at 30% 26%, rgba(63,160,255,.6), rgba(63,160,255,0) 70%), radial-gradient(closest-side at 56% 52%, rgba(139,107,255,.58), rgba(139,107,255,0) 72%), radial-gradient(closest-side at 74% 80%, rgba(233,107,216,.54), rgba(233,107,216,0) 70%)',
+                }}
+              />
+              <div
+                aria-hidden="true"
+                className="absolute bottom-[12%] left-[18%] h-[7%] w-[66%] rounded-full blur-[26px]"
+                style={{
+                  background: 'radial-gradient(closest-side, rgba(0,0,0,.66), rgba(0,0,0,0) 76%)',
+                }}
+              />
+              <img
+                src="/dialect-hero.png"
+                alt="The Taptile Dialect macro pad hanging by its braided cable, over its lit acrylic base"
+                className="relative block h-full w-full object-contain"
+              />
+            </div>
           </div>
         </div>
       </section>
-
-      {/* ------------------------------ build quality ------------------------------ */}
-      <BuildQuality />
 
       {/* -------------------------------- dialects -------------------------------- */}
-      <section id="dialects" className="relative overflow-hidden border-t border-hairline">
-        <div className="aurora-soft pointer-events-none absolute inset-0" aria-hidden="true" />
-        <div className="relative z-[2] mx-auto grid max-w-shell items-center gap-12 px-5 py-[88px] lg:grid-cols-[.85fr_1.15fr]">
-          <div>
-            <p className="kicker">
-              <span className="dot-grad" />
-              Dialects
-            </p>
-            <h2 className="mt-3.5 text-[clamp(26px,3.2vw,40px)] font-heading leading-[1.1] tracking-heading text-neutral-100">
-              Nine keys, two dials,
-              <br />
-              <span className="serif text-[clamp(30px,3.9vw,50px)]">relabelled per app.</span>
-            </h2>
-            <p className="mt-5 max-w-md text-[17px] leading-relaxed text-neutral-400">
-              Each dialect remaps the keys and the dials to the app you are already in.
-              Switch between them below and watch the same board change its mind.
-            </p>
-          </div>
-
-          <div id="try" className="animate-rise scroll-mt-24">
-            <div className="mb-3.5 flex items-center gap-2.5">
-              <span className="text-[10px] uppercase tracking-[0.16em] text-neutral-500">Try a profile</span>
-              <span className="h-0.5 flex-1 bg-divider" />
-            </div>
-
-            <div className="mb-4 flex flex-wrap gap-1.5">
-              {PROFILES.map((p, i) => {
-                const on = i === profile;
-                return (
-                  <button
-                    key={p.name}
-                    type="button"
-                    onClick={() => setProfile(i)}
-                    aria-pressed={on}
-                    className="rounded-full border px-3.5 py-1.5 text-[13px] font-semibold transition"
-                    style={{
-                      borderColor: on ? '#f8f4f4' : 'rgba(255,255,255,.12)',
-                      background: on ? '#f8f4f4' : 'rgba(255,255,255,.02)',
-                      color: on ? '#131111' : '#bab6b6',
-                    }}
-                  >
-                    {p.name}
-                  </button>
-                );
-              })}
-            </div>
-
-            <div className="stage-soft flex justify-center rounded-xl p-7">
-              <div className="overflow-hidden rounded-xl border border-hairline bg-surface shadow-shell">
-                <div className="flex items-center gap-2.5 border-b border-hairline bg-white/[0.02] px-4 py-2.5">
-                  <span className="h-2 w-4 rounded-[3px] border border-neutral-900 bg-bezel" />
-                  <span className="text-[9px] font-heading uppercase tracking-[0.18em] text-neutral-400">
-                    Taptile Dialect
-                  </span>
-                  <span className="ml-auto text-[8.5px] tracking-[0.14em] text-neutral-700">TP-09D2</span>
-                  <span className="h-1.5 w-1.5 rounded-full bg-[#3ec95f]" />
-                </div>
-
-                <div className="px-6 pb-6 pt-5">
-                  {/* Rear strip — logo left, both encoders right. This is where they
-                      sit on the real top plate: behind the key cluster, not in front. */}
-                  <div className="mb-3.5 flex items-center gap-2.5 rounded-lg border border-hairline bg-keycap/60 px-3.5 py-2.5">
-                    <span className="shrink-0 text-neutral-600">
-                      <LogoMark size={24} />
-                    </span>
-                    <div className="flex flex-1 justify-end gap-5">
-                      {active.dials.map((label, i) => (
-                        <span key={label} className="flex flex-col items-center gap-1.5">
-                          <span className="grid h-[56px] w-[56px] place-items-center rounded-full border border-bezel shadow-cap"
-                                style={{ background: 'radial-gradient(circle at 50% 34%, #2b2826, #131111 72%)' }}>
-                            <span className="text-[9px] text-neutral-500">{label}</span>
-                          </span>
-                          <span className="text-[8px] font-heading tracking-[0.14em] text-neutral-700">D{i + 1}</span>
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="rounded-lg border border-hairline bg-ground p-3">
-                  <div className="grid grid-cols-3 gap-2.5" style={{ gridAutoRows: '78px', gridTemplateColumns: 'repeat(3, 78px)' }}>
-                    {active.keys.map((k, i) => {
-                      const on = i === pressed;
-                      return (
-                        <button
-                          key={on ? `k${i}-${pressTick}` : `k${i}`}
-                          type="button"
-                          onClick={() => {
-                            setPressed(i);
-                            setPressTick((t) => t + 1);
-                          }}
-                          aria-label={`Key ${i + 1}, ${k[0]}`}
-                          className="rounded-md p-[3px] shadow-cap"
-                          style={{
-                            background: '#2a2725',
-                            border: `1px solid ${on ? 'rgba(255,255,255,.45)' : 'rgba(255,255,255,.06)'}`,
-                            animation: on ? 'keypop .22s ease-out' : 'none',
-                          }}
-                        >
-                          <span
-                            className="relative flex h-full w-full flex-col items-center justify-center gap-1 rounded-sm"
-                            style={{ background: on ? '#f8f4f4' : '#131111' }}
-                          >
-                            <span
-                              className="absolute left-1.5 top-1 text-[8px] font-heading tracking-[0.1em]"
-                              style={{ color: on ? 'rgba(19,17,17,.5)' : '#605d5d' }}
-                            >
-                              K{i + 1}
-                            </span>
-                            <span
-                              className="px-1 text-center text-[9.5px] leading-tight"
-                              style={{ color: on ? 'rgba(19,17,17,.75)' : '#9b9797' }}
-                            >
-                              {k[0]}
-                            </span>
-                          </span>
-                        </button>
-                      );
-                    })}
-                  </div>
-
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-3.5 flex items-center gap-3 rounded-lg border border-hairline bg-white/[0.02] px-4 py-3">
-              <span className="text-[9.5px] uppercase tracking-[0.16em] text-neutral-600">Fires</span>
-              <span className="font-mono text-sm text-neutral-100">{pressedKey[1]}</span>
-              <span className="ml-auto text-[13px] text-neutral-500">
-                {pressedKey[0]} · {active.name}
-              </span>
-            </div>
-            <p className="mt-2.5 text-xs text-neutral-700">
-              Press a key. Switch profiles to see the same board in another app.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* ------------------------------ compatibility ------------------------------ */}
-      <CompatibilityCarousel apps={COMPAT_APPS} />
-
-      {/* --------------------------- software (#software) --------------------------- */}
-      <section id="software" className="scroll-mt-20 border-t border-hairline py-[88px]">
-        <div className="mx-auto max-w-shell px-5">
-          <div className="flex flex-wrap items-end justify-between gap-8">
-            <div>
-              <p className="kicker-accent">01 — Software</p>
-              <h2 className="mt-3 text-3xl font-heading tracking-heading text-neutral-100 sm:text-4xl">
-                The app comes with it
-              </h2>
-              <p className="mt-4 max-w-lg text-neutral-400">
-                Taptile ships with the configurator — no subscription, no account required. Map a
-                key, name it, pick an icon, set the light. It writes straight to the board.
-              </p>
-            </div>
-            <p className="max-w-[260px] text-[13px] text-neutral-600">
-              The real app, running right here. Hit <span className="text-neutral-300">Test mode</span> on
-              the sign-in screen to jump straight to the key-mapping page.
-            </p>
-          </div>
-
-          <SoftwareDemo />
-        </div>
-      </section>
-
-      {/* ------------------------------- how (#how) ------------------------------- */}
-      <section id="how" className="scroll-mt-20 border-t border-hairline py-[88px]">
-        <div className="mx-auto max-w-shell px-5">
-          <p className="kicker-accent">02 — Setup</p>
-          <h2 className="mt-3 text-3xl font-heading tracking-heading text-neutral-100 sm:text-4xl">
-            How it works
-          </h2>
-          <div className="mt-11 grid border-t border-hairline sm:grid-cols-3">
-            {STEPS.map((step, index) => (
-              <div key={step.title} className="border-hairline pr-7 pt-8 pb-8 sm:border-r sm:last:border-r-0">
-                <span className="grid h-11 w-11 place-items-center rounded-full bg-neutral-100 font-heading text-[15px] text-keycap shadow-glow">
-                  {index + 1}
-                </span>
-                <h3 className="mt-[22px] text-lg font-heading text-neutral-100">{step.title}</h3>
-                <p className="mt-2.5 max-w-xs text-[15px] leading-relaxed text-neutral-400">{step.body}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ------------------------------ poster statement ------------------------------ */}
-      <section className="border-t border-hairline py-[88px]">
-        <div className="mx-auto max-w-shell px-5">
-          <div className="overflow-hidden rounded-2xl bg-neutral-100 px-14 py-16 shadow-glow">
-            <p className="text-[10px] uppercase tracking-[0.16em] text-neutral-700">Taptile Dialect · TP-09D2</p>
-            <h2 className="mt-3.5 max-w-3xl text-4xl font-heading leading-[1.02] tracking-heading text-ground sm:text-5xl">
-              Nine keys. Two dials.
-              <br />
-              <span className="serif">Every shortcut you own.</span>
-            </h2>
-            <div className="mt-9 flex flex-wrap items-center gap-5">
-              <button
-                type="button"
-                onClick={jumpToWaitlist}
-                className="inline-flex items-center rounded-full bg-ground px-6 py-3.5 font-heading text-base text-neutral-100 transition hover:bg-neutral-900"
-              >
-                Get told when it ships
-              </button>
-              <span className="text-sm text-neutral-700">
-                NZ$70. One board, built properly.
-              </span>
-            </div>
-          </div>
-        </div>
-      </section>
+      <Dialects />
 
       {/* ---------------------------- waitlist (#waitlist) ---------------------------- */}
       <section
         id="waitlist"
-        className="scroll-mt-20 border-t border-hairline"
+        className="relative scroll-mt-[70px] overflow-hidden"
         style={{
           backgroundImage:
-            'radial-gradient(circle at 50% 0%, rgba(139,107,255,.18), transparent 60%), radial-gradient(circle at 78% 40%, rgba(233,107,216,.10), transparent 62%)',
-          backgroundSize: '100% 100%, 100% 100%',
+            'linear-gradient(180deg, #0b0a0a 0%, rgba(11,10,10,0) 280px), radial-gradient(64% 52% at 22% 24%, rgba(63,160,255,.16), rgba(11,10,10,0) 72%), radial-gradient(58% 54% at 78% 78%, rgba(233,107,216,.16), rgba(11,10,10,0) 74%), radial-gradient(70% 60% at 50% 46%, rgba(139,107,255,.14), rgba(11,10,10,0) 76%)',
         }}
       >
-        <div className="mx-auto grid max-w-shell items-center gap-10 px-5 py-16 lg:grid-cols-[.9fr_1.1fr]">
+        <Reveal className="mx-auto grid max-w-shell items-start gap-12 px-5 py-24 lg:grid-cols-2 lg:gap-16">
           <div>
-            <p className="kicker-accent">03 — Early access</p>
-            <h2 className="mt-3 text-[clamp(24px,2.6vw,34px)] font-heading leading-[1.1] tracking-heading text-neutral-100">
-              Want one
-              <span className="serif text-[clamp(28px,3.1vw,42px)]"> first?</span>
+            <p className="kicker-accent">Early access</p>
+            <h2 className="mt-3 text-[clamp(34px,3.6vw,48px)] leading-[1.05] text-neutral-100">
+              Want one <span className="serif text-[clamp(40px,4.4vw,58px)]">first?</span>
             </h2>
-            <p className="mt-3 max-w-sm text-[15px] leading-relaxed text-neutral-500">
-              {PROMISES[0]} Your address is only used for that email.
+            <p className="mt-[18px] max-w-[460px] text-[17px] leading-[1.6] text-neutral-400">
+              Leave your address and we will email you once the board is ready to order.
             </p>
+
+            <div className="mt-8 flex flex-col gap-3.5">
+              {PROMISES.map((promise) => (
+                <div key={promise} className="flex items-start gap-3">
+                  <span
+                    aria-hidden="true"
+                    className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full
+                               border border-white/[0.16] text-[11px] text-neutral-100"
+                  >
+                    ✓
+                  </span>
+                  <p className="text-[15px] text-neutral-400">{promise}</p>
+                </div>
+              ))}
+            </div>
           </div>
 
-          <div className="card p-7">
+          <div className="rounded-2xl border border-white/[0.12] bg-surface p-8 shadow-shell">
             {saved ? (
               <div role="status" aria-live="polite">
                 <span className="grid h-11 w-11 place-items-center rounded-full bg-[#3ec95f] text-[22px] text-ground">
                   ✓
                 </span>
-                <h3 className="mt-5 text-2xl font-heading tracking-heading text-neutral-100">
-                  You&apos;re on the list.
-                </h3>
-                <p className="mt-2.5 text-[15px] leading-relaxed text-neutral-400">
-                  We&apos;ll email {saved.email} once these are ready to order. Nothing else.
+                <h3 className="mt-5 text-2xl text-neutral-100">You are on the list.</h3>
+                <p className="mt-2.5 text-[15px] leading-[1.6] text-neutral-400">
+                  We will email {saved.email} once these are ready to order. Nothing else.
                 </p>
-                <div className="mt-6 border-t border-hairline pt-5">
-                  <p className="text-[10px] uppercase tracking-[0.14em] text-neutral-700">Interested in</p>
-                  <p className="mt-1 text-[22px] font-heading text-neutral-100">{saved.interest}</p>
+                <div className="mt-6 border-t border-white/[0.08] pt-5">
+                  <p className="text-[10px] uppercase tracking-[0.14em] text-neutral-700">
+                    Interested in
+                  </p>
+                  <p className="mt-1 font-heading text-[22px] text-neutral-100">{saved.interest}</p>
                 </div>
                 <button
                   type="button"
                   onClick={resetWaitlist}
-                  className="mt-[22px] text-[13px] text-neutral-600 underline"
+                  className="mt-5 border-0 bg-none p-0 text-[13px] text-neutral-600 underline"
                 >
                   Use a different email
                 </button>
               </div>
             ) : (
-              <form onSubmit={(e) => submit(e, `landing:${interest}`)} noValidate>
-                <p className="mb-2.5 text-xs text-neutral-500">Which board do you want?</p>
-                <div className="flex flex-wrap gap-2">
-                  {INTERESTS.map((label) => {
-                    const on = interest === label;
+              <form onSubmit={(event) => submit(event, 'waitlist')} noValidate>
+                {/* Nine keys that light under your typing, like the board does. */}
+                <div aria-hidden="true" className="mb-[22px] flex gap-[7px]">
+                  {Array.from({ length: 9 }, (_, i) => {
+                    const head = (typed - 1) % 9;
+                    const back = (head - i + 9) % 9;
+                    const heat = typed === 0 ? 0 : Math.max(0, 1 - back / 3.4);
+                    const lit = heat > 0.05;
                     return (
-                      <button
-                        key={label}
-                        type="button"
-                        onClick={() => {
-                          setInterest(label);
-                          setError(null);
-                        }}
-                        aria-pressed={on}
-                        className="rounded-full border px-4 py-2.5 text-[13px] font-semibold transition"
+                      <span
+                        key={i}
+                        className="flex-1 rounded-[9px] p-0.5 transition-[transform,box-shadow] duration-[250ms]"
                         style={{
-                          borderColor: on ? '#f8f4f4' : 'rgba(255,255,255,.12)',
-                          background: on ? '#f8f4f4' : 'rgba(255,255,255,.02)',
-                          color: on ? '#131111' : '#bab6b6',
+                          aspectRatio: '1',
+                          background: 'linear-gradient(180deg,#3a3634,#211f1e)',
+                          transform: heat > 0.55 ? 'translateY(1px) scale(.97)' : 'none',
+                          boxShadow: lit
+                            ? `0 5px 12px rgba(0,0,0,.5), 0 0 ${(6 + 16 * heat).toFixed(0)}px rgba(139,107,255,${(0.5 * heat).toFixed(2)})`
+                            : '0 5px 12px rgba(0,0,0,.5)',
                         }}
                       >
-                        {label}
-                      </button>
+                        <span
+                          className="block h-full w-full rounded-[7px] transition-[background] duration-[250ms]"
+                          style={{
+                            background: lit
+                              ? `rgba(139,107,255,${(0.16 + 0.72 * heat).toFixed(2)})`
+                              : 'linear-gradient(180deg,#211f1e,#171514)',
+                          }}
+                        />
+                      </span>
                     );
                   })}
                 </div>
 
-                <label htmlFor="waitlist-email" className="mb-2 mt-6 block text-xs text-neutral-500">
+                <label htmlFor="waitlist-email" className="label">
                   Email address
                 </label>
                 <input
@@ -775,12 +393,8 @@ export default function Landing() {
                   autoComplete="email"
                   placeholder="you@example.com"
                   value={email}
-                  onChange={(e) => {
-                    setEmail(e.target.value);
-                    setError(null);
-                  }}
-                  className="field"
-                  disabled={status === 'busy'}
+                  onChange={(event) => onEmailChange(event.target.value)}
+                  className="field border-white/[0.12] bg-keycap px-5 py-3.5 text-[15px]"
                 />
 
                 {error && (
@@ -791,40 +405,19 @@ export default function Landing() {
 
                 <button
                   type="submit"
-                  className="btn-primary mt-4 w-full py-3.5"
                   disabled={status === 'busy'}
+                  className="btn-primary mt-4 w-full py-[15px] text-[15px]"
                 >
                   {submitLabel}
                 </button>
 
-                <p className="mt-3.5 text-xs leading-relaxed text-neutral-500">
-                  We&apos;ll only use your address for the launch email.
+                <p className="mt-3.5 text-xs leading-[1.5] text-neutral-500">
+                  We will only use your address for the launch email.
                 </p>
               </form>
             )}
           </div>
-        </div>
-      </section>
-
-      {/* ------------------------------- faq (#faq) ------------------------------- */}
-      <section id="faq" className="scroll-mt-20 border-t border-hairline py-[88px]">
-        <div className="mx-auto max-w-[820px] px-5">
-          <p className="kicker-accent">04 — Questions</p>
-          <h2 className="mt-3 text-3xl font-heading tracking-heading text-neutral-100 sm:text-4xl">
-            Questions
-          </h2>
-          <div className="mt-9 border-t border-hairline">
-            {FAQ.map((item) => (
-              <details key={item.q} className="group border-b border-hairline px-1 py-[22px]">
-                <summary className="flex cursor-pointer items-center justify-between gap-4 text-left text-[17px] font-medium text-neutral-100 marker:content-['']">
-                  {item.q}
-                  <span className="shrink-0 text-xl text-neutral-500 transition group-open:rotate-45">+</span>
-                </summary>
-                <p className="mt-3.5 max-w-[640px] text-[15px] leading-relaxed text-neutral-400">{item.a}</p>
-              </details>
-            ))}
-          </div>
-        </div>
+        </Reveal>
       </section>
     </>
   );
