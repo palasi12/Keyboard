@@ -187,7 +187,9 @@ export default function Dialects() {
       id="dialects"
       className="relative scroll-mt-[70px] overflow-hidden py-28"
       style={{
-        background: 'linear-gradient(180deg, #0b0a0a 0%, #131111 16%, #131111 84%, #0b0a0a 100%)',
+        // Long ramps at both ends. The panel tone is only a few points off the
+        // ground colour, so a short ramp reads as a band rather than a blend.
+        background: 'linear-gradient(180deg, #0b0a0a 0%, #131111 24%, #131111 76%, #0b0a0a 100%)',
       }}
     >
       <div

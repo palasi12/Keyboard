@@ -1,12 +1,11 @@
 import { Link } from 'react-router-dom';
 import { Logo } from './Nav';
 
+// Solid ground. The section above now fades itself out, so a second fade here
+// only stacked two ramps on top of each other.
 export default function Footer() {
   return (
-    <footer
-      className="relative py-14"
-      style={{ background: 'linear-gradient(180deg, rgba(11,10,10,0), #0b0a0a 120px)' }}
-    >
+    <footer className="relative bg-ground py-14">
       <div
         aria-hidden="true"
         className="absolute inset-x-0 top-0 h-px"

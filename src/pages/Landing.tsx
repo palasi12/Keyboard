@@ -117,6 +117,12 @@ export default function Landing() {
 
   const submitLabel = status === 'busy' ? 'Joining…' : 'Join the list';
 
+  // Signups from before there was one board stored things like "Not sure yet"
+  // here, which the confirmation copy renders as "We have noted the Not sure
+  // yet." Anything that is not the board we actually sell is treated as unsaid
+  // rather than rewritten — they did not pick it.
+  const notedInterest = saved?.interest === INTEREST ? INTEREST : null;
+
   return (
     <>
       <Seo
@@ -138,29 +144,36 @@ export default function Landing() {
               'linear-gradient(100deg, rgba(255,255,255,0), rgba(201,180,255,.05) 46%, rgba(255,255,255,0))',
           }}
         />
+        {/* Lands the hero on solid ground, not on .96 of it — the last few per
+            cent is where a seam shows against the next section. Tall enough to
+            swallow the bottom of the board, which overruns the section. */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 bottom-0 h-[24%]"
+          className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] h-[34%]"
           style={{
             background:
-              'linear-gradient(180deg, rgba(11,10,10,0), rgba(11,10,10,.72) 78%, rgba(11,10,10,.96))',
+              'linear-gradient(180deg, rgba(11,10,10,0) 0%, rgba(11,10,10,.5) 46%, rgba(11,10,10,.86) 76%, #0b0a0a 100%)',
           }}
         />
 
+        {/* The handoff was drawn at 1440x905, where its fixed pixel sizes filled
+            the window exactly. On a larger monitor those same values leave the
+            whole hero marooned in the middle, so the shell, the type and the
+            board all scale with the viewport instead of stopping at 1200px. */}
         <div
-          className="relative z-[3] mx-auto grid min-h-screen max-w-[1200px] items-center gap-8
-                     px-5 pb-7 pt-24 lg:grid-cols-[minmax(0,1fr)_minmax(0,470px)] lg:gap-0"
+          className="relative z-[3] mx-auto grid min-h-screen max-w-[min(1440px,92vw)] items-center gap-8
+                     px-5 pb-7 pt-24 lg:grid-cols-[minmax(0,1fr)_minmax(0,560px)] lg:gap-0"
         >
-          <div className="animate-rise relative z-[3] w-full max-w-[600px] lg:justify-self-end">
-            <h1 className="text-[clamp(26px,3vw,46px)] leading-[1.1] text-neutral-100 sm:whitespace-nowrap">
+          <div className="animate-rise relative z-[3] w-full max-w-[min(720px,46vw)] lg:justify-self-end">
+            <h1 className="text-[clamp(26px,3vw,54px)] leading-[1.1] text-neutral-100 sm:whitespace-nowrap">
               Nine keys. Two dials.
               <br />
-              <span className="serif text-[clamp(32px,3.8vw,58px)]">
+              <span className="serif text-[clamp(32px,3.8vw,68px)]">
                 As many dialects as you need.
               </span>
             </h1>
 
-            <p className="mt-5 max-w-[470px] text-[17.5px] leading-[1.62] text-neutral-400">
+            <p className="mt-5 max-w-[min(560px,36vw)] text-[clamp(16px,1.15vw,20px)] leading-[1.62] text-neutral-400">
               The Dialect is a nine-key macro pad with two clicking dials and a lit acrylic base.
               Map it once in the configurator and the layout lives on the board.
             </p>
@@ -179,8 +192,8 @@ export default function Landing() {
                     You are on the list.
                   </p>
                   <p className="mt-2 text-sm text-neutral-400">
-                    We will email {saved.email} once the first run opens. We have noted the{' '}
-                    {saved.interest}.
+                    We will email {saved.email} once the first run opens.
+                    {notedInterest && ` We have noted the ${notedInterest}.`}
                   </p>
                 </div>
               ) : (
@@ -250,7 +263,7 @@ export default function Landing() {
 
           <div className="relative z-[1] h-[380px] min-w-0 sm:h-[480px] lg:h-auto lg:self-stretch">
             <div
-              className="absolute left-1/2 top-1/2 h-[min(910px,168vh)] w-auto animate-float"
+              className="absolute left-1/2 top-1/2 h-[min(1180px,94vh)] w-auto animate-float"
               style={{ aspectRatio: '2200 / 2750' }}
             >
               <div
@@ -294,8 +307,11 @@ export default function Landing() {
         id="waitlist"
         className="relative scroll-mt-[70px] overflow-hidden"
         style={{
+          // Fades in at the top and back out at the bottom. Without the second
+          // ramp the colour wash is cut off square against the footer, which is
+          // the one seam you actually notice scrolling the page.
           backgroundImage:
-            'linear-gradient(180deg, #0b0a0a 0%, rgba(11,10,10,0) 280px), radial-gradient(64% 52% at 22% 24%, rgba(63,160,255,.16), rgba(11,10,10,0) 72%), radial-gradient(58% 54% at 78% 78%, rgba(233,107,216,.16), rgba(11,10,10,0) 74%), radial-gradient(70% 60% at 50% 46%, rgba(139,107,255,.14), rgba(11,10,10,0) 76%)',
+            'linear-gradient(180deg, #0b0a0a 0%, rgba(11,10,10,0) 300px), linear-gradient(0deg, #0b0a0a 0%, rgba(11,10,10,0) 240px), radial-gradient(64% 52% at 22% 24%, rgba(63,160,255,.16), rgba(11,10,10,0) 72%), radial-gradient(58% 54% at 78% 78%, rgba(233,107,216,.16), rgba(11,10,10,0) 74%), radial-gradient(70% 60% at 50% 46%, rgba(139,107,255,.14), rgba(11,10,10,0) 76%)',
         }}
       >
         <Reveal className="mx-auto grid max-w-shell items-start gap-12 px-5 py-24 lg:grid-cols-2 lg:gap-16">
@@ -334,12 +350,16 @@ export default function Landing() {
                 <p className="mt-2.5 text-[15px] leading-[1.6] text-neutral-400">
                   We will email {saved.email} once these are ready to order. Nothing else.
                 </p>
-                <div className="mt-6 border-t border-white/[0.08] pt-5">
-                  <p className="text-[10px] uppercase tracking-[0.14em] text-neutral-700">
-                    Interested in
-                  </p>
-                  <p className="mt-1 font-heading text-[22px] text-neutral-100">{saved.interest}</p>
-                </div>
+                {notedInterest && (
+                  <div className="mt-6 border-t border-white/[0.08] pt-5">
+                    <p className="text-[10px] uppercase tracking-[0.14em] text-neutral-700">
+                      Interested in
+                    </p>
+                    <p className="mt-1 font-heading text-[22px] text-neutral-100">
+                      {notedInterest}
+                    </p>
+                  </div>
+                )}
                 <button
                   type="button"
                   onClick={resetWaitlist}
