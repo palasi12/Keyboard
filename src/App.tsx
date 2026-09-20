@@ -7,8 +7,7 @@ import Landing from './pages/Landing';
 import Login from './pages/Login';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
-import Admin from './pages/Admin';
-import AdminUpdates from './pages/AdminUpdates';
+import AdminApp from './dashboard/AdminApp';
 import Updates from './pages/Updates';
 import Update from './pages/Update';
 import Privacy from './pages/Privacy';
@@ -37,7 +36,7 @@ function ScrollBehaviour() {
  * here ends at the waitlist or the devlog. Sign-in is kept because /admin is
  * how updates get published — not because visitors have accounts.
  */
-const routes = (
+const siteRoutes = (
   <Routes>
     <Route path="/" element={<Landing />} />
     <Route path="/updates" element={<Updates />} />
@@ -47,31 +46,21 @@ const routes = (
     <Route path="/login" element={<Login />} />
     <Route path="/forgot-password" element={<ForgotPassword />} />
     <Route path="/reset-password" element={<ResetPassword />} />
-    <Route
-      path="/admin"
-      element={
-        <ProtectedRoute>
-          <Admin />
-        </ProtectedRoute>
-      }
-    />
-    <Route
-      path="/admin/updates"
-      element={
-        <ProtectedRoute>
-          <AdminUpdates />
-        </ProtectedRoute>
-      }
-    />
     <Route path="*" element={<Navigate to="/" replace />} />
   </Routes>
 );
 
-export default function App() {
+/**
+ * The public site.
+ *
+ * The dashboard is deliberately not rendered inside this: it owns the whole
+ * viewport, has its own sidebar and its own type and colour system, so
+ * wrapping it in the marketing nav and footer would put two unrelated designs
+ * on one screen.
+ */
+function Site() {
   return (
     <div className="flex min-h-screen flex-col bg-ground">
-      <ScrollBehaviour />
-
       <a
         href="#main"
         className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50
@@ -86,10 +75,29 @@ export default function App() {
       {/* The nav floats over the page, so everything except the landing hero
           (which pulls itself back up) starts below it. */}
       <main id="main" className="flex-1 pt-[88px]">
-        {routes}
+        {siteRoutes}
       </main>
 
       <Footer />
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <>
+      <ScrollBehaviour />
+      <Routes>
+        <Route
+          path="/admin/*"
+          element={
+            <ProtectedRoute>
+              <AdminApp />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="*" element={<Site />} />
+      </Routes>
+    </>
   );
 }

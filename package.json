@@ -9,9 +9,10 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "tsc --noEmit && vite build",
+    "build": "tsc --noEmit && bash scripts/check-copy.sh && vite build",
     "preview": "vite preview",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "check:copy": "bash scripts/check-copy.sh"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.46.1",

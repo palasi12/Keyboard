@@ -45,11 +45,71 @@ export default {
           violet: '#8b6bff',
           pink: '#e96bd8',
         },
+
+      /* ---------------------------------------------------------------
+         Admin dashboard tokens (TAPTILE Dialect dashboard handoff).
+         Scoped to /admin. Three handoff names are renamed because the
+         storefront already owns them and redefining them would restyle
+         the public site:
+             handoff `ground`  -> `deck`   (storefront ground is #0b0a0a)
+             handoff `surface` -> `panel`  (storefront surface is #1a1918)
+             handoff `danger`  -> `alert`  (storefront danger is #ff6b5c)
+         Everything else matches the handoff verbatim. No hex literals
+         belong in dashboard components — add them here instead.
+      --------------------------------------------------------------- */
+      deck: '#111214',
+      rail: '#0f1013',
+      panel: { DEFAULT: '#1e2126', top: '#23272d', bot: '#1c1f24' },
+      tile: { DEFAULT: '#262a30', top: '#2e323a', track: '#282f35' },
+      line: { DEFAULT: '#2a2f35', strong: '#343a43', row: '#252a31', rail: '#22262c' },
+
+      /* UI accent. Marks exactly one thing per view. */
+      lime: {
+        DEFAULT: '#b6ff56',
+        light: '#d3ff8d',
+        mid: '#8ade33',
+        deep: '#4f9a00',
+        drop: '#96e63c',
+        ink: '#08120a',
+      },
+      /* Ambient glow and chart fills only. Never a UI accent. */
+      emerald: { DEFAULT: '#03d16d', light: '#42dc93', dark: '#06512b', mid: '#4ade80' },
+
+      ink: {
+        1: '#e8eaed',
+        2: '#c5cad2',
+        3: '#98a0aa',
+        4: '#858d97',
+        5: '#5a616a',
+        nav: '#aeb5bf',
+      },
+      status: { lime: '#b6ff56', blue: '#7dd3fc', rose: '#f0abfc', grey: '#aeb5bf' },
+      /* Off-state of a Toggle. Deliberately outside the ink scale — it is a
+         control surface, not text. */
+      toggle: { track: '#30363d', knob: '#8a919b' },
+      /* Rose border a short stock card wears. */
+      short: '#4a3340',
+      alert: {
+        surface: '#2b1f24',
+        bot: '#201619',
+        line: '#45323a',
+        text: '#f0b6c4',
+        muted: '#b8949c',
+        ink: '#2a0b13',
+      },
+      chart: {
+        1: '#b6ff56', 2: '#4ade80', 3: '#16a34a',
+        4: '#d9f99d', 5: '#03d16d', 6: '#86efac',
+        track: '#282f35',
+        grid: 'rgba(255,255,255,0.045)',
+      },
       },
       fontFamily: {
         sans: ['Archivo', 'system-ui', '-apple-system', 'sans-serif'],
         /* The italic second line of every heading. */
         serif: ['"Instrument Serif"', 'Georgia', 'serif'],
+        /* Admin dashboard only. The storefront stays on Archivo. */
+        dash: ['"Plus Jakarta Sans"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
       },
       fontWeight: {
         heading: '800',
@@ -63,6 +123,11 @@ export default {
         xl: '18px',
         '2xl': '24px',
         full: '9999px',
+        /* Dashboard geometry. */
+        chip: '9px',
+        tile: '11px',
+        card: '16px',
+        pill: '20px',
       },
       boxShadow: {
         cap: '0 4px 10px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.05)',
@@ -71,6 +136,28 @@ export default {
         lift: '0 5px 14px rgba(255,255,255,.11)',
         nav: '0 10px 30px rgba(0,0,0,.45)',
         panel: '0 20px 60px rgba(0,0,0,.45)',
+        /* Dashboard elevation. */
+        card: 'inset 0 1px 0 rgba(255,255,255,0.055), 0 12px 32px rgba(0,0,0,0.5)',
+        'card-sm': 'inset 0 1px 0 rgba(255,255,255,0.05), 0 8px 20px rgba(0,0,0,0.45)',
+        tile: 'inset 0 1px 0 rgba(255,255,255,0.045)',
+        track: 'inset 0 1px 2px rgba(0,0,0,0.4)',
+        lime: '0 6px 20px rgba(182,255,86,0.28), inset 0 1px 0 rgba(255,255,255,0.35)',
+        'lime-sm': '0 5px 14px rgba(182,255,86,0.22)',
+        'lime-bar': '0 0 12px rgba(182,255,86,0.22)',
+      },
+      backgroundImage: {
+        'lime-grad': 'linear-gradient(135deg,#d3ff8d 0%,#b6ff56 48%,#96e63c 100%)',
+        'panel-grad': 'linear-gradient(168deg,#23272d 0%,#1e2126 55%,#1c1f24 100%)',
+        'tile-grad': 'linear-gradient(170deg,#2e323a 0%,#262a30 100%)',
+        'rail-grad': 'linear-gradient(180deg,rgba(3,209,109,0.08) 0%,rgba(0,0,0,0) 32%)',
+        'alert-grad': 'linear-gradient(168deg,#2b1f24 0%,#201619 100%)',
+        'alert-btn': 'linear-gradient(135deg,#f0779a 0%,#d63f68 100%)',
+      },
+      /* The dashboard motion table (§9) uses 120ms and 140ms, neither of
+         which is a Tailwind default — without these the classes emit nothing. */
+      transitionDuration: {
+        120: '120ms',
+        140: '140ms',
       },
       letterSpacing: {
         heading: '-0.015em',
