@@ -28,8 +28,15 @@
     text-wrap: pretty;
   }
 
-  a { @apply text-neutral-100; }
-  a:hover { @apply text-white; }
+  /* Storefront link colour. Scoped away from the dashboard, which has its own
+     palette and colours links with utilities.
+
+     The `:where()` is load-bearing: it contributes zero specificity, so these
+     stay at `a` / `a:hover` weight. Writing `a:not(.dash a)` instead would
+     inherit the argument's specificity and start overriding text utilities on
+     the public site. */
+  a:not(:where(.dash a)) { @apply text-neutral-100; }
+  a:not(:where(.dash a)):hover { @apply text-white; }
 
   :focus { outline: none; }
   :focus-visible {
@@ -253,12 +260,13 @@
     outline-color: theme('colors.lime.ink');
   }
 
-  .dash a {
-    @apply text-inherit;
-  }
-  .dash a:hover {
-    @apply text-inherit;
-  }
+  /* No anchor colour rule here on purpose.
+     This used to be `.dash a { color: inherit }`, which is specificity 0-1-1
+     and therefore beat every Tailwind colour utility at 0-1-0. The active nav
+     pill and the primary CTA lost their `text-lime-ink`, inherited near-white
+     instead, and rendered as pale text on bright lime -- which is what made
+     them look like glowing slabs. `text-lime` links went white the same way.
+     The storefront's base `a` rules are scoped away from .dash instead. */
   .dash ::selection {
     background: rgba(182, 255, 86, 0.28);
   }
