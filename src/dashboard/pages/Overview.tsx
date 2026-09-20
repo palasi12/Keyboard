@@ -1,43 +1,50 @@
 /**
- * Overview (handoff §5.1).
+ * Overview.
  *
- * The four KPIs are links, because the question a KPI raises is always
- * "where does that come from". The waitlist card on the rail is the one panel
- * reading real data — it is the same count the Launch gate is measured on.
+ * Only what is true. The revenue, order-value and channel cards from the
+ * handoff are gone with the rest of the sample set — nothing has sold, and a
+ * KPI row of invented money was the most misleading thing on the dashboard.
+ *
+ * What is left reads from Supabase: the waitlist, the devlog, the team, and
+ * the launch gates that those feed.
  */
 
-import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { PageBody, PageHeader } from '../layout/AppShell';
-import { Bar, Card, CardTitle, Kpi, Pill, Row, StackedBar, Skeleton } from '../ui';
-import { AreaChart, Donut, Ring, Sparkline } from '../ui/charts';
-import { Avatar } from '../ui';
-import { CHANNELS, FIGURES, FILL_IN, GATES, ORDERS, RANGES } from '../mock';
-import { currency, number, shortDate } from '../lib/format';
-import { useWaitlist } from '../lib/useLiveData';
-import { CHART } from '../lib/chart';
+import { Bar, Card, CardTitle, Kpi, Pill, Skeleton } from '../ui';
+import { Ring, Sparkline } from '../ui/charts';
+import { FIGURES, GATES } from '../mock';
+import { number } from '../lib/format';
+import { useUpdates, useWaitlist } from '../lib/useLiveData';
 import { ArrowRight } from '../icons';
 
 export default function Overview() {
   const waitlist = useWaitlist();
-  const [channel, setChannel] = useState<string | null>(null);
-
-  const year = RANGES.find((range) => range.key === '12m')!;
-  const cleared = GATES.filter((gate) => gate.state === 'done').length;
+  const updates = useUpdates();
 
   const signups = waitlist.data.length;
   const target = FIGURES.waitlistTarget;
   const waitlistPct = Math.min(100, Math.round((signups / target) * 100));
 
-  const latest = ORDERS.filter((order) => order.status === 'pre').slice(0, 3);
+  // Gate 6 is the waitlist gate, and it is the one gate backed by real data.
+  const states = GATES.map((gate, index) =>
+    index === 5 ? (signups >= target ? 'done' : 'prog') : gate.state,
+  );
+  const cleared = states.filter((state) => state === 'done').length;
+  const blocked = states.filter((state) => state === 'block').length;
 
-  const channelTotal = CHANNELS.reduce((sum, item) => sum + item.value, 0);
-  const isolated = channel ? CHANNELS.find((item) => item.label === channel) : undefined;
+  const published = updates.data.filter((update) => update.published).length;
+  const drafts = updates.data.length - published;
+
+  const thisWeek = waitlist.data.filter(
+    (entry) => Date.now() - new Date(entry.created_at).getTime() < 7 * 86_400_000,
+  ).length;
 
   return (
     <>
       <PageHeader
         title="Overview"
+        live
         description="Can we open pre-orders yet, and what is stopping us?"
       />
 
@@ -55,7 +62,9 @@ export default function Overview() {
                   ariaLabel={`Launch readiness: ${cleared} of ${GATES.length} gates cleared`}
                 />
                 <p className="mt-[12px] text-center text-[11.5px] text-ink-4">
-                  Every blocker traces back to one decision: the price.
+                  {blocked > 0
+                    ? 'Every blocker traces back to one decision: the price.'
+                    : 'Nothing blocked — finish what is in progress.'}
                 </p>
                 <Link
                   to="/admin/launch"
@@ -64,67 +73,6 @@ export default function Overview() {
                   Open the launch gates
                   <ArrowRight size={14} />
                 </Link>
-              </div>
-            </Card>
-
-            <Card pad={16}>
-              <CardTitle
-                action={
-                  <Link to="/admin/customers" className="text-[10.5px] font-semibold text-lime">
-                    View
-                  </Link>
-                }
-              >
-                Waitlist
-              </CardTitle>
-              {waitlist.loading ? (
-                <Skeleton height={64} />
-              ) : (
-                <>
-                  <p className="dash-metric-md">
-                    {number(signups)}{' '}
-                    <span className="text-[13px] font-semibold text-ink-4">of {target}</span>
-                  </p>
-                  <div className="mt-[10px]">
-                    <Sparkline
-                      data={waitlist.growth}
-                      height={38}
-                      ariaLabel="Waitlist signups over the last 12 weeks"
-                    />
-                  </div>
-                  <div className="mt-[10px]">
-                    <Bar label="To the gate" value={`${waitlistPct}%`} pct={waitlistPct} />
-                  </div>
-                  <p className="mt-[9px] text-[10.5px] text-ink-4">
-                    {signups >= target
-                      ? 'The waitlist gate is cleared.'
-                      : `${target - signups} signups to the gate.`}
-                  </p>
-                </>
-              )}
-            </Card>
-
-            <Card pad={16}>
-              <CardTitle
-                action={
-                  <Link to="/admin/orders" className="text-[10.5px] font-semibold text-lime">
-                    All
-                  </Link>
-                }
-              >
-                Latest pre-orders
-              </CardTitle>
-              <div className="flex flex-col">
-                {latest.map((order) => (
-                  <Row
-                    key={order.id}
-                    left={<Avatar name={order.name} size={28} />}
-                    name={order.name}
-                    sub={`${order.id} · ${shortDate(order.date)}`}
-                    value={currency(order.total)}
-                    valueSub={`${order.units} unit${order.units === 1 ? '' : 's'}`}
-                  />
-                ))}
               </div>
             </Card>
 
@@ -141,128 +89,82 @@ export default function Overview() {
       >
         <div className="grid grid-cols-1 gap-[14px] sm:grid-cols-2 xl:grid-cols-4">
           <Kpi
-            label="Revenue this month"
-            value={currency(FIGURES.revenueMonth)}
-            delta="112%"
-            to="/admin/revenue"
+            label="Waitlist"
+            value={waitlist.loading ? '—' : number(signups)}
+            delta={thisWeek > 0 ? `+${thisWeek}` : '—'}
+            sub="this week"
+            to="/admin/customers"
           />
           <Kpi
-            label="Revenue all-time"
-            value={currency(FIGURES.revenueAllTime)}
-            to="/admin/revenue"
+            label="To the gate"
+            value={waitlist.loading ? '—' : number(Math.max(0, target - signups))}
+            sub={`of ${target} needed`}
+            to="/admin/launch"
           />
           <Kpi
-            label="Avg order value"
-            value={currency(FIGURES.avgOrderValue)}
-            sub={`Sample · price ${FILL_IN}`}
-            to="/admin/orders"
+            label="Gates cleared"
+            value={`${cleared} of ${GATES.length}`}
+            sub={blocked > 0 ? `${blocked} blocked` : 'none blocked'}
+            to="/admin/launch"
           />
           <Kpi
-            label="Units sold"
-            value={number(FIGURES.unitsSold)}
-            sub={`of ${FIGURES.runSize} in the first run`}
-            to="/admin/orders"
+            label="Devlog posts"
+            value={updates.loading ? '—' : number(published)}
+            sub={drafts > 0 ? `${drafts} draft${drafts === 1 ? '' : 's'}` : 'no drafts'}
+            to="/admin/content"
           />
         </div>
 
         <Card pad={18}>
-          <CardTitle>Revenue over time</CardTitle>
-          <AreaChart
-            data={year.series}
-            labels={year.ticks}
-            height={200}
-            marker={year.marker}
-            markerLabel="Pre-orders opened"
-            ariaLabel="Revenue over the last twelve months"
-            formatValue={(value) => currency(value)}
-          />
+          <CardTitle
+            action={
+              <Link to="/admin/customers" className="text-[10.5px] font-semibold text-lime">
+                View signups
+              </Link>
+            }
+          >
+            Waitlist growth
+          </CardTitle>
+          {waitlist.loading ? (
+            <Skeleton height={80} />
+          ) : signups === 0 ? (
+            <p className="py-6 text-center text-[11.5px] text-ink-4">
+              No signups yet. The form on the landing page writes straight into this table.
+            </p>
+          ) : (
+            <>
+              <p className="dash-metric">
+                {number(signups)}{' '}
+                <span className="text-[14px] font-semibold text-ink-4">of {target}</span>
+              </p>
+              <div className="mt-[12px]">
+                <Sparkline
+                  data={waitlist.growth}
+                  height={56}
+                  ariaLabel="Waitlist signups over the last twelve weeks"
+                />
+              </div>
+              <div className="mt-[12px]">
+                <Bar label="To the gate" value={`${waitlistPct}%`} pct={waitlistPct} />
+              </div>
+              <p className="mt-[9px] text-[10.5px] text-ink-4">
+                {signups >= target
+                  ? 'The waitlist gate is cleared.'
+                  : `${target - signups} signups to the gate.`}
+              </p>
+            </>
+          )}
         </Card>
 
-        <div className="flex flex-col gap-[14px] lg:flex-row">
-          <Card pad={18} className="flex-[1.25]">
-            <CardTitle>Revenue by channel</CardTitle>
-            <StackedBar
-              segments={CHANNELS.map((item, index) => ({
-                label: item.label,
-                pct: item.pct,
-                colour: CHART.series[index]!,
-                dim: channel !== null && channel !== item.label,
-              }))}
-            />
-            <div className="mt-[14px] flex flex-col">
-              {CHANNELS.map((item, index) => {
-                const active = channel === item.label;
-                return (
-                  <button
-                    key={item.label}
-                    type="button"
-                    aria-pressed={active}
-                    onClick={() => setChannel(active ? null : item.label)}
-                    className="flex items-center gap-[10px] rounded-chip px-[2px] py-[9px] text-left transition hover:bg-white/[0.025]"
-                    style={{ opacity: channel !== null && !active ? 0.28 : 1 }}
-                  >
-                    <span
-                      className="h-[9px] w-[9px] shrink-0 rounded-[3px]"
-                      style={{ background: CHART.series[index] }}
-                      aria-hidden="true"
-                    />
-                    <span className="flex-1 text-[12.5px] font-semibold text-ink-1">
-                      {item.label}
-                    </span>
-                    <span className="text-[12.5px] font-bold text-ink-1">
-                      {currency(item.value)}
-                    </span>
-                    <span className="w-[34px] text-right text-[10.5px] text-ink-4">
-                      {item.pct}%
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-            <p className="mt-[10px] text-[10.5px] text-ink-4">
-              {isolated
-                ? `${isolated.label} is ${isolated.pct}% of ${currency(channelTotal)}.`
-                : 'Own site carries most of it. Marketplace fees make it the weakest channel per unit.'}
-            </p>
-          </Card>
-
-          <Card pad={18} className="flex-1">
-            <CardTitle>Gross margin</CardTitle>
-            <Donut
-              segments={[
-                { label: 'Margin', value: FIGURES.margin },
-                { label: 'Cost', value: 100 - FIGURES.margin },
-              ]}
-              centerValue={`${FIGURES.margin}%`}
-              centerLabel="Margin"
-              size={136}
-              ariaLabel={`Gross margin ${FIGURES.margin} percent`}
-            />
-            <div className="mt-[14px] flex flex-col gap-[2px]">
-              <div className="flex items-center justify-between py-[7px]">
-                <span className="dash-eyebrow">Price</span>
-                <span className="text-[12.5px] font-bold text-lime">{FILL_IN}</span>
-              </div>
-              <div className="flex items-center justify-between border-t border-line-row py-[7px]">
-                <span className="dash-eyebrow">Unit cost</span>
-                <span className="text-[12.5px] font-bold text-ink-1">
-                  {currency(FIGURES.unitCost, { cents: true })}
-                </span>
-              </div>
-              <div className="flex items-center justify-between border-t border-line-row py-[7px]">
-                <span className="dash-eyebrow">Margin / unit</span>
-                <span className="text-[12.5px] font-bold text-ink-1">{FILL_IN}</span>
-              </div>
-            </div>
-            <Link
-              to="/admin/production"
-              className="mt-[10px] inline-flex items-center gap-[5px] text-[10.5px] font-semibold text-lime"
-            >
-              Where the unit cost goes
-              <ArrowRight size={12} />
-            </Link>
-          </Card>
-        </div>
+        <Card pad={18}>
+          <CardTitle>What is not here yet</CardTitle>
+          <p className="text-[11.5px] leading-[1.65] text-ink-3">
+            Revenue, Orders, Costs and Production are empty on purpose. They used to render
+            figures from the design handoff — revenue, a run of orders, an expense ledger, stock
+            counts — and none of it was real. Nothing has sold, so those pages stay empty until
+            something backs them.
+          </p>
+        </Card>
       </PageBody>
     </>
   );

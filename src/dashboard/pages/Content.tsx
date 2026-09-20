@@ -6,10 +6,10 @@
  * slug derivation from the title, and the Postgres errors turned into plain
  * English. Those posts are real rows in Supabase.
  *
- * The posting streak, reach and platform cards below it are the handoff's
- * sample set — nothing here is wired to TikTok or Instagram — so each of
- * those cards carries its own SAMPLE DATA chip rather than the page carrying
- * one for everything.
+ * The posting streak, reach, platform and calendar cards are gone. They were
+ * the handoff's sample set and nothing was wired to TikTok or Instagram, so
+ * every figure on them was invented. What is left is the devlog, which is
+ * real.
  */
 
 import { useState } from 'react';
@@ -24,11 +24,9 @@ import {
   Field,
   Kpi,
   Pill,
-  SampleChip,
   Skeleton,
   Toggle,
 } from '../ui';
-import { AreaChart, Sparkline } from '../ui/charts';
 import {
   deleteUpdate,
   formatUpdateDate,
@@ -38,8 +36,7 @@ import {
   type UpdateDraft,
 } from '../../lib/updates';
 import { useUpdates } from '../lib/useLiveData';
-import { PLATFORMS, REACH_SERIES, WHAT_WORKS } from '../mock';
-import { compact, number } from '../lib/format';
+import { number } from '../lib/format';
 import { cn } from '../lib/cn';
 import { Play, Plus } from '../icons';
 
@@ -54,8 +51,6 @@ const BLANK: UpdateDraft = {
   published: false,
 };
 
-const DAYS = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
-
 export default function Content() {
   const updates = useUpdates();
 
@@ -65,18 +60,8 @@ export default function Content() {
   const [status, setStatus] = useState<string>();
   const [error, setError] = useState<string>();
 
-  // Sample state (§7): the streak cells and the 14-slot calendar.
-  const [days, setDays] = useState<boolean[]>([true, true, false, true, true, false, false]);
-  const [calendar, setCalendar] = useState<(0 | 1 | 2)[]>([
-    2, 2, 0, 2, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0,
-  ]);
-
   const published = updates.data.filter((update) => update.published);
   const drafts = updates.data.filter((update) => !update.published);
-
-  const streak = days.filter(Boolean).length;
-  const posted = calendar.filter((slot) => slot === 2).length;
-  const planned = calendar.filter((slot) => slot === 1).length;
 
   function edit(update: Update) {
     setDraft({
@@ -138,7 +123,7 @@ export default function Content() {
       <PageHeader
         title="Content"
         live
-        description="The devlog is live. The reach and streak cards below are sample."
+        description="Write, edit and publish development updates."
         actions={
           <Button icon={Plus} variant="primary" onClick={startNew}>
             New post
@@ -148,34 +133,14 @@ export default function Content() {
 
       <PageBody
         rail={
-          <>
-            <Card pad={16}>
-              <CardTitle action={<SampleChip />}>Best performing</CardTitle>
-              <p className="text-[12.5px] font-bold text-ink-1">Dial mapping in 20s</p>
-              <p className="mt-[2px] text-[10.5px] text-ink-4">TikTok · 9.1k views</p>
-            </Card>
-
-            <Card pad={16}>
-              <CardTitle action={<SampleChip />}>What works</CardTitle>
-              <ul className="flex flex-col gap-[9px]">
-                {WHAT_WORKS.map((line) => (
-                  <li key={line} className="flex gap-[8px] text-[11.5px] text-ink-2">
-                    <span className="mt-[6px] h-[4px] w-[4px] shrink-0 rounded-full bg-lime" aria-hidden="true" />
-                    {line}
-                  </li>
-                ))}
-              </ul>
-            </Card>
-
-            <Card pad={16}>
-              <CardTitle action={<SampleChip />}>Posts to waitlist</CardTitle>
-              <p className="dash-metric-md">1.8</p>
-              <p className="mt-[3px] text-[10.5px] text-ink-4">signups per post</p>
-              <div className="mt-[10px]">
-                <Sparkline data={REACH_SERIES} height={38} ariaLabel="Reach over the last seven days" />
-              </div>
-            </Card>
-          </>
+          <Card pad={16}>
+            <CardTitle>Where these appear</CardTitle>
+            <p className="text-[11.5px] leading-[1.6] text-ink-3">
+              Published posts show on the public devlog at /updates. Drafts are invisible to
+              visitors — row-level security refuses them to the anon key, so an unpublished post
+              cannot leak by guessing its URL.
+            </p>
+          </Card>
         }
       >
         {updates.error && <ErrorCard message={updates.error} onRetry={updates.reload} />}
@@ -197,8 +162,16 @@ export default function Content() {
             value={updates.loading ? '—' : number(drafts.length)}
             sub="not visible yet"
           />
-          <Kpi label="Reach this week" value={compact(19_100)} delta="64%" sub="Sample" />
-          <Kpi label="Posting streak" value={`${streak} / 7`} sub="Sample" />
+          <Kpi
+            label="Total posts"
+            value={updates.loading ? '—' : number(updates.data.length)}
+            sub="published and draft"
+          />
+          <Kpi
+            label="Latest"
+            value={updates.loading || !updates.data[0] ? '—' : formatUpdateDate(updates.data[0].published_at)}
+            sub={updates.data[0]?.title ?? 'nothing yet'}
+          />
         </div>
 
         {/* ------------------------------------------------------ devlog --- */}
@@ -377,105 +350,6 @@ export default function Content() {
           )}
         </Card>
 
-        {/* ------------------------------------------------------ social --- */}
-
-        <div className="flex flex-col gap-[14px] lg:flex-row">
-          <Card pad={18} className="flex-1">
-            <CardTitle action={<SampleChip />}>Posting streak</CardTitle>
-            <div className="flex gap-[6px]">
-              {days.map((on, index) => (
-                <button
-                  key={index}
-                  type="button"
-                  aria-pressed={on}
-                  aria-label={`Day ${index + 1}, ${on ? 'posted' : 'not posted'}`}
-                  onClick={() =>
-                    setDays((current) => current.map((value, i) => (i === index ? !value : value)))
-                  }
-                  className={cn(
-                    'flex h-[44px] flex-1 items-center justify-center rounded-tile border text-[11px] font-bold transition',
-                    on
-                      ? 'on-lime border-transparent bg-lime-grad text-lime-ink shadow-lime-sm'
-                      : 'border-line-strong bg-tile-grad text-ink-4',
-                  )}
-                >
-                  {DAYS[index]}
-                </button>
-              ))}
-            </div>
-            <p className="mt-[12px] text-[12.5px] font-bold text-ink-1">{streak} / 7</p>
-            <p className="mt-[3px] text-[11px] text-ink-4">
-              {streak === 7
-                ? 'The first clean week since the run started.'
-                : `${7 - streak} missed this week.`}
-            </p>
-          </Card>
-
-          <Card pad={18} className="flex-1">
-            <CardTitle action={<SampleChip />}>Reach</CardTitle>
-            <p className="dash-metric">{compact(19_100)}</p>
-            <div className="mt-[10px]">
-              <AreaChart
-                data={REACH_SERIES}
-                labels={DAYS}
-                height={130}
-                ariaLabel="Reach over the last seven days"
-                formatValue={(value) => compact(value)}
-              />
-            </div>
-          </Card>
-        </div>
-
-        <div className="grid grid-cols-1 gap-[14px] sm:grid-cols-3">
-          {PLATFORMS.map((platform) => (
-            <Card key={platform.name} pad={16}>
-              <div className="flex items-start justify-between gap-2">
-                <p className="text-[12.5px] font-bold text-ink-1">{platform.name}</p>
-                <SampleChip />
-              </div>
-              <p className="dash-metric-sm mt-[9px]">{compact(platform.reach)}</p>
-              <p className="mt-[2px] text-[10.5px] text-ink-4">
-                {number(platform.followers)} followers
-              </p>
-              <p className="mt-[9px] truncate text-[11px] text-ink-2" title={platform.best}>
-                Best: {platform.best}
-              </p>
-            </Card>
-          ))}
-        </div>
-
-        <Card pad={18}>
-          <CardTitle action={<SampleChip />}>Calendar</CardTitle>
-          <div className="grid grid-cols-7 gap-[6px]">
-            {calendar.map((slot, index) => (
-              <button
-                key={index}
-                type="button"
-                aria-label={`Slot ${index + 1}: ${
-                  slot === 0 ? 'empty' : slot === 1 ? 'planned' : 'posted'
-                }. Activate to cycle.`}
-                onClick={() =>
-                  setCalendar((current) =>
-                    current.map((value, i) =>
-                      i === index ? (((value + 1) % 3) as 0 | 1 | 2) : value,
-                    ),
-                  )
-                }
-                className={cn(
-                  'flex h-[54px] items-center justify-center rounded-tile border text-[10.5px] font-bold transition',
-                  slot === 2 && 'on-lime border-transparent bg-lime-grad text-lime-ink shadow-lime-sm',
-                  slot === 1 && 'border-status-blue/40 bg-status-blue/[0.14] text-status-blue',
-                  slot === 0 && 'border-line-strong bg-tile-grad text-ink-5',
-                )}
-              >
-                {slot === 2 ? 'Posted' : slot === 1 ? 'Planned' : '+ Add'}
-              </button>
-            ))}
-          </div>
-          <p className="mt-[12px] text-[11px] text-ink-4">
-            {posted} posted · {planned} planned · {calendar.length - posted - planned} open
-          </p>
-        </Card>
       </PageBody>
     </>
   );
