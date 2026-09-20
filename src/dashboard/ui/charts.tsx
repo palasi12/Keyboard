@@ -308,15 +308,12 @@ export function Ring({
   const circumference = 2 * Math.PI * radius;
   const clamped = Math.max(0, Math.min(1, pct));
 
+  // The glow goes on the progress stroke, never on the <svg>. A drop-shadow on
+  // the root halos everything inside it, grey track included, which lights up
+  // the whole circle instead of the arc and reads as glare.
   return (
     <div className="relative shrink-0" style={{ width: size, height: size }}>
-      <svg
-        width={size}
-        height={size}
-        role="img"
-        aria-label={ariaLabel}
-        style={{ filter: 'drop-shadow(0 0 10px rgba(182,255,86,0.35))' }}
-      >
+      <svg width={size} height={size} role="img" aria-label={ariaLabel}>
         <defs>
           <linearGradient id={`ring-${uid}`} x1="0" y1="0" x2="1" y2="1">
             <stop offset="0%" stopColor={CHART.limeLight} />
@@ -342,6 +339,7 @@ export function Ring({
             strokeLinecap="round"
             strokeDasharray={`${circumference * clamped} ${circumference}`}
             className="transition-[stroke-dasharray] duration-500"
+            style={{ filter: 'drop-shadow(0 0 10px rgba(182,255,86,0.35))' }}
           />
         </g>
       </svg>

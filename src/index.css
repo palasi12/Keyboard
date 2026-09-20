@@ -203,12 +203,26 @@
      the UI read as lit rather than flat. Applied once on the shell. */
   .dash {
     @apply font-dash text-ink-1;
+
+    /* Anchored to the viewport, not the element.
+       The handoff draws this on a fixed 1440x900 frame, so the radials are
+       absolute pixel blobs at percentage positions. This element grows to the
+       full scroll height, and without `fixed` those percentages spread the
+       blobs into the middle of a long page -- the emerald that should hug the
+       left edge ends up behind the content on Overview and Launch. */
+    background-attachment: fixed;
+
+    /* Intensity is dialled back from the handoff, which specified these at
+       0.30 / 0.26 / 0.20 / 0.55 / 0.07. At full strength the wash reads as
+       glare behind the cards on the taller pages. The dark base radial is
+       left alone -- it tints downward and adds depth rather than light.
+       Restore the originals here if it ever looks flat. */
     background:
-      radial-gradient(620px 780px at -6% 46%, rgba(3, 209, 109, 0.3), rgba(0, 0, 0, 0) 62%),
-      radial-gradient(940px 340px at 52% 112%, rgba(3, 209, 109, 0.26), rgba(0, 0, 0, 0) 66%),
-      radial-gradient(560px 720px at 106% 38%, rgba(66, 220, 147, 0.2), rgba(0, 0, 0, 0) 62%),
+      radial-gradient(620px 780px at -6% 46%, rgba(3, 209, 109, 0.15), rgba(0, 0, 0, 0) 62%),
+      radial-gradient(940px 340px at 52% 112%, rgba(3, 209, 109, 0.13), rgba(0, 0, 0, 0) 66%),
+      radial-gradient(560px 720px at 106% 38%, rgba(66, 220, 147, 0.1), rgba(0, 0, 0, 0) 62%),
       radial-gradient(780px 300px at 46% -12%, rgba(6, 81, 43, 0.55), rgba(0, 0, 0, 0) 68%),
-      radial-gradient(880px 460px at 80% 8%, rgba(182, 255, 86, 0.07), rgba(0, 0, 0, 0) 66%),
+      radial-gradient(880px 460px at 80% 8%, rgba(182, 255, 86, 0.035), rgba(0, 0, 0, 0) 66%),
       #111214;
   }
 
@@ -216,9 +230,9 @@
   @media (max-width: 767px) {
     .dash {
       background:
-        radial-gradient(420px 520px at -14% 28%, rgba(3, 209, 109, 0.3), rgba(0, 0, 0, 0) 62%),
-        radial-gradient(520px 300px at 58% 108%, rgba(3, 209, 109, 0.26), rgba(0, 0, 0, 0) 66%),
-        radial-gradient(380px 460px at 112% 22%, rgba(66, 220, 147, 0.2), rgba(0, 0, 0, 0) 62%),
+        radial-gradient(420px 520px at -14% 28%, rgba(3, 209, 109, 0.15), rgba(0, 0, 0, 0) 62%),
+        radial-gradient(520px 300px at 58% 108%, rgba(3, 209, 109, 0.13), rgba(0, 0, 0, 0) 66%),
+        radial-gradient(380px 460px at 112% 22%, rgba(66, 220, 147, 0.1), rgba(0, 0, 0, 0) 62%),
         radial-gradient(420px 220px at 46% -10%, rgba(6, 81, 43, 0.55), rgba(0, 0, 0, 0) 68%),
         #111214;
     }
