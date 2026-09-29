@@ -127,7 +127,7 @@ export default function Landing() {
     <>
       <Seo
         title="Taptile — programmable mini keyboards"
-        description="The Taptile Dialect: nine programmable mechanical keys and two rotary dials for the shortcuts you use every day. Designed in Auckland, New Zealand. NZ$70."
+        description="The Taptile Dialect: nine programmable mechanical keys and two rotary dials for the shortcuts you use every day. Designed in Auckland, New Zealand."
         path="/"
         image="/og.svg"
       />
@@ -235,8 +235,6 @@ export default function Landing() {
             </div>
 
             <div className="mt-6 flex flex-wrap items-center gap-x-[18px] gap-y-2 text-sm text-neutral-500">
-              <span>NZ$70</span>
-              <span className="h-3 w-px bg-neutral-100/[0.14]" />
               <span>Windows, macOS, Linux</span>
               <span className="h-3 w-px bg-neutral-100/[0.14]" />
               <span>Remapped in the browser</span>
