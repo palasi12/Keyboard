@@ -1,7 +1,8 @@
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
-import { useEffect } from 'react';
-import Nav from './components/Nav';
-import Footer from './components/Footer';
+import { useEffect, type ReactNode } from 'react';
+import './site/site.css';
+import { Footer, Nav } from './site/chrome';
+import { WaitlistProvider } from './site/Waitlist';
 import ProtectedRoute from './components/ProtectedRoute';
 import Landing from './pages/Landing';
 import Login from './pages/Login';
@@ -19,16 +20,24 @@ function ScrollBehaviour() {
 
   useEffect(() => {
     if (hash) {
-      const target = document.querySelector(hash);
-      if (target) {
-        target.scrollIntoView({ behavior: 'smooth' });
-        return;
-      }
+      // Landing sections mount after the route change, so give them a frame.
+      const id = window.setTimeout(() => {
+        const target = document.querySelector(hash);
+        if (target) target.scrollIntoView({ behavior: 'smooth' });
+        else window.scrollTo(0, 0);
+      }, 30);
+      return () => window.clearTimeout(id);
     }
     window.scrollTo(0, 0);
+    return undefined;
   }, [pathname, hash]);
 
   return null;
+}
+
+/** Team sign-in pages keep their own forms; this just seats them under the nav. */
+function AuthFrame({ children }: { children: ReactNode }) {
+  return <div className="auth-frame">{children}</div>;
 }
 
 /**
@@ -43,43 +52,29 @@ const siteRoutes = (
     <Route path="/updates/:slug" element={<Update />} />
     <Route path="/privacy" element={<Privacy />} />
     <Route path="/terms" element={<Terms />} />
-    <Route path="/login" element={<Login />} />
-    <Route path="/forgot-password" element={<ForgotPassword />} />
-    <Route path="/reset-password" element={<ResetPassword />} />
+    <Route path="/login" element={<AuthFrame><Login /></AuthFrame>} />
+    <Route path="/forgot-password" element={<AuthFrame><ForgotPassword /></AuthFrame>} />
+    <Route path="/reset-password" element={<AuthFrame><ResetPassword /></AuthFrame>} />
     <Route path="*" element={<Navigate to="/" replace />} />
   </Routes>
 );
 
 /**
- * The public site.
- *
- * The dashboard is deliberately not rendered inside this: it owns the whole
- * viewport, has its own sidebar and its own type and colour system, so
- * wrapping it in the marketing nav and footer would put two unrelated designs
- * on one screen.
+ * The public site. The dashboard is deliberately not rendered inside this: it
+ * owns the whole viewport and its own design, so /admin never sees `.tt`.
  */
 function Site() {
   return (
-    <div className="flex min-h-screen flex-col bg-ground">
-      <a
-        href="#main"
-        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50
-                   focus:rounded-full focus:bg-neutral-100 focus:px-4 focus:py-2
-                   focus:font-heading focus:text-sm focus:text-keycap"
-      >
-        Skip to content
-      </a>
-
-      <Nav />
-
-      {/* The nav floats over the page, so everything except the landing hero
-          (which pulls itself back up) starts below it. */}
-      <main id="main" className="flex-1 pt-[88px]">
-        {siteRoutes}
-      </main>
-
-      <Footer />
-    </div>
+    <WaitlistProvider>
+      <div className="tt">
+        <a href="#main" className="skip">
+          Skip to content
+        </a>
+        <Nav />
+        <main id="main">{siteRoutes}</main>
+        <Footer />
+      </div>
+    </WaitlistProvider>
   );
 }
 
