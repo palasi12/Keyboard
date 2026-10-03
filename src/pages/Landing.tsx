@@ -18,16 +18,19 @@ export default function Landing() {
         path="/"
         image="/og.jpg"
       />
-      <section className="solo" id="waitlist">
-        <picture className="solo-img">
+      <section className="land" id="waitlist">
+        <div className="land-copy">
+          <span className="land-tag">Coming soon</span>
+          <h1>Taptile Dialect</h1>
+          <p className="lede">Nine keys. Two knobs. Underglow.</p>
+        </div>
+        <picture className="land-img">
           <source media="(max-width: 860px)" srcSet="/media/hero-sm.webp" />
           <img src="/media/hero.webp" alt="The Taptile Dialect macro pad with white underglow" fetchPriority="high" />
         </picture>
-        <div className="solo-shade" aria-hidden="true" />
-        <div className="shell solo-copy">
-          <h1>Taptile Dialect</h1>
-          <p className="lede">Nine keys, two knobs, underglow. Join the waitlist and get the first batch before anyone else.</p>
-          <WaitlistForm place="hero" />
+        <div className="land-form">
+          <WaitlistForm place="hero" note={false} />
+          <p className="wl-note">Join the waitlist. One email when the first batch is ready. No payment.</p>
         </div>
       </section>
     </>

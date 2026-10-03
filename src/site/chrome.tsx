@@ -53,9 +53,11 @@ export function Nav() {
           ))}
         </nav>
         <span className="spacer" />
-        <Link to="/#waitlist" className="btn btn-white">
-          Join the waitlist
-        </Link>
+        {location.pathname !== '/' && (
+          <Link to="/#waitlist" className="btn btn-white">
+            Join the waitlist
+          </Link>
+        )}
         <button
           type="button"
           className="menu-btn"
