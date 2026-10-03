@@ -383,8 +383,8 @@
 .tt .land-tag::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: #fff; box-shadow: 0 0 8px #fff; }
 .tt .land h1 { margin-top: 22px; font-size: clamp(44px, 6.4vw, 96px); letter-spacing: -0.045em; line-height: 1; }
 .tt .land .lede { margin: 16px auto 0; font-size: clamp(17px, 1.5vw, 21px); color: var(--mute); }
-.tt .land-img { display: block; width: min(640px, 100%); margin: clamp(8px, 2vh, 24px) auto 0; }
-.tt .land-img img { display: block; width: 100%; height: auto; max-height: 48svh; object-fit: contain; margin: 0 auto; }
+.tt .land-img { display: block; width: min(720px, 100%); margin: clamp(8px, 2vh, 24px) auto 0; }
+.tt .land-img img { display: block; width: 100%; height: auto; max-height: 51svh; object-fit: contain; margin: 0 auto; }
 .tt .land-form { width: min(480px, 100%); margin-top: clamp(4px, 1.5vh, 20px); }
 .tt .land-form .wl-row, .tt .land-form .wl-done { margin: 0 auto; max-width: 480px; text-align: left; }
 .tt .land-form .wl-note { margin-top: 14px; text-align: center; }

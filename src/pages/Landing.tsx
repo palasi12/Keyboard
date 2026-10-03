@@ -26,7 +26,7 @@ export default function Landing() {
         </div>
         <picture className="land-img">
           <source media="(max-width: 860px)" srcSet="/media/hero-sm.webp" />
-          <img src="/media/hero.webp" alt="The Taptile Dialect macro pad with white underglow" fetchPriority="high" />
+          <img src="/media/hero.webp" width={1830} height={1600} alt="The Taptile Dialect macro pad with white underglow" fetchPriority="high" decoding="async" />
         </picture>
         <div className="land-form">
           <WaitlistForm place="hero" note={false} />
