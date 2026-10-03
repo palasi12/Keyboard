@@ -42,10 +42,8 @@ function HeroCopy() {
     <div className={`hero-copy rv ${on ? 'in' : ''}`}>
       <h1>
         Taptile Dialect
-        <span className="sub">Nine keys.</span>
-        <span className="sub">Two knobs.</span>
       </h1>
-      <p className="lede">A macro pad for the shortcuts you use all day.</p>
+      <p className="lede">Nine keys, two knobs. A macro pad for the shortcuts you use all day.</p>
     </div>
   );
 }
@@ -76,8 +74,7 @@ function Underglow() {
       <div className="shell glow-wrap">
         <Reveal>
           <h2>
-            The keys stay dark.
-            <span className="sub">The desk lights up.</span>
+            The keys stay dark. The desk lights up.
           </h2>
           <p className="lede">13 LEDs on the underside. White out of the box, any colour after that.</p>
           <div className="swatches" role="radiogroup" aria-label="Underglow colour">
