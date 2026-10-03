@@ -107,9 +107,14 @@ export function WaitlistProvider({ children }: { children: ReactNode }) {
           setBusy(false);
           return;
         }
-      } else {
-        // Local preview without Supabase keys: confirm rather than blame the visitor.
+      } else if (import.meta.env.DEV) {
+        // Local dev without Supabase keys: pretend, so the form can be designed.
         await new Promise((resolve) => setTimeout(resolve, 400));
+      } else {
+        // A live build without keys must never fake a signup — the address would be lost.
+        setError('Signups are temporarily unavailable. Please try again soon.');
+        setBusy(false);
+        return;
       }
 
       try {
