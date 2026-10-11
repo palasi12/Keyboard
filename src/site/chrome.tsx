@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../lib/auth';
+import { SocialIcons } from './socials';
 
 export function Brand() {
   return (
@@ -80,6 +81,7 @@ export function Nav() {
           <Link to="/#waitlist" className="btn btn-white">
             Join the waitlist
           </Link>
+          <SocialIcons />
         </div>
       )}
     </>
@@ -109,6 +111,7 @@ export function Footer() {
               <Link to="/login">Team sign in</Link>
             )}
           </div>
+          <SocialIcons className="foot-social" />
         </div>
         <div className="foot-small">
           <span>Designed and assembled in New Zealand</span>

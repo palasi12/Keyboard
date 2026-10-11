@@ -25,6 +25,22 @@
     <meta property="og:image" content="https://www.trytaptile.com/og.jpg" />
     <meta name="twitter:card" content="summary_large_image" />
 
+    <!-- Ties the social accounts to the site for search engines. Keep in step with src/site/socials.tsx. -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "Taptile",
+        "url": "https://www.trytaptile.com",
+        "logo": "https://www.trytaptile.com/favicon.png",
+        "sameAs": [
+          "https://www.instagram.com/trytaptile/",
+          "https://www.tiktok.com/@taptile0",
+          "https://www.youtube.com/@trytaptile"
+        ]
+      }
+    </script>
+
     <link rel="preload" as="image" href="/media/hero.webp" media="(min-width: 861px)" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

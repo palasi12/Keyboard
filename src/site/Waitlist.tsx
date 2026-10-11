@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type FormEvent, type ReactNode } from 'react';
 import { joinWaitlist } from '../lib/waitlist';
 import { isSupabaseConfigured } from '../lib/supabase';
+import { SocialIcons } from './socials';
 
 /**
  * Waitlist state shared by every signup form on the page.
@@ -188,6 +189,10 @@ export function WaitlistForm({ place, note = true }: { place: string; note?: boo
           <div className="wl-actions">
             <button type="button" onClick={share}>{copied ? 'Link copied' : 'Share with a friend'}</button>
             <button type="button" onClick={reset}>Use a different email</button>
+          </div>
+          <div className="wl-follow">
+            <span>Follow the build</span>
+            <SocialIcons />
           </div>
         </div>
       </div>
