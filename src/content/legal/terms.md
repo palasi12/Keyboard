@@ -4,7 +4,7 @@
 
 Taptile is operated by two individuals based in Auckland, New Zealand. There is no registered company — we trade in our own names. **Both of us are currently under 18.** This matters: under Part 6 of the Contract and Commercial Law Act 2017, a contract entered into by a minor can be reviewed, and potentially cancelled, by a court or the Disputes Tribunal if it wasn't fair and reasonable when it was made. We're telling you this plainly because you're entitled to know who you're contracting with, not because we expect it to come up.
 
-Contact us at **hello.taptile@gmail.com**.
+Contact us at **support@trytaptile.com**.
 
 ## 2. Where things stand right now
 
@@ -12,7 +12,7 @@ Taptile is **pre-launch**. Nothing has shipped, no orders have been taken, and n
 
 ## 3. The waitlist
 
-Joining the waitlist is not placing an order. It doesn't commit you to anything, doesn't hold a unit of the product for you, and doesn't guarantee the price you'll eventually be offered. You can leave the waitlist at any time by emailing hello.taptile@gmail.com.
+Joining the waitlist is not placing an order. It doesn't commit you to anything, doesn't hold a unit of the product for you, and doesn't guarantee the price you'll eventually be offered. You can leave the waitlist at any time with the link at the bottom of any waitlist email, or by emailing support@trytaptile.com.
 
 ## 4. Accounts
 
@@ -48,8 +48,8 @@ Nothing in these terms excludes or limits our liability for death or personal in
 
 ## 10. Contact
 
-**hello.taptile@gmail.com**
+**support@trytaptile.com**
 
 ---
 
-Last updated: 19 August 2026
+Last updated: 12 October 2026

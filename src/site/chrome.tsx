@@ -100,6 +100,7 @@ export function Footer() {
             <Link to="/updates">Updates</Link>
             <Link to="/privacy">Privacy</Link>
             <Link to="/terms">Terms</Link>
+            <a href="mailto:support@trytaptile.com">Support</a>
             {user ? (
               <>
                 <Link to="/admin">Admin</Link>

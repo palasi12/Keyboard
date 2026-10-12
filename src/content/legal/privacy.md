@@ -1,4 +1,4 @@
-**In short:** we collect your email address if you join the waitlist or create an account, and nothing more than that. We run no analytics or trackers of any kind. Your keymaps and macros never leave your browser. Waitlist and account data is stored on Supabase's servers in the United Kingdom. You can ask to see or correct what we hold at any time by emailing hello.taptile@gmail.com.
+**In short:** we collect your email address if you join the waitlist or create an account, and nothing more than that. We run no analytics or trackers of any kind. Your keymaps and macros never leave your browser. Waitlist and account data is stored on Supabase's servers in the United Kingdom. You can ask to see or correct what we hold at any time by emailing support@trytaptile.com.
 
 ## No analytics, no tracking
 
@@ -37,7 +37,8 @@ If you use the browser-based configurator to remap keys or build macros, none of
 We use a small number of service providers to run the site. Each only sees what it needs to do its job:
 
 - **Supabase** stores our database and handles account sign-in. The project is hosted in the **eu-west-2** region — London, United Kingdom.
-- **Resend** sends transactional email, such as the waitlist confirmation. It is sent from hello@trytaptile.com, and replies go to hello.taptile@gmail.com.
+- **Resend** sends our email — account emails like sign-in links and password resets, and waitlist emails. Everything is sent from support@trytaptile.com through Resend's servers in Ireland. Resend sees the address it's sending to and the content of the email.
+- **Google Workspace** runs our support inbox. If you email support@trytaptile.com or reply to one of our emails, your message and email address are stored in Google's systems.
 - **Vercel** hosts the website and serves it to your browser. It sees your IP address in its server logs, as any host does.
 - **Google**, only if you choose "Continue with Google" to sign in. Google returns your email, name and profile picture to us; what Google itself does with that information is covered by Google's own privacy policy, not this one.
 
@@ -45,17 +46,17 @@ We don't sell personal information to anyone, and we don't share it beyond the p
 
 ## Your information leaving New Zealand
 
-Because Supabase stores our database in the United Kingdom, your personal information is held overseas. Under the Privacy Act 2020, specifically Information Privacy Principle 12, we're required to tell you this plainly — so here it is: if you join the waitlist or create an account, your information is stored on servers in the UK, not New Zealand.
+Because Supabase stores our database in the United Kingdom, your personal information is held overseas. Under the Privacy Act 2020, specifically Information Privacy Principle 12, we're required to tell you this plainly — so here it is: if you join the waitlist or create an account, your information is stored on servers in the UK, not New Zealand. The emails we send you go out through Resend's servers in Ireland, and if you write to us, your message is kept in Google Workspace, whose servers may also be outside New Zealand.
 
 ## How long we keep information
 
-- **Waitlist entries** are kept until you ask us to remove you, or until the waitlist closes, whichever comes first.
+- **Waitlist entries** are kept until you leave the list (there's a one-click link at the bottom of every waitlist email, and leaving deletes your address), ask us to remove you, or the waitlist closes — whichever comes first.
 - **Account information** is kept until you delete your account.
 - **Server logs** are retained by Vercel for its normal operational period; we don't separately archive them.
 
 ## Your rights
 
-Under the Privacy Act 2020, you can ask us what personal information we hold about you, and ask us to correct it if it's wrong. To do either, email **hello.taptile@gmail.com**. We'll respond as quickly as we reasonably can.
+Under the Privacy Act 2020, you can ask us what personal information we hold about you, and ask us to correct it if it's wrong. To do either, email **support@trytaptile.com**. We'll respond as quickly as we reasonably can.
 
 If you're not satisfied with how we've handled a request or complaint, you can take it to the **Office of the Privacy Commissioner** at privacy.org.nz.
 
@@ -65,7 +66,7 @@ We treat information from Australian visitors and customers in line with the **A
 
 ## Children
 
-We don't currently verify anyone's age when they join the waitlist or create an account. If we become aware that we've collected personal information from a child without appropriate consent, we'll delete it and, where we can identify a parent or guardian, let them know. If you believe a child has given us their information, email hello.taptile@gmail.com and we'll act on it.
+We don't currently verify anyone's age when they join the waitlist or create an account. If we become aware that we've collected personal information from a child without appropriate consent, we'll delete it and, where we can identify a parent or guardian, let them know. If you believe a child has given us their information, email support@trytaptile.com and we'll act on it.
 
 ## If something goes wrong
 
@@ -77,8 +78,8 @@ We'll update this policy whenever what the site actually does changes. The curre
 
 ## Contact
 
-Questions, access requests, corrections, or complaints: **hello.taptile@gmail.com**.
+Questions, access requests, corrections, or complaints: **support@trytaptile.com**.
 
 ---
 
-Last updated: 19 August 2026
+Last updated: 12 October 2026

@@ -13,6 +13,7 @@ import Updates from './pages/Updates';
 import Update from './pages/Update';
 import Privacy from './pages/Privacy';
 import Terms from './pages/Terms';
+import Leave from './pages/Leave';
 
 /** Jump to the top on navigation, or to the #anchor when there is one. */
 function ScrollBehaviour() {
@@ -55,6 +56,7 @@ const siteRoutes = (
     <Route path="/login" element={<AuthFrame><Login /></AuthFrame>} />
     <Route path="/forgot-password" element={<AuthFrame><ForgotPassword /></AuthFrame>} />
     <Route path="/reset-password" element={<AuthFrame><ResetPassword /></AuthFrame>} />
+    <Route path="/leave" element={<AuthFrame><Leave /></AuthFrame>} />
     <Route path="*" element={<Navigate to="/" replace />} />
   </Routes>
 );

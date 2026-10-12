@@ -33,3 +33,6 @@ vite.config.ts.timestamp-*.mjs
 
 # Screenshots the desktop app saves from this chat
 Claude outputs/
+
+# local email previews written by supabase/tests/email/run.ts
+supabase/tests/email/preview/
